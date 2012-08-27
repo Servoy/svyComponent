@@ -1,0 +1,5 @@
+encapsulation:56,
+extendsID:"24AF8285-98EB-412B-AEE6-86E2AB653B43",
+name:"GoogleMap",
+typeid:3,
+uuid:"B67699E0-7361-40E1-B986-4BD4518D1E70"
