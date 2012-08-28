@@ -90,22 +90,25 @@ var init = function() {
 						var map = new google.maps.Map(document.getElementById(node.id), node.options)
 						maps.gmaps[node.id] = map
 						
-						var handler = function(event){
-							var id = node.id //TODO: this doesn't work...
-							mapsEventHandler.call(this, 'map', id, event)
+						var events = [
+										"bounds_changed", 
+										"center_changed", 
+										"click", 
+										"dblclick", 
+										"heading_changed", 
+										"maptypeid_changed", 
+										"projection_changed",
+										"tilt_changed",
+										"zoom_changed",
+									];
+						var handler;
+						for (var j = 0; j < events.length; j++) {
+							handler = new Function ("mapsEventHandler.call(this, 'map', '"+node.id+"', event, '"+events[j]+"')");
+							google.maps.event.addListener(map, events[j], handler);
 						}
-						
-						google.maps.event.addListener(map, 'bounds_changed', handler);
-						google.maps.event.addListener(map, 'center_changed', handler);
-						google.maps.event.addListener(map, 'click', handler);
-						google.maps.event.addListener(map, 'dblclick', handler);
-						google.maps.event.addListener(map, 'heading_changed', handler);
-						google.maps.event.addListener(map, 'maptypeid_changed', handler);
-						google.maps.event.addListener(map, 'projection_changed', handler);
-						google.maps.event.addListener(map, 'tilt_changed', handler);
-						google.maps.event.addListener(map, 'zoom_changed', handler);
+
 					} else {
-						
+
 					}
 				}
 				maps.todos = []
@@ -113,15 +116,29 @@ var init = function() {
 	    }
 	    
 	    function mapsEventHandler(objectType, id, event) {
-	    	console.log(arguments)
+	    	console.log(arguments);
+	    	var eventHandleButton = document.getElementById('eventHandleButton');
+	    	addArgument(eventHandleButton, "onclick", id);
+	    	eventHandleButton.click();
 	    }
+	    
+		function addArgument(element, eventName, arg) {
+			//Not implemented yet -> should include the argument in the event call
+			
+//			var _tmp = element[eventName].toString();
+////			console.log("tmp: " + _tmp);
+//			var _body = _tmp.substring(_tmp.indexOf('{\n')+2,_tmp.lastIndexOf('(')+1);
+////			console.log("body: " + _body);
+//			element[eventName] = new Function("javascript:forms.GoogleMap.handleEvent('"+arg+"')");
+		}
 	]]>
 	</script>
 	var bytes = new Packages.java.lang.String(code).getBytes('UTF-8')
-	solutionModel.newMedia('googleMapsHandler.js', bytes)
-	plugins.WebClientUtils.addJsReference('media:///googleMapsHandler.js')
+	var uuid = application.getUUID();
+	solutionModel.newMedia('googleMapsHandler_'+uuid+'.js', bytes)
+	plugins.WebClientUtils.addJsReference('media:///googleMapsHandler_'+uuid+'.js')
 
-	//Setup toObjectPresentation function through prototype on constructor functiosn that need to be serialized to client
+	//Setup toObjectPresentation function through prototype on constructor functions that need to be serialized to client
 	LatLng.prototype.toObjectPresentation = function() {
 		return { svySpecial: true, type: 'constructor', parts: ['google', 'maps', 'LatLng'], args: [this.lat, this.lng] }
 	}
@@ -129,6 +146,7 @@ var init = function() {
 		return { svySpecial: true, type: 'reference', parts: ['google', 'maps', 'MapTypeId', this.type] }
 	}
 }()
+
 
 /**
  * Internal API: DO NOT CALL
@@ -432,7 +450,7 @@ function Marker(options) {
  * @properties={typeid:24,uuid:"1E81E90E-BBDA-4D0C-8AB9-467196F292BC"}
  */
 function InfoWindow() {
-	
+
 }
 
 /**
@@ -448,7 +466,7 @@ function InfoWindow() {
 function GoogleMap(container, data, options, apiKey) {
 
 	var viz = scopes.modDataVisualization.createVisualizationContainer(container, forms.GoogleMap)
-
+	
 	var mapSetup = {
 		id: viz.getId(),
 		options: options

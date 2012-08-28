@@ -3,6 +3,7 @@
 	<name>modDataVisualization</name>
 	<comment></comment>
 	<projects>
+		<project>servoy_localhost_resources</project>
 		<project>gmap_resources</project>
 	</projects>
 	<buildSpec>

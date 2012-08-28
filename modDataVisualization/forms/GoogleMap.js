@@ -8,8 +8,18 @@ var dom = <html>
 	</head>
 	<body onload={'initialize(\'' + getId() + '\')'}>
 		<div id={getId()} style="width: 100%; height: 100%"><![CDATA[&nbsp;]]></div>
+		<input type="button" id="eventHandleButton" onclick="javascript:forms.GoogleMap.handleEvent()" style="visibility:hidden; top:0px; left:0px; position:absolute;"/>
 	</body>
 </html>
+
+/**
+ * @param {Object} arg
+ *
+ * @properties={typeid:24,uuid:"3BE42838-383D-4DA0-9D15-5CB624D7238F"}
+ */
+function handleEvent(arg) {
+	application.output("HANDLE EVENT: "+ arg);
+}
 
 /**
  * @properties={typeid:24,uuid:"F7F24BAF-2341-465E-ADB2-B01987037637"}
@@ -52,6 +62,7 @@ function render() {
 	
 	var mrkrs = ''
 	for each(var marker in markers) {
+		marker.id = application.getUUID();
 		mrkrs += 'maps.todos.push(\'' + scopes.modGoogleMaps.serializeObject(marker) + '\');'
 	}
 	if (mrkrs.length > 0) {
