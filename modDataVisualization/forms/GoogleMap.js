@@ -18,7 +18,20 @@ var dom = <html>
  * @properties={typeid:24,uuid:"3BE42838-383D-4DA0-9D15-5CB624D7238F"}
  */
 function handleEvent(arg) {
-	application.output("HANDLE EVENT: "+ arg);
+	
+	plugins.WebClientUtils.executeClientSideJS("", getValues, ['calledId', 'calledObjectType', 'calledEvent'])
+	
+}
+
+/**
+ * @param {Object} id
+ * @param {Object} objectType
+ * @param {Object} event
+ *
+ * @properties={typeid:24,uuid:"060E1A54-5522-4136-B658-1DC32E15D903"}
+ */
+function getValues(id, objectType, event) {
+	application.output("id: " + id + ", objectType: " + objectType + ", event: " + event);
 }
 
 /**

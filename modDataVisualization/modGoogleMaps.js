@@ -115,22 +115,18 @@ var init = function() {
 	    	}
 	    }
 	    
+	    //Variables that will be read from the webclient
+	    var calledObjectType, calledId, calledEvent;
+	    
 	    function mapsEventHandler(objectType, id, event) {
+	    	calledObjectType = objectType;
+	    	calledId = id;
+	    	calledEvent = event;
+	    	
 	    	console.log(arguments);
 	    	var eventHandleButton = document.getElementById('eventHandleButton');
-	    	addArgument(eventHandleButton, "onclick", id);
 	    	eventHandleButton.click();
 	    }
-	    
-		function addArgument(element, eventName, arg) {
-			//Not implemented yet -> should include the argument in the event call
-			
-//			var _tmp = element[eventName].toString();
-////			console.log("tmp: " + _tmp);
-//			var _body = _tmp.substring(_tmp.indexOf('{\n')+2,_tmp.lastIndexOf('(')+1);
-////			console.log("body: " + _body);
-//			element[eventName] = new Function("javascript:forms.GoogleMap.handleEvent('"+arg+"')");
-		}
 	]]>
 	</script>
 	var bytes = new Packages.java.lang.String(code).getBytes('UTF-8')
