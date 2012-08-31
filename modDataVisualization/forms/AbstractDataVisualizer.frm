@@ -1,4 +1,4 @@
-encapsulation:2,
+encapsulation:62,
 items:[
 {
 anchors:15,
@@ -22,6 +22,9 @@ uuid:"74DB82D3-E01E-4527-9263-FEA56961695B"
 ],
 name:"AbstractDataVisualizer",
 navigatorID:"-1",
+onHideMethodID:"22CD8598-93D9-4261-952C-5129AE22778F",
+onShowMethodID:"4C7A2CF9-E700-412C-BB7E-91E0A1002385",
+onUnLoadMethodID:"0A8FE3BA-A64C-4298-AA00-AA0731573ABB",
 showInMenu:true,
 size:"10,10",
 typeid:3,

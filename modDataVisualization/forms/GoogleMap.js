@@ -1,69 +1,13 @@
 //Stuff to get things working in the Web Client
 /**
- * @type {XML}
- * @properties={typeid:35,uuid:"F56F777E-C324-416A-85AD-025422225AC0",variableType:-4}
- */
-var dom = <html>
-	<head>
-	</head>
-	<body onload={'initialize(\'' + getId() + '\')'}>
-		<div id={getId()} style="width: 100%; height: 100%"><![CDATA[&nbsp;]]></div>
-		<input type="button" id="eventHandleButton" onclick="javascript:forms.GoogleMap.handleEvent()" style="visibility:hidden; top:0px; left:0px; position:absolute;"/>
-	</body>
-</html>
-
-/**
- * @param {Object} arg
- *
- * @properties={typeid:24,uuid:"3BE42838-383D-4DA0-9D15-5CB624D7238F"}
- */
-function handleEvent(arg) {
-	
-	plugins.WebClientUtils.executeClientSideJS("", getValues, ['calledId', 'calledObjectType', 'calledEvent'])
-	
-}
-
-/**
- * @param {Object} id
- * @param {Object} objectType
- * @param {Object} event
- *
- * @properties={typeid:24,uuid:"060E1A54-5522-4136-B658-1DC32E15D903"}
- */
-function getValues(id, objectType, event) {
-	application.output("id: " + id + ", objectType: " + objectType + ", event: " + event);
-}
-
-/**
- * @properties={typeid:24,uuid:"F7F24BAF-2341-465E-ADB2-B01987037637"}
- */
-function getId() {
-	return controller.getName()
-}
-
-/**
  * @properties={typeid:24,uuid:"01375B7F-1EA4-4E8B-8A40-61A69E5AC222"}
  */
 function toObjectPresentation() {
 	return {
 		svySpecial: true, 
 		type: 'reference', 
-		parts: ['maps', 'gmaps', getId()]
+		parts: ['svyDataViz','gmaps', 'maps', getId()]
 	}
-}
-
-/**
- * @properties={typeid:35,uuid:"450779CA-8630-432D-839C-DF3C5FA16DFE",variableType:-4}
- */
-var scripts = <scripts/>
-
-/**
- * @param {Object} script
- *
- * @properties={typeid:24,uuid:"A5210EE9-6A79-492E-9AD6-33CBE5368FB7"}
- */
-function addScript(script) {
-	scripts.appendChild(script)
 }
 
 /**
@@ -72,11 +16,11 @@ function addScript(script) {
 function render() {
 	var copy = dom.copy()
 	copy.head.setChildren(scripts.children())
-	
+	copy.body.@onLoad = 'svyDataViz.' + getBrowserId() + '.initialize()'
 	var mrkrs = ''
 	for each(var marker in markers) {
 		marker.id = application.getUUID();
-		mrkrs += 'maps.todos.push(\'' + scopes.modGoogleMaps.serializeObject(marker) + '\');'
+		mrkrs += 'svyDataViz.gmaps.todos.push(\'' + scopes.modDataVisualization.serializeObject(marker, scopes.modGoogleMaps.specialTypes) + '\');'
 	}
 	if (mrkrs.length > 0) {
 		copy.head.appendChild(<script>{mrkrs}</script>)
@@ -84,14 +28,15 @@ function render() {
 	html = scopes.modDataVisualization.stripCDataTags(copy)
 }
 
-//Convenient Marker store 
 /**
+ * Convenient Marker Store of all Markers on the map
+ * When calling .setMap() on a marker, the Marker will be added to this Marker store on the relevant GoogleMap instance
+ * 
  * @type {Array<scopes.modGoogleMaps.Marker>}
  *
  * @properties={typeid:35,uuid:"92CAF31E-F19E-4483-A98E-0948BDC7C620",variableType:-4}
  */
 var markers = {}
-
 
 /*
  * Google Maps API
@@ -228,7 +173,9 @@ function setTilt(tilt) {}
  *
  * @properties={typeid:24,uuid:"18932509-F32B-4ADA-981E-11DE7AA5220B"}
  */
-function setZoom(zoom) {}
+function setZoom(zoom) {
+	
+}
 
 /**
  * @properties={typeid:35,uuid:"7AD26AFE-F7E9-43F7-8421-620A82ABB5E8",variableType:-4}
@@ -263,5 +210,12 @@ var EVENT_TYPES = {
  * @properties={typeid:24,uuid:"F29A6319-139F-4A1A-9557-BB5874E93BD9"}
  */
 function addEventListener(eventHandler, eventType) {
-	
+	scopes.svyEventManager.addListener(this,eventType,eventHandler)
+}
+
+/**
+ * @properties={typeid:24,uuid:"9EB750CE-8684-4DC8-949A-CE3CCD40AD01"}
+ */
+function getBrowserId() {
+	return 'gmaps'
 }
