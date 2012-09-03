@@ -682,44 +682,42 @@ function InfoWindow() {
  * Google Map impl.
  * 
  * TODO: persist switching to streetview: http://stackoverflow.com/questions/7251738/detecting-google-maps-streetview-mode
- * TODO: Fix Marker impl.
  * TODO: Impl. missing Types used in options
  * @constructor 
  * @param {RuntimeTabPanel} container the panel in which the visualization is displayed. Note: all existing tabs in the panel will be removed
- * @param {String} apiKey
- * @param {{backgroundColor:String=,
- *	 center:LatLng,
- *	 disableDefaultUI:Boolean=,
- *	 disableDoubleClickZoom:Boolean=,
- *	 draggable:Boolean=,
- *	 draggableCursor:String=,
- *	 draggingCursor:String=,
- *	 heading:Number=,
- *	 keyboardShortcuts:Boolean=,
- *	 mapMaker:Boolean=,
- *	 mapTypeControl:Boolean=,
- *	 mapTypeControlOptions:MapTypeControlOptions=,
- *	 mapTypeId:MapTypeId,
- *	 maxZoom:Number=,
- *	 minZoom:Number=,
- *	 noClear:Boolean=,
- *	 overviewMapControl:Boolean=,
- *	 overviewMapControlOptions:OverviewMapControlOptions=,
- *	 panControl:Boolean=,
- *	 panControlOptions:PanControlOptions=,
- *	 rotateControl:Boolean=,
- *	 rotateControlOptions:RotateControlOptions=,
- *	 scaleControl:Boolean=,
- *	 scaleControlOptions:ScaleControlOptions=,
- *	 scrollwheel:Boolean=,
- *	 streetView:StreetViewPanorama=,
- *	 streetViewControl:Boolean=,
- *	 streetViewControlOptions:StreetViewControlOptions=,
- *	 styles:Array<MapTypeStyle>=,
- *	 tilt:Number=,
- *	 zoom:Number,
- *	 zoomControl:Boolean=,
- *	 zoomControlOptions:ZoomControlOptions=}} options
+ * @param {String} [options.backgroundColor]
+ * @param {LatLng} options.center
+ * @param {Boolean} [options.disableDefaultUI]
+ * @param {Boolean} [options.disableDoubleClickZoom]
+ * @param {Boolean} [options.draggable]
+ * @param {String} [options.draggableCursor]
+ * @param {String} [options.draggingCursor]
+ * @param {Number} [options.heading]
+ * @param {Boolean} [options.keyboardShortcuts]
+ * @param {Boolean} [options.mapMaker]
+ * @param {Boolean} [options.mapTypeControl]
+ * @param {MapTypeControlOptions} [options.mapTypeControlOptions]
+ * @param {MapTypeId} options.mapTypeId
+ * @param {Number} [options.maxZoom]
+ * @param {Number} [options.minZoom]
+ * @param {Boolean} [options.noClear]
+ * @param {Boolean} [options.overviewMapControl]
+ * @param {OverviewMapControlOptions} [options.overviewMapControlOptions]
+ * @param {Boolean} [options.panControl]
+ * @param {PanControlOptions} [options.panControlOptions]
+ * @param {Boolean} [options.rotateControl]
+ * @param {RotateControlOptions} [options.rotateControlOptions]
+ * @param {Boolean} [options.scaleControl]
+ * @param {ScaleControlOptions} [options.scaleControlOptions]
+ * @param {Boolean} [options.scrollwheel]
+ * @param {StreetViewPanorama} [options.streetView]
+ * @param {Boolean} [options.streetViewControl]
+ * @param {StreetViewControlOptions} [options.streetViewControlOptions]
+ * @param {Array<MapTypeStyle>} [options.styles]
+ * @param {Number} [options.tilt]
+ * @param {Number} options.zoom
+ * @param {Boolean} [options.zoomControl]
+ * @param {ZoomControlOptions} [options.zoomControlOptions] 
  * @properties={typeid:24,uuid:"1E5BE0D4-5E7A-489D-AACA-7BECA54B2CD1"}
  */
 function GoogleMap(container, options) {
@@ -748,16 +746,29 @@ function GoogleMap(container, options) {
 	}
 	updateState()
 	
+	/**
+	 * Internal API, DO NOT CALL
+	 * @param {String} id
+	 * @param {Marker} marker
+	 */
 	this.addMarker = function(id, marker) {
 		dv.markers[id] = marker	
 		updateState()//TODO: incremental code
 	}
 	
+	/**
+	 * Internal API, DO NOT CALL
+	 * @param {String} id
+	 */
 	this.removeMarker = function (id) {
 		delete dv.markers[id]
 		updateState() //TODO: incremental code
 	}
 	
+	/**
+	 * Internal API, DO NOT CALL
+	 * @return {Object}
+	 */
 	this.toObjectPresentation = function() {
 		return {
 			svySpecial: true, 
@@ -941,7 +952,7 @@ function GoogleMap(container, options) {
 	 * @param {String} eventType
 	 */
 	function addEventListener(eventHandler, eventType) {
-		scopes.svyEventManager.addListener(this,eventType,eventHandler)
+		scopes.svyEventManager.addListener(this, eventType, eventHandler)
 	}
 	
 	allMaps[mapSetup.id] = [options, updateState]
