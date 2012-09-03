@@ -103,7 +103,8 @@ function onLoad(event) {
 		panControl: true,
 		rotateControl: true,
 		scaleControl: true,
-		zoomControl: true
+		zoomControl: true,
+		mapMaker: false
 	})
 	maps.push(map)
 	
