@@ -1,5 +1,5 @@
 /*
- * Google Maps APIv3 implementation: https://developers.google.com/maps/documentation/javascript/reference
+ * Google Maps APIv3.9 implementation: https://developers.google.com/maps/documentation/javascript/reference
  * 
  * TODO: Implement mechanism to sync scripting updates to browser
  * TODO: Implement API of Marker & Maps
@@ -260,7 +260,7 @@ function browserCallback(objectType, id, eventType, data) {
  * @type {Array}
  * @properties={typeid:35,uuid:"F61367F4-BDE9-42B1-994E-22EA719A34D9",variableType:-4}
  */
-var specialTypes = [LatLng, MapTypeId, Marker, RuntimeForm]
+var specialTypes = [LatLng, MapTypeId, Marker, GoogleMap]
 
 /**
  * Map holding references to the inner setup of all Maps and their storeState method.
@@ -572,10 +572,10 @@ function Marker(options) {
 			_map = map
 		} else if (_map != map) {
 			//TODO: This should also trigger sync to browser to remove the marker from the map
-			delete _map.markers[id]
+			delete _map.removeMarker[id]
 			_map = map
 		}
-		//_map.addMarker(id, this)
+		_map.addMarker(id, this)
 		//_map.markers[id] = this
 	}
 	this.setOptions = function(options) {
@@ -753,6 +753,11 @@ function GoogleMap(container, options) {
 		updateState()//TODO: incremental code
 	}
 	
+	this.removeMarker = function (id) {
+		delete dv.markers[id]
+		updateState() //TODO: incremental code
+	}
+	
 	this.toObjectPresentation = function() {
 		return {
 			svySpecial: true, 
@@ -906,6 +911,38 @@ function GoogleMap(container, options) {
 	this.controls = [] //TODO: implement what needs implementing for this property
 	this.mapTypes = null //TODO: implement what needs implementing for this property
 	this.overlayMapTypes = [] //TODO: implement what needs implementing for this property
+	
+	/**
+	 */
+	var EVENT_TYPES = {
+		BOUNDS_CHANGED: 'bounds_changed',
+		CENTER_CHANGED: 'center_changed',
+		CLICK: 'click',
+		DBLCLICK: 'dblclick',
+		//DRAG: 'drag',
+		//DRAGEND: 'dragend',
+		//DRAGSTART: 'dragstart',
+		HEADING_CHANGED: 'heading_changed',
+		//IDLE: 'idle',
+		MAPTYPEID_CHANGED: 'maptypeid_changed',
+		//MOUSEMOVE: 'mousemove',
+		//MOUSEOUT: 'mouseout',
+		//MOUSEOVER: 'mouseover',
+		PROJECTION_CHANGED: 'projection_changed',
+		//RESIZE: 'resize',
+		//RIGHTCLICK: 'rightclick',
+		//TILESLOADED: 'tilesloaded',
+		TILT_CHANGED: 'tilt_changed',
+		ZOOM_CHANGED: 'zoom_changed',
+	}
+	
+	/**
+	 * @param {Function} eventHandler
+	 * @param {String} eventType
+	 */
+	function addEventListener(eventHandler, eventType) {
+		scopes.svyEventManager.addListener(this,eventType,eventHandler)
+	}
 	
 	allMaps[mapSetup.id] = [options, updateState]
 }

@@ -113,7 +113,7 @@ function onLoad(event) {
 	m.setPosition(new scopes.modGoogleMaps.LatLng(10,20))
 	m.setTitle('Hello Paul')
 	m.setDraggable(true)
-//	m.setMap(map)
+	m.setMap(map)
 //	//map.render()
 	
 	plugins.scheduler.addJob('test',new Date(Date.now()+10000),update,10000)
