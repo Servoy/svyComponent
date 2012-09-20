@@ -1,4 +1,3 @@
-encapsulation:56,
 extendsID:"24AF8285-98EB-412B-AEE6-86E2AB653B43",
 name:"GoogleMap",
 typeid:3,

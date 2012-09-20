@@ -92,21 +92,25 @@ var init = function() {
 							map.set('svyId',node.id)
 							svyDataViz.gmaps.objects[node.id] = map
 							
-//							var events = [
-//								"bounds_changed", 
-//								"center_changed", 
-//								"click", 
-//								"dblclick", 
-//								"heading_changed", 
-//								"maptypeid_changed", 
-//								"projection_changed",
-//								"tilt_changed",
-//								"zoom_changed",
-//							];
+							var events = [
+								'idle',
+//								'bounds_changed', 
+//								'center_changed', 
+								'click', 
+								'dblclick', 
+								'heading_changed', 
+								'maptypeid_changed', 
+								'projection_changed',
+								'tilt_changed'
+//								'zoom_changed',
+							];
 							
-							var events = ['idle']
 							for (var j = 0; j < events.length; j++) {
-								var handler = new Function ("svyDataViz.gmaps.callbackIntermediate.call(this, 'map', '"+node.id+"', '"+events[j]+"', event)");
+								var handler = function(id, eventType){
+									return function(event) {
+										svyDataViz.gmaps.callbackIntermediate(id, eventType, event)
+									}
+								}(node.id, events[j])
 								google.maps.event.addListener(map, events[j], handler);
 							}
 							
@@ -128,7 +132,7 @@ var init = function() {
 					svyDataViz.gmaps.todos = []
 		    	}
 		    },
-			callbackIntermediate: function(objectType, id, eventType, event){
+			callbackIntermediate: function(id, eventType, event){
 				//Intermediate function to retrieve relevant data when events occur on a map and then send them to the server
 				var data
 				var map = svyDataViz.gmaps.objects[id]
@@ -175,7 +179,7 @@ var init = function() {
 					default:
 						break;
 				}
-				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType,data)
+				svyDataViz.gmaps.mapsEventHandler('map', id, eventType,data)
 			},
 			callbackMarker: function(objectType, id, eventType, event){
 				//Function to retrieve relevant data when events occur on a marker and then send them to the server
@@ -213,7 +217,6 @@ var init = function() {
 				}
 				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType, data);
 			}
-			
 		}
 		
 		function svyDataVizGMapCallback() {
@@ -279,7 +282,6 @@ var init = function() {
  */
 function browserCallback(objectType, id, eventType, data) {
 	application.output("OBJECT: " +objectType)
-	
 	switch (objectType) {
 		case 'map':
 			var mapOptions = allMaps[id][0]
@@ -613,7 +615,7 @@ function Marker(options) {
 			type: 'reference', 
 			parts: ['svyDataViz','gmaps', 'objects', id],
 			marker: true
-		}
+			}
 		
 //		return {svySpecial: true, 
 //				type: 'constructor', 
@@ -637,7 +639,6 @@ function Marker(options) {
 //				}] 
 //			}
 	}
-	
 
 	//Constants
 	this.MAX_ZINDEX
@@ -923,8 +924,6 @@ function GoogleMap(container, options) {
 			parts: ['svyDataViz','gmaps', 'objects', mapSetup.id]
 		}
 	}
-	 
-	
 
 	/* Scripting API
 	 */
@@ -1012,7 +1011,7 @@ function GoogleMap(container, options) {
 	}
 
 	/**
-	 * @param {LatLngBounds} bounds
+	 * @param {scopes.modGoogleMaps.LatLngBounds} bounds
 	 */
 	this.panToBounds = function(bounds){
 		plugins.WebClientUtils.executeClientSideJS('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panToBounds(bounds);')
