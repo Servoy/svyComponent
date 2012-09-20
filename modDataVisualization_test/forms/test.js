@@ -61,7 +61,7 @@ function onLoad(event) {
 	    max: 100,
 	    title: "Visitors"
 	}))
-		
+	
 	gauges.push(new scopes.modJustGauge.JustGauge(elements.gauge2,{
 		title: 'Features',
 		value: (Math.random() * 100).toFixed(0)
@@ -119,6 +119,10 @@ function onLoad(event) {
 		title: 'Hello Paul',
 		map: map
 	});
+	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
+	m.addEventListener(markerCallback,m.EVENT_TYPES.DBLCLICK);
+	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
+	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
 	m = new scopes.modGoogleMaps.Marker({
 		position: new scopes.modGoogleMaps.LatLng(52,5),
@@ -126,6 +130,7 @@ function onLoad(event) {
 		title: 'Hello Joas',
 		map: map
 	});
+	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
 	
 	var lineChart = new scopes.modFlotr2.LineChart(elements.flotr2$line)
@@ -157,7 +162,7 @@ function onLoad(event) {
 					hoverable: true,
 					clickable: true,
 					color: '#a7a7a7'
-
+	
 				},
 				selection: {
 					mode: 'x'
@@ -238,3 +243,11 @@ function onLoad(event) {
 	//Start automatic update
 	plugins.scheduler.addJob('test',new Date(Date.now()+10000),update,10000)
 }
+
+/**
+ * @properties={typeid:24,uuid:"90F7FE19-B6F1-4DB4-8437-6F56E5C4C035"}
+ */
+function markerCallback(event, data) {
+	application.output("MARKERCALLBACK: " + data);
+}
+
