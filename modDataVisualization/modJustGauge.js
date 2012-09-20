@@ -7,7 +7,6 @@
  * @properties={typeid:35,uuid:"B4689D91-3D5D-4E8E-86DC-C598ED52B960",variableType:-4}
  */
 var init = function() {
-	application.output('init...')
 	//TODO: allow devs to optimalizise external lib inclusion
 	plugins.WebClientUtils.addJsReference('media:///raphael.2.1.0.min.js')
 	plugins.WebClientUtils.addJsReference('media:///justgage.1.0.1.min.js')
