@@ -32,8 +32,7 @@ function serializeObject(o, specialTypes) {
 		var oo = o['toObjectPresentation']()
 		return serializeObject(oo, specialTypes);
 	}
-	
-	return JSON.stringify(o, function(key, value) {
+	var _str = JSON.stringify(o, function(key, value) {
 			if (specialTypes && specialTypes.some(function(element, index, array) {
 					return value instanceof element
 				})) {
@@ -41,6 +40,8 @@ function serializeObject(o, specialTypes) {
 				}
 			return value
 		})
+		
+	return _str;
 }
 
 /**

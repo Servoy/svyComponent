@@ -20,10 +20,12 @@ var maps = []
 var autoUpdate = true
 
 /**
+ * @param {JSEvent} event
+ * 
  * @properties={typeid:24,uuid:"6339D4F4-0D29-445C-A833-68D97EAA7C2E"}
  */
-function update() {
-	if (!autoUpdate) return
+function update(event) {
+	if (!autoUpdate && event && event.getType() != JSEvent.ACTION) return
 	
 	for (var i = 0; i < gauges.length; i++) {
 		gauges[i].refresh((Math.random() * 100).toFixed(0))
@@ -73,29 +75,29 @@ function onLoad(event) {
 	}
 	gauges.push(new scopes.modJustGauge.JustGauge(elements.gauge4,option))
 	
-//	//Instantiate Google GeoChart
-//	var data = [
-//		['NL', 1000],
-//		['GB', 500],
-//		['RO', 50],
-//		['US', 750]
-//	]
-//	
-//	var options = {
-//		 colorAxis: {colors: ['green','orange']}
-//	}
-//	var geo = scopes.modGoogleCharts.GeoChart(elements.geochart, data, options)
+	//Instantiate Google GeoChart
+	var data = [
+		['NL', 1000],
+		['GB', 500],
+		['RO', 50],
+		['US', 750]
+	]
+	
+	var options = {
+		 colorAxis: {colors: ['green','orange']}
+	}
+	var geo = scopes.modGoogleCharts.GeoChart(elements.geochart, data, options)
 	
 	//Instantiate GoogleMaps
-	var map = new scopes.modGoogleMaps.GoogleMap(elements.maps, {
+	var map1 = new scopes.modGoogleMaps.GoogleMap(elements.maps, {
 		zoom: 8,
 		center: new scopes.modGoogleMaps.LatLng(-34.397, 150.644),
 		mapTypeId: scopes.modGoogleMaps.MapTypeIds.HYBRID
 	})
 	//map.render()
-	maps.push(map)
+	maps.push(map1)
 	
-	map = new scopes.modGoogleMaps.GoogleMap(elements.map2, {
+	var map = new scopes.modGoogleMaps.GoogleMap(elements.map2, {
 		zoom: 2,
 		center: new scopes.modGoogleMaps.LatLng(10, 20),
 		mapTypeId: scopes.modGoogleMaps.MapTypeIds.TERRAIN,
@@ -109,12 +111,20 @@ function onLoad(event) {
 	maps.push(map)
 	
 		
-	var m = new scopes.modGoogleMaps.Marker()
-	m.setPosition(new scopes.modGoogleMaps.LatLng(10,20))
-	m.setTitle('Hello Paul')
-	m.setDraggable(true)
-	m.setMap(map)
+	var m = new scopes.modGoogleMaps.Marker({
+		position: new scopes.modGoogleMaps.LatLng(10,20),
+		draggable: true,
+		title: 'Hello Paul',
+		map: map
+	});
+	
+	m = new scopes.modGoogleMaps.Marker({
+		position: new scopes.modGoogleMaps.LatLng(52,5),
+		draggable: true,
+		title: 'Hello Joas',
+		map: map
+	});
 //	//map.render()
 	
-	plugins.scheduler.addJob('test',new Date(Date.now()+10000),update,10000)
+//	plugins.scheduler.addJob('test',new Date(Date.now()+10000),update,10000)
 }

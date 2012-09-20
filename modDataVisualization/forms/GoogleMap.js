@@ -35,3 +35,4 @@ var markers = {}
 function getBrowserId() {
 	return 'gmaps'
 }
+

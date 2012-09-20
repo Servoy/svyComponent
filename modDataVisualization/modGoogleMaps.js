@@ -77,17 +77,20 @@ var init = function() {
 	    	}
 		}
 		svyDataViz.gmaps = {
-			maps: {},
+			objects: {},
 			todos: [],
 			initialize: function() {
 		    	if (window.google && google.maps) {
 		    		for (var i = 0; i < svyDataViz.gmaps.todos.length; i++) {
 		    			console.log(svyDataViz.gmaps.todos[i])
 		    			var node = JSON.parse(svyDataViz.gmaps.todos[i], svyDataViz.reviver)
-						if (node.id) {
+
+						if (node && node.type == "map") {
+							console.log("MAP:");
+							console.log(node);
 							var map = new google.maps.Map(document.getElementById(node.id), node.options)
 							map.set('svyId',node.id)
-							svyDataViz.gmaps.maps[node.id] = map
+							svyDataViz.gmaps.objects[node.id] = map
 							
 //							var events = [
 //								"bounds_changed", 
@@ -107,8 +110,19 @@ var init = function() {
 								google.maps.event.addListener(map, events[j], handler);
 							}
 							
-						} else {
+						} else if (node && node.type == "marker"){
+							console.log("Marker");
+							console.log(node);
+							var marker = new google.maps.Marker(node.options)
+							marker.set('svyId',node.id)
+							svyDataViz.gmaps.objects[node.id] = marker
 							
+//							var events = ['click', 'position_changed']
+							var events = ['dragend'];
+							for (var j = 0; j < events.length; j++) {
+								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
+								google.maps.event.addListener(marker, events[j], handler);
+							}
 						}
 					}
 					svyDataViz.gmaps.todos = []
@@ -117,7 +131,7 @@ var init = function() {
 			callbackIntermediate: function(objectType, id, eventType, event){
 				//Intermediate function to retrieve relevant data when events occur on a map and then send them to the server
 				var data
-				var map = svyDataViz.gmaps.maps[id]
+				var map = svyDataViz.gmaps.objects[id]
 				switch (eventType) {
 //					case 'bounds_changed':
 //						break;
@@ -125,6 +139,10 @@ var init = function() {
 //						data = JSON.stringify({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
 //						break;
 //					case 'click':
+//						console.log('click');
+//						break;
+//					case 'position_changed':
+//						console.log('click');
 //						break;
 //					case 'dblclick':
 //						break;
@@ -158,7 +176,44 @@ var init = function() {
 						break;
 				}
 				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType,data)
+			},
+			callbackMarker: function(objectType, id, eventType, event){
+				//Function to retrieve relevant data when events occur on a marker and then send them to the server
+				var data
+				var marker = svyDataViz.gmaps.objects[id]
+				switch (eventType) {
+					case 'click':
+					case 'position_changed':
+//						console.log('position_changed');
+//						data = JSON.stringify({
+//							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
+//							mapid: marker.map.svyId
+//						})						
+//					case 'dblclick':
+//						break;
+//					case 'idle':
+//						bounds = map.getBounds()
+//					
+//						data = JSON.stringify({
+//							bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
+//							center: {lat: map.getCenter().lat(), lng: map.getCenter().lng()},
+//							heading: map.getHeading(),
+//							mapTypeId: map.getMapTypeId(),
+//							tilt: map.getTilt(),
+//							zoom: map.getZoom()
+//						})
+//						break;
+					default:
+						console.log(eventType);
+						data = JSON.stringify({
+							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
+							mapid: marker.map.svyId
+						})		
+						break;
+				}
+				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType, data);
 			}
+			
 		}
 		
 		function svyDataVizGMapCallback() {
@@ -190,6 +245,31 @@ var init = function() {
 	MapTypeId.prototype.toObjectPresentation = function() {
 		return { svySpecial: true, type: 'reference', parts: ['google', 'maps', 'MapTypeId', this.type] }
 	}
+//	Marker.prototype.toObjectPresentation = function() {
+//		return {svySpecial: true, 
+//				type: 'constructor', 
+//				parts: ['google', 'maps', 'Marker'], 
+//				id: this.id,
+//				args: [{animation: this.getAnimation(),
+//					clickable: this.getClickable(),
+//					cursor: this.getCursor(),
+//					draggable: this.getDraggable(),
+//					flat: this.getFlat(),
+//					icon: this.getIcon(),
+//					map: this.getMap(),
+//					optimized: null,
+//					position: this.getPosition(),
+//					raiseOnDrag: null,
+//					shadow: this.getShadow(),
+//					shape: this.getShape(),
+//					title: this.getTitle(),
+//					visible: this.getVisible(),
+//					zIndex: this.getZIndex()
+//				}] 
+//		}
+//	}
+	
+	
 }()
 
 /**
@@ -198,11 +278,11 @@ var init = function() {
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
 function browserCallback(objectType, id, eventType, data) {
-	application.output(arguments)
+	application.output("OBJECT: " +objectType)
 	
 	switch (objectType) {
 		case 'map':
-			var options = allMaps[id][0]
+			var mapOptions = allMaps[id][0]
 			switch (eventType) {
 //				case 'bounds_changed':
 //					break;
@@ -232,20 +312,26 @@ function browserCallback(objectType, id, eventType, data) {
 					var o = JSON.parse(data)
 					var sw = new scopes.modGoogleMaps.LatLng(o.bounds.sw.lat, o.bounds.sw.lng)
 					var ne = new scopes.modGoogleMaps.LatLng(o.bounds.ne.lat, o.bounds.ne.lng)
-					options.bounds = new scopes.modGoogleMaps.LatLngBounds(sw,ne)
-					options.center = new scopes.modGoogleMaps.LatLng(o.center.lat,o.center.lng)
-					if (o.heading) options.heading = parseInt(o.heading)
-					options.mapTypeId = o.mapTypeId
-					options.tilt = o.tilt 
-					options.zoom = o.zoom
+					mapOptions.bounds = new scopes.modGoogleMaps.LatLngBounds(sw,ne)
+					mapOptions.center = new scopes.modGoogleMaps.LatLng(o.center.lat,o.center.lng)
+					if (o.heading) mapOptions.heading = parseInt(o.heading)
+					mapOptions.mapTypeId = o.mapTypeId
+					mapOptions.tilt = o.tilt 
+					mapOptions.zoom = o.zoom
 					break;
 				default:
 					application.output('Unknown Map eventType: ' + eventType)
 					return;
 			}
-			allMaps[id][1]()
+			allMaps[id][1](); //run the updateState method
+			break;
 		case 'marker':
+			application.output(objectType + ", " + id + ", " + eventType + ", " + data);
+			var markerOptions = allMarkers[id][0];
+			var o = JSON.parse(data);
+			markerOptions.position = new scopes.modGoogleMaps.LatLng(o.position.lat, o.position.lng);
 			
+			allMarkers[id][1](); //run the updateState method
 			break;
 	
 		default:
@@ -270,6 +356,15 @@ var specialTypes = [LatLng, MapTypeId, Marker, GoogleMap]
  * @properties={typeid:35,uuid:"1E3B2526-74A5-4BF3-80F7-E3D540136405",variableType:-4}
  */
 var allMaps = {}
+
+/**
+ * Map holding references to the inner setup of all Markers and their storeState method.
+ * Used by the browserCallback function to persists browserside updates to the map, without causing another render cycle towards the browser
+ * @private
+ * @type {Object<Array>}
+ * @properties={typeid:35,uuid:"6080FDFD-21F5-4DBE-AA8A-3A17FAB5633A",variableType:-4}
+ */
+var allMarkers = {}
 
 /**
  * Implements https://developers.google.com/maps/documentation/javascript/reference#LatLng
@@ -437,7 +532,7 @@ var MapTypeIds = {
  * 			draggable: Boolean=,
  * 			flat: Boolean=,
  * 			icon: String|MarkerImage|Symbol=,
- * 			map: RuntimeForm<GoogleMap>|StreetViewPanorama=,
+ * 			map: RuntimeForm<GoogleMap>,//|StreetViewPanorama,
  * 			optimized: Boolean=,
  * 			position: LatLng,
  * 			raiseOnDrag: Boolean=,
@@ -453,50 +548,96 @@ var MapTypeIds = {
  * @properties={typeid:24,uuid:"15AF5C80-3814-47FF-B34B-7D9D40E82FBF"}
  */
 function Marker(options) {
+	var id = application.getUUID().toString()
+//	var _animation
+//	var _clickable
+//	var _cursor
+//	var _draggable
+//	var _flat
+//	var _icon
+//	/**@type {scopes.modGoogleMaps.GoogleMap}*/
+//	var _map
+//	var _optimized
+//	var _position
+//	var _raiseOnDrag
+//	var _shadow
+//	var _shape
+//	var _title
+//	var _visible
+//	var _zIndex
+
+	var markerSetup = {
+		id: id,
+		type: "marker",
+		options: options
+	}
+	
+	/**
+	 * @param {String} [incrementalUpdateCode]
+	 */
+	function updateState(incrementalUpdateCode) {
+//		if (mapSetup.id in forms) {
+//			forms[mapSetup.id].storeState(scopes.modDataVisualization.serializeObject(mapSetup, specialTypes))
+//			
+//			if (forms[mapSetup.id].rendered) {
+//				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+//			}
+//		} else {
+//			application.output('Invalid DataVisualizer reference') //TODO: better error messages
+//		}
+		
+		
+		var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
+		if (_mapFormName in forms) {
+			forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
+			
+			if (forms[_mapFormName].rendered) {
+				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+			}
+		} else {
+			application.output('Invalid DataVisualizer reference') //TODO: better error messages
+		}
+	}
+	
+	updateState()
+
+	
 	/**
 	 * Internal API: DO NOT CALL
 	 * @return {Object}
 	 */
 	this.toObjectPresentation = function() {
-		return {svySpecial: true, 
-				type: 'constructor', 
-				parts: ['google', 'maps', 'Marker'], 
-				id: id,
-				args: [{animation: _animation,
-					clickable: _clickable,
-					cursor: _cursor,
-					draggable: _draggable,
-					flat: _flat,
-					icon: _icon,
-					map: _map,
-					optimized: _optimized,
-					position: _position,
-					raiseOnDrag: _raiseOnDrag,
-					shadow: _shadow,
-					shape: _shape,
-					title: _title,
-					visible: _visible,
-					zIndex: _zIndex
-				}] 
-			}
+		
+		return {
+			svySpecial: true, 
+			type: 'reference', 
+			parts: ['svyDataViz','gmaps', 'objects', id],
+			marker: true
+		}
+		
+//		return {svySpecial: true, 
+//				type: 'constructor', 
+//				parts: ['google', 'maps', 'Marker'], 
+//				id: id,
+//				args: [{animation: _animation,
+//					clickable: _clickable,
+//					cursor: _cursor,
+//					draggable: _draggable,
+//					flat: _flat,
+//					icon: _icon,
+//					map: _map,
+//					optimized: _optimized,
+//					position: _position,
+//					raiseOnDrag: _raiseOnDrag,
+//					shadow: _shadow,
+//					shape: _shape,
+//					title: _title,
+//					visible: _visible,
+//					zIndex: _zIndex
+//				}] 
+//			}
 	}
-	var id = application.getUUID().toString()
-	var _animation
-	var _clickable
-	var _cursor
-	var _draggable
-	var _flat
-	var _icon
-	/**@type {scopes.modGoogleMaps.GoogleMap}*/
-	var _map
-	var _optimized
-	var _position
-	var _raiseOnDrag
-	var _shadow
-	var _shape
-	var _title
-	var _visible
-	var _zIndex
+	
 
 	//Constants
 	this.MAX_ZINDEX
@@ -512,7 +653,7 @@ function Marker(options) {
 		return _cursor
 	}
 	this.getDraggable = function() {
-		return _draggable
+		return options.draggable;
 	}
 	this.getFlat = function() {
 		return _flat
@@ -524,7 +665,7 @@ function Marker(options) {
 		return _map
 	}
 	this.getPosition = function() {
-		return _position
+		return options.position
 	}
 	this.getShadow = function() {
 		return _shadow
@@ -533,7 +674,7 @@ function Marker(options) {
 		return _shape
 	}
 	this.getTitle = function() {
-		return _title
+		return options.title;
 	}
 	this.getVisible = function() {
 		return _visible
@@ -553,7 +694,7 @@ function Marker(options) {
 		_cursor = cursor
 	}
 	this.setDraggable = function(flag) {
-		_draggable = flag
+		options.draggable = flag
 	}
 	this.setFlat = function(flag) {
 		_flat = flag
@@ -565,75 +706,78 @@ function Marker(options) {
 	 * @param {scopes.modGoogleMaps.GoogleMap} map
 	 */
 	this.setMap = function(map) {
-		if (_map == map) {
+		if (options.map == map) {
 			return
 		}
-		if (_map == null) { 
-			_map = map
-		} else if (_map != map) {
+		if (options.map == null) { 
+			options.map = map
+		} else if (options.map != map) {
 			//TODO: This should also trigger sync to browser to remove the marker from the map
-			delete _map.removeMarker[id]
-			_map = map
+			delete options.map.removeMarker[id]
+			options.map = map
 		}
-		_map.addMarker(id, this)
+		options.map.addMarker(id, this)
 		//_map.markers[id] = this
 	}
-	this.setOptions = function(options) {
-		for each (var prop in options) {
-			switch (prop) {
-				case 'animation':
-					this.setAnimation(options[prop])
-					break;
-				case 'clickable':
-					this.setClickable(options[prop])
-					break;
-				case 'cursor':
-					this.setCursor(options[prop])
-					break;
-				case 'draggable':
-					this.setDraggable(options[prop])
-					break;
-				case 'flat':
-					this.setFlat(options[prop])
-					break;
-				case 'icon':
-					this.setIcon(options[prop])
-					break;
-				case 'map':
-					this.setMap(options[prop])
-					break;
-				case 'optimized':
-					_optimized = options[prop]
-					break;
-				case 'position':
-					this.setPosition(options[prop])
-					break;
-				case 'raiseOnDrag':
-					_raiseOnDrag = options[prop]
-					break;
-				case 'shadow':
-					this.setShadow(options[prop])
-					break;
-				case 'shape':
-					this.setShape(options[prop])
-					break;
-				case 'title':
-					this.setTitle(options[prop])
-					break;
-				case 'visible':
-					this.setvisible(options[prop])
-					break;
-				case 'zIndex':
-					this.setZIndex(options[prop])
-					break;
-				default:
-					application.output('Unsupported property "' + prop + '" supplied to Marker.setOptions')	
-					break;
-				}
-		}
-	}
+
+	//	this.setOptions = function(options) {
+//		for each (var prop in options) {
+//			switch (prop) {
+//				case 'animation':
+//					this.setAnimation(options[prop])
+//					break;
+//				case 'clickable':
+//					this.setClickable(options[prop])
+//					break;
+//				case 'cursor':
+//					this.setCursor(options[prop])
+//					break;
+//				case 'draggable':
+//					this.setDraggable(options[prop])
+//					break;
+//				case 'flat':
+//					this.setFlat(options[prop])
+//					break;
+//				case 'icon':
+//					this.setIcon(options[prop])
+//					break;
+//				case 'map':
+//					this.setMap(options[prop])
+//					break;
+//				case 'optimized':
+//					_optimized = options[prop]
+//					break;
+//				case 'position':
+//					this.setPosition(options[prop])
+//					break;
+//				case 'raiseOnDrag':
+//					_raiseOnDrag = options[prop]
+//					break;
+//				case 'shadow':
+//					this.setShadow(options[prop])
+//					break;
+//				case 'shape':
+//					this.setShape(options[prop])
+//					break;
+//				case 'title':
+//					this.setTitle(options[prop])
+//					break;
+//				case 'visible':
+//					this.setvisible(options[prop])
+//					break;
+//				case 'zIndex':
+//					this.setZIndex(options[prop])
+//					break;
+//				default:
+//					application.output('Unsupported property "' + prop + '" supplied to Marker.setOptions')	
+//					break;
+//				}
+//		}
+//	}
 	this.setPosition = function(latLng) {
-		_position = latLng
+		options.position = latLng;
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + markerSetup.id + '\'].setPosition(latLng);')		
+
 	}
 	this.setShadow = function(shadow) {
 		_shadow = shadow
@@ -642,7 +786,7 @@ function Marker(options) {
 		_shape = shape
 	}
 	this.setTitle = function(title) {
-		_title = title
+		markerSetup.options.title = title;
 	}
 	this.setVisible = function(visible) {
 		_visible = visible
@@ -667,6 +811,8 @@ function Marker(options) {
 	this.addEventListener = function(eventHandler, eventType) {
 		//TODO: implement
 	}
+	
+	allMarkers[markerSetup.id] = [options, updateState]
 }
 
 /**
@@ -726,8 +872,9 @@ function GoogleMap(container, options) {
 
 	var mapSetup = {
 		id: dv.getId(),
-		options: options,
-		markers: dv.markers
+		type: "map",
+		options: options
+//		markers: dv.markers
 	}
 	
 	/**
@@ -773,9 +920,11 @@ function GoogleMap(container, options) {
 		return {
 			svySpecial: true, 
 			type: 'reference', 
-			parts: ['svyDataViz','gmaps', 'maps', mapSetup.id]
+			parts: ['svyDataViz','gmaps', 'objects', mapSetup.id]
 		}
 	}
+	 
+	
 
 	/* Scripting API
 	 */
@@ -783,7 +932,7 @@ function GoogleMap(container, options) {
 	 * @param {LatLngBounds} bounds
 	 */
 	this.fitBounds = function(bounds) {
-		updateState('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].fitBounds(bounds);')
+		updateState('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].fitBounds(bounds);')
 	}
 
 	/**
@@ -851,7 +1000,7 @@ function GoogleMap(container, options) {
 	 */
 	this.panBy = function(x, y) {
 		//No state update, because no way to determine the new center. State will be updated async
-		plugins.WebClientUtils.executeClientSideJS('svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].panBy(' + x + ','+ y + ');')		
+		plugins.WebClientUtils.executeClientSideJS('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panBy(' + x + ','+ y + ');')		
 	}
 
 	/**
@@ -859,14 +1008,14 @@ function GoogleMap(container, options) {
 	 */
 	this.panTo = function(latLng) {
 		options.center = latLng
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].panTo(latLng);')		
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panTo(latLng);')		
 	}
 
 	/**
 	 * @param {LatLngBounds} bounds
 	 */
 	this.panToBounds = function(bounds){
-		plugins.WebClientUtils.executeClientSideJS('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].panToBounds(bounds);')
+		plugins.WebClientUtils.executeClientSideJS('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panToBounds(bounds);')
 	}
 
 	/**
@@ -874,7 +1023,7 @@ function GoogleMap(container, options) {
 	 */
 	this.setCenter = function(latLng) {
 		options.center = latLng
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].setCenter(latLng);')
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setCenter(latLng);')
 	}
 
 	/**
@@ -882,7 +1031,7 @@ function GoogleMap(container, options) {
 	 */
 	this.setHeading = function(heading) {
 		options.heading = heading
-		updateState('svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].setHeading(' + heading + ');')
+		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setHeading(' + heading + ');')
 	}
 
 	/**
@@ -890,7 +1039,7 @@ function GoogleMap(container, options) {
 	 */
 	this.setMapTypeId = function(mapTypeId) {
 		options.mapTypeId = mapTypeId
-		updateState('svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].setMapTypId(' + mapTypeId + ');')
+		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setMapTypId(' + mapTypeId + ');')
 	}
 
 	/**
@@ -908,7 +1057,7 @@ function GoogleMap(container, options) {
 	 */
 	this.setTilt = function(tilt) {
 		options.tilt = tilt
-		updateState('svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].setTilt(' + tilt + ');')
+		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setTilt(' + tilt + ');')
 	}
 	
 	/**
@@ -916,7 +1065,7 @@ function GoogleMap(container, options) {
 	 */
 	this.setZoom = function(zoom) {
 		options.zoom = zoom
-		updateState('svyDataViz.gmaps.maps[\'' + mapSetup.id + '\'].setZoom(' + zoom + ');')
+		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setZoom(' + zoom + ');')
 	}
 	
 	this.controls = [] //TODO: implement what needs implementing for this property

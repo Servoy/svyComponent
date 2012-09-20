@@ -27,44 +27,58 @@ var dom = <html>
 </html>
 
 /**
+ * @type {Array}
+ *
  * @properties={typeid:35,uuid:"0261CBF8-0C13-4FA1-88C0-31E2AADE7DAA",variableType:-4}
  */
-var scripts = <scripts/>
+var scripts = <scripts/>;
+
+/**
+ * @properties={typeid:35,uuid:"EB18FD74-CBBD-4CF9-BAC3-6ACE7C79DBA9",variableType:-4}
+ */
+var scriptObj = {};
 
 /**
  * @param {Object} script
+ * @param {Object} id
  *
  * @properties={typeid:24,uuid:"798D1B39-79DD-4C06-AF7E-53C747107059"}
  */
-function addScript(script) {
-	scripts.appendChild(script)
+function addScript(id, script) {
+	scriptObj[id] = script;
 }
 
-/**
- * @param {String} code
- *
- * @properties={typeid:24,uuid:"87C182AD-B370-4FF3-BE54-EC60F9562971"}
- */
-function addCode(code) {
-	if (rendered) {
-		plugins.WebClientUtils.executeClientSideJS(code.charAt(-1) == ';' ? code : code + ';')
-	}
-	else {
-		addScript(<script>{code}</script>)
-	}
-}
+///**
+// * @param {String} code
+// *
+// * @properties={typeid:24,uuid:"87C182AD-B370-4FF3-BE54-EC60F9562971"}
+// */
+//function addCode(code) {
+//	if (rendered) {
+//		plugins.WebClientUtils.executeClientSideJS(code.charAt(-1) == ';' ? code : code + ';')
+//	}
+//	else {
+//		addScript(<script>{code}</script>)
+//	}
+//}
 
 /**
- * @param {Object} jsonString
+ * @param {String} jsonString
  *
  * @properties={typeid:24,uuid:"0FB00B1F-C956-484C-9C50-595675A57E54"}
  */
 function storeState(jsonString) {
-	//TODO: optimize: based on old API that is not used anymore
-	scripts = <scripts/>
-	addScript(<script>{'svyDataViz.' + getBrowserId() + '.todos.push(\'' + jsonString + '\')'}</script>)
-	render()
-	plugins.WebClientUtils.setRendered(elements.visualizationContainer)
+	/** @type {{id: UUID}} */
+	var obj = JSON.parse(jsonString);
+	
+	addScript(obj.id, <script>{'svyDataViz.' + getBrowserId() + '.todos.push(\'' + jsonString + '\')'}</script>);
+
+	scripts = <scripts/>;
+	for (var s in scriptObj) {
+		scripts.appendChild(scriptObj[s]);
+	}
+	render();
+	plugins.WebClientUtils.setRendered(elements.visualizationContainer);
 }
 
 /**
