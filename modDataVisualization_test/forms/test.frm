@@ -23,7 +23,7 @@ uuid:"20C41D06-6CD3-40FD-923E-7302A4AC21FB"
 },
 {
 location:"35,10",
-onActionMethodID:"6339D4F4-0D29-445C-A833-68D97EAA7C2E",
+onActionMethodID:"4E2FEE74-8C57-42B5-9750-B8C5BA1098DF",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"130,20",

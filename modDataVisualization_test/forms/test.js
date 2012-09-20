@@ -20,12 +20,18 @@ var maps = []
 var autoUpdate = true
 
 /**
- * @param {JSEvent} event
- * 
+ * @properties={typeid:24,uuid:"4E2FEE74-8C57-42B5-9750-B8C5BA1098DF"}
+ */
+function manualUpdate() {
+	update(true)
+}
+
+/**
+ * @param {Boolean} force
  * @properties={typeid:24,uuid:"6339D4F4-0D29-445C-A833-68D97EAA7C2E"}
  */
-function update(event) {
-	if (!autoUpdate && event && event.getType() != JSEvent.ACTION) return
+function update(force) {
+	if (!force && !autoUpdate) return
 	
 	for (var i = 0; i < gauges.length; i++) {
 		gauges[i].refresh((Math.random() * 100).toFixed(0))
