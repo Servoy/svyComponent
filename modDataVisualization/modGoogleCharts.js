@@ -114,7 +114,7 @@ var init = function(){
 	plugins.WebClientUtils.addJsReference('media:///googleGeoChartHandler_'+uuid+'.js')
 	
 	//TODO: make the callback script generic on DataVizualization level, instead of having to add one on every impl.
-	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'id', 'eventType', 'data'], false);
+	var callback = plugins.WebClientUtils.generateCallbackScript(browserChartCallback,['objectType', 'id', 'eventType', 'data'], false);
 	var script = 'svyDataViz.googleGeoChart.chartEventHandler = function(objectType, id, eventType, data){' + callback + '}';
 	bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
 	uuid = application.getUUID();
@@ -125,9 +125,9 @@ var init = function(){
 /**
  * @properties={typeid:24,uuid:"42C9FF5A-9F17-4791-8120-5C49B31993BE"}
  */
-//function browserCallback() {
-//	application.output(arguments)
-//}
+function browserChartCallback() {
+	application.output(arguments)
+}
 
 /**
  * @properties={typeid:35,uuid:"0D213AFC-539E-4AF7-BD09-3D98671BF3F2",variableType:-4}
