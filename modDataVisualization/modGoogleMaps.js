@@ -108,7 +108,7 @@ var init = function() {
 							for (var j = 0; j < events.length; j++) {
 								var handler = function(id, eventType){
 									return function(event) {
-										svyDataViz.gmaps.callbackIntermediate(id, eventType, event)
+										svyDataViz.gmaps.callbackIntermediate("map", id, eventType, event)
 									}
 								}(node.id, events[j])
 								google.maps.event.addListener(map, events[j], handler);
@@ -121,8 +121,7 @@ var init = function() {
 							marker.set('svyId',node.id)
 							svyDataViz.gmaps.objects[node.id] = marker
 							
-//							var events = ['click', 'position_changed']
-							var events = ['dragend'];
+							var events = ['click', 'dblclick', 'dragend', 'position_changed', 'rightclick'];
 							for (var j = 0; j < events.length; j++) {
 								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
 								google.maps.event.addListener(marker, events[j], handler);
@@ -132,7 +131,7 @@ var init = function() {
 					svyDataViz.gmaps.todos = []
 		    	}
 		    },
-			callbackIntermediate: function(id, eventType, event){
+			callbackIntermediate: function(objectType, id, eventType, event){
 				//Intermediate function to retrieve relevant data when events occur on a map and then send them to the server
 				var data
 				var map = svyDataViz.gmaps.objects[id]
@@ -179,15 +178,14 @@ var init = function() {
 					default:
 						break;
 				}
-				svyDataViz.gmaps.mapsEventHandler('map', id, eventType,data)
+				svyDataViz.gmaps.mapsEventHandler("map", id, eventType,data)
 			},
 			callbackMarker: function(objectType, id, eventType, event){
 				//Function to retrieve relevant data when events occur on a marker and then send them to the server
 				var data
 				var marker = svyDataViz.gmaps.objects[id]
 				switch (eventType) {
-					case 'click':
-					case 'position_changed':
+//					case 'position_changed':
 //						console.log('position_changed');
 //						data = JSON.stringify({
 //							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
@@ -208,7 +206,6 @@ var init = function() {
 //						})
 //						break;
 					default:
-						console.log(eventType);
 						data = JSON.stringify({
 							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
 							mapid: marker.map.svyId
@@ -248,31 +245,6 @@ var init = function() {
 	MapTypeId.prototype.toObjectPresentation = function() {
 		return { svySpecial: true, type: 'reference', parts: ['google', 'maps', 'MapTypeId', this.type] }
 	}
-//	Marker.prototype.toObjectPresentation = function() {
-//		return {svySpecial: true, 
-//				type: 'constructor', 
-//				parts: ['google', 'maps', 'Marker'], 
-//				id: this.id,
-//				args: [{animation: this.getAnimation(),
-//					clickable: this.getClickable(),
-//					cursor: this.getCursor(),
-//					draggable: this.getDraggable(),
-//					flat: this.getFlat(),
-//					icon: this.getIcon(),
-//					map: this.getMap(),
-//					optimized: null,
-//					position: this.getPosition(),
-//					raiseOnDrag: null,
-//					shadow: this.getShadow(),
-//					shape: this.getShape(),
-//					title: this.getTitle(),
-//					visible: this.getVisible(),
-//					zIndex: this.getZIndex()
-//				}] 
-//		}
-//	}
-	
-	
 }()
 
 /**
@@ -281,10 +253,11 @@ var init = function() {
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
 function browserCallback(objectType, id, eventType, data) {
-	application.output("OBJECT: " +objectType)
+	var options = allObjects[id][0];
+	var o;
 	switch (objectType) {
 		case 'map':
-			var mapOptions = allMaps[id][0]
+			var mapOptions = allObjects[id][0]
 			switch (eventType) {
 //				case 'bounds_changed':
 //					break;
@@ -311,35 +284,41 @@ function browserCallback(objectType, id, eventType, data) {
 //					options.zoom = parseInt(data)
 //					break;
 				case 'idle':
-					var o = JSON.parse(data)
+					o = JSON.parse(data)
 					var sw = new scopes.modGoogleMaps.LatLng(o.bounds.sw.lat, o.bounds.sw.lng)
 					var ne = new scopes.modGoogleMaps.LatLng(o.bounds.ne.lat, o.bounds.ne.lng)
-					mapOptions.bounds = new scopes.modGoogleMaps.LatLngBounds(sw,ne)
-					mapOptions.center = new scopes.modGoogleMaps.LatLng(o.center.lat,o.center.lng)
-					if (o.heading) mapOptions.heading = parseInt(o.heading)
-					mapOptions.mapTypeId = o.mapTypeId
-					mapOptions.tilt = o.tilt 
-					mapOptions.zoom = o.zoom
+					options.bounds = new scopes.modGoogleMaps.LatLngBounds(sw,ne)
+					options.center = new scopes.modGoogleMaps.LatLng(o.center.lat,o.center.lng)
+					if (o.heading) options.heading = parseInt(o.heading)
+					options.mapTypeId = o.mapTypeId
+					options.tilt = o.tilt 
+					options.zoom = o.zoom
 					break;
 				default:
 					application.output('Unknown Map eventType: ' + eventType)
 					return;
 			}
-			allMaps[id][1](); //run the updateState method
 			break;
 		case 'marker':
-			application.output(objectType + ", " + id + ", " + eventType + ", " + data);
-			var markerOptions = allMarkers[id][0];
-			var o = JSON.parse(data);
-			markerOptions.position = new scopes.modGoogleMaps.LatLng(o.position.lat, o.position.lng);
+			switch (eventType) {
+				case 'dragend':
+					o = JSON.parse(data);
+					options.position = new scopes.modGoogleMaps.LatLng(o.position.lat, o.position.lng);
+					break;
+				case 'click':
+					//TODO: show infoWindow?
+			}
 			
-			allMarkers[id][1](); //run the updateState method
 			break;
 	
 		default:
 			application.output('Unknown GoogleMaps objectType: ' + objectType)
 			break;
 	}
+	allObjects[id][1](); //run the updateState method
+	
+	//Fire event that the user potentially has attached
+	scopes.svyEventManager.fireEvent(null, id, eventType, [objectType, id, eventType, data]);
 }
 
 /**
@@ -351,22 +330,13 @@ function browserCallback(objectType, id, eventType, data) {
 var specialTypes = [LatLng, MapTypeId, Marker, GoogleMap]
 
 /**
- * Map holding references to the inner setup of all Maps and their storeState method.
+ * Map holding references to the inner setup of all Objects (Maps, Markers, ...) and their storeState method.
  * Used by the browserCallback function to persists browserside updates to the map, without causing another render cycle towards the browser
  * @private
  * @type {Object<Array>}
  * @properties={typeid:35,uuid:"1E3B2526-74A5-4BF3-80F7-E3D540136405",variableType:-4}
  */
-var allMaps = {}
-
-/**
- * Map holding references to the inner setup of all Markers and their storeState method.
- * Used by the browserCallback function to persists browserside updates to the map, without causing another render cycle towards the browser
- * @private
- * @type {Object<Array>}
- * @properties={typeid:35,uuid:"6080FDFD-21F5-4DBE-AA8A-3A17FAB5633A",variableType:-4}
- */
-var allMarkers = {}
+var allObjects = {}
 
 /**
  * Implements https://developers.google.com/maps/documentation/javascript/reference#LatLng
@@ -574,21 +544,12 @@ function Marker(options) {
 		options: options
 	}
 	
+	var listeners = {};
+	
 	/**
 	 * @param {String} [incrementalUpdateCode]
 	 */
 	function updateState(incrementalUpdateCode) {
-//		if (mapSetup.id in forms) {
-//			forms[mapSetup.id].storeState(scopes.modDataVisualization.serializeObject(mapSetup, specialTypes))
-//			
-//			if (forms[mapSetup.id].rendered) {
-//				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
-//			}
-//		} else {
-//			application.output('Invalid DataVisualizer reference') //TODO: better error messages
-//		}
-		
-		
 		var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
 		if (_mapFormName in forms) {
 			forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
@@ -718,7 +679,7 @@ function Marker(options) {
 			options.map = map
 		}
 		options.map.addMarker(id, this)
-		//_map.markers[id] = this
+		options.map.markers[id] = this
 	}
 
 	//	this.setOptions = function(options) {
@@ -800,7 +761,7 @@ function Marker(options) {
 		CLICK            : 'click',
 		DBLCLICK         : 'dblclick',
 	//	DRAG             : 'drag',
-	//	DRAGEND          : 'dragend',
+		DRAGEND          : 'dragend',
 	//	DRAGSTART        : 'dragstart',
 	//	MOUSEDOWN        : 'mousedown',
 	//	MOUSEOUT         : 'mouseout',
@@ -810,10 +771,18 @@ function Marker(options) {
 		RIGHTCLICK       : 'rightclick'
 	}
 	this.addEventListener = function(eventHandler, eventType) {
-		//TODO: implement
+		scopes.svyEventManager.addListener(markerSetup.id, eventType, eventHandler);
 	}
 	
-	allMarkers[markerSetup.id] = [options, updateState]
+//	function addEventListener(eventHandler, eventType) {
+//		scopes.svyEventManager.addListener(this, eventType, eventHandler)
+//	}
+//	
+	this.getEventHandler = function(eventType) {
+		return listeners[eventType];
+	}
+	
+	allObjects[markerSetup.id] = [options, updateState]
 }
 
 /**
@@ -1103,5 +1072,5 @@ function GoogleMap(container, options) {
 		scopes.svyEventManager.addListener(this, eventType, eventHandler)
 	}
 	
-	allMaps[mapSetup.id] = [options, updateState]
+	allObjects[mapSetup.id] = [options, updateState]
 }
