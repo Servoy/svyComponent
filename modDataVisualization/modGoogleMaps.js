@@ -121,7 +121,7 @@ var init = function() {
 							marker.set('svyId',node.id)
 							svyDataViz.gmaps.objects[node.id] = marker
 							
-							var events = ['click', 'dblclick', 'dragend', 'position_changed', 'rightclick'];
+							var events = ['click', 'dblclick', 'dragend', 'rightclick'];
 							for (var j = 0; j < events.length; j++) {
 								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
 								google.maps.event.addListener(marker, events[j], handler);
@@ -213,7 +213,28 @@ var init = function() {
 						break;
 				}
 				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType, data);
+			},
+			callbackMarker: function(objectType, id, eventType, event){
+				//Function to retrieve relevant data when events occur on a marker and then send them to the server
+				var data
+				var marker = svyDataViz.gmaps.objects[id]
+				switch (eventType) {
+//					case 'position_changed':
+//						console.log('position_changed');
+//						data = JSON.stringify({
+//							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
+//							mapid: marker.map.svyId
+//						})						
+					default:
+						data = JSON.stringify({
+							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
+							mapid: marker.map.svyId
+						})		
+						break;
+				}
+				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType, data);
 			}
+			
 		}
 		
 		function svyDataVizGMapCallback() {
@@ -308,9 +329,8 @@ function browserCallback(objectType, id, eventType, data) {
 				case 'click':
 					//TODO: show infoWindow?
 			}
-			
+				
 			break;
-	
 		default:
 			application.output('Unknown GoogleMaps objectType: ' + objectType)
 			break;
@@ -576,7 +596,7 @@ function Marker(options) {
 			type: 'reference', 
 			parts: ['svyDataViz','gmaps', 'objects', id],
 			marker: true
-			}
+		}
 		
 //		return {svySpecial: true, 
 //				type: 'constructor', 
@@ -600,6 +620,7 @@ function Marker(options) {
 //				}] 
 //			}
 	}
+	
 
 	//Constants
 	this.MAX_ZINDEX
@@ -893,6 +914,8 @@ function GoogleMap(container, options) {
 			parts: ['svyDataViz','gmaps', 'objects', mapSetup.id]
 		}
 	}
+	 
+	
 
 	/* Scripting API
 	 */

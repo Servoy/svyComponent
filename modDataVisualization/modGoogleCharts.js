@@ -125,9 +125,9 @@ var init = function(){
 /**
  * @properties={typeid:24,uuid:"42C9FF5A-9F17-4791-8120-5C49B31993BE"}
  */
-function browserCallback() {
-	application.output(arguments)
-}
+//function browserCallback() {
+//	application.output(arguments)
+//}
 
 /**
  * @properties={typeid:35,uuid:"0D213AFC-539E-4AF7-BD09-3D98671BF3F2",variableType:-4}
