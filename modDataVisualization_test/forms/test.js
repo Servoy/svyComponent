@@ -6,7 +6,7 @@
 var gauges = []
 
 /**
- * @type {Array<scopes.modGoogleMaps.GoogleMap>}
+ * @type {Array<scopes.modGoogleMaps.Map>}
  *
  * @properties={typeid:35,uuid:"0236ED8A-A80D-4577-B3E3-7603CA724ABD",variableType:-4}
  */
@@ -92,14 +92,14 @@ function onLoad(event) {
 	scopes.modGoogleCharts.GeoChart(elements.geochart, data, options)
 	
 	//Instantiate GoogleMaps
-	var map = new scopes.modGoogleMaps.GoogleMap(elements.maps, {
+	var map = new scopes.modGoogleMaps.Map(elements.maps, {
 		zoom: 8,
 		center: new scopes.modGoogleMaps.LatLng(-34.397, 150.644),
 		mapTypeId: scopes.modGoogleMaps.MapTypeIds.HYBRID
 	})
 	maps.push(map)
 	
-	map = new scopes.modGoogleMaps.GoogleMap(elements.map2, {
+	map = new scopes.modGoogleMaps.Map(elements.map2, {
 		zoom: 2,
 		center: new scopes.modGoogleMaps.LatLng(10, 20),
 		mapTypeId: scopes.modGoogleMaps.MapTypeIds.TERRAIN,
@@ -140,7 +140,7 @@ function onLoad(event) {
 					lineWidth: 0.5, show: true, fill: true, fillColor: ['#fcefe3', '#efbc93'], fillOpacity: 0.34
 				}, 
 				points: { show: true, fill: true, fillColor: '#e79a70', hitRadius: 7 }
-			}, {
+	}, {
 				colors: ['#e79a70'],
 				shadowSize: 0,
 				fontColor: '#e1e1e1',

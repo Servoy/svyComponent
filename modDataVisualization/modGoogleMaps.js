@@ -7,6 +7,8 @@
  * TODO: Event firing
  * TODO: implement InfoWindow
  * TODO: implement PolyLine
+ * TODO: remove console.log statements, as not supported in every browser
+ * TODO: add JSON polyfill for older browsers
  */
 
 /**
@@ -81,16 +83,16 @@ var init = function() {
 			todos: [],
 			initialize: function() {
 		    	if (window.google && google.maps) {
-		    		for (var i = 0; i < svyDataViz.gmaps.todos.length; i++) {
-		    			console.log(svyDataViz.gmaps.todos[i])
-		    			var node = JSON.parse(svyDataViz.gmaps.todos[i], svyDataViz.reviver)
+		    		for (var i = 0; i < this.todos.length; i++) {
+		    			console.log(this.todos[i])
+		    			var node = JSON.parse(this.todos[i], svyDataViz.reviver)
 
 						if (node && node.type == "map") {
 							console.log("MAP:");
 							console.log(node);
 							var map = new google.maps.Map(document.getElementById(node.id), node.options)
 							map.set('svyId',node.id)
-							svyDataViz.gmaps.objects[node.id] = map
+							this.objects[node.id] = map
 							
 							var events = [
 								'idle',
@@ -119,7 +121,7 @@ var init = function() {
 							console.log(node);
 							var marker = new google.maps.Marker(node.options)
 							marker.set('svyId',node.id)
-							svyDataViz.gmaps.objects[node.id] = marker
+							this.objects[node.id] = marker
 							
 							var events = ['click', 'dblclick', 'dragend', 'rightclick'];
 							for (var j = 0; j < events.length; j++) {
@@ -128,13 +130,13 @@ var init = function() {
 							}
 						}
 					}
-					svyDataViz.gmaps.todos = []
+					this.todos = []
 		    	}
 		    },
 			callbackIntermediate: function(objectType, id, eventType, event){
 				//Intermediate function to retrieve relevant data when events occur on a map and then send them to the server
 				var data
-				var map = svyDataViz.gmaps.objects[id]
+				var map = this.objects[id]
 				switch (eventType) {
 //					case 'bounds_changed':
 //						break;
@@ -178,12 +180,12 @@ var init = function() {
 					default:
 						break;
 				}
-				svyDataViz.gmaps.mapsEventHandler("map", id, eventType,data)
+				this.mapsEventHandler('map', id, eventType,data)
 			},
 			callbackMarker: function(objectType, id, eventType, event){
 				//Function to retrieve relevant data when events occur on a marker and then send them to the server
 				var data
-				var marker = svyDataViz.gmaps.objects[id]
+				var marker = this.objects[id]
 				switch (eventType) {
 //					case 'position_changed':
 //						console.log('position_changed');
@@ -212,29 +214,8 @@ var init = function() {
 						})		
 						break;
 				}
-				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType, data);
-			},
-			callbackMarker: function(objectType, id, eventType, event){
-				//Function to retrieve relevant data when events occur on a marker and then send them to the server
-				var data
-				var marker = svyDataViz.gmaps.objects[id]
-				switch (eventType) {
-//					case 'position_changed':
-//						console.log('position_changed');
-//						data = JSON.stringify({
-//							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
-//							mapid: marker.map.svyId
-//						})						
-					default:
-						data = JSON.stringify({
-							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
-							mapid: marker.map.svyId
-						})		
-						break;
-				}
-				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType, data);
+				this.mapsEventHandler(objectType, id, eventType, data);
 			}
-			
 		}
 		
 		function svyDataVizGMapCallback() {
@@ -278,7 +259,7 @@ function browserCallback(objectType, id, eventType, data) {
 	var o;
 	switch (objectType) {
 		case 'map':
-			var mapOptions = allObjects[id][0]
+			//var mapOptions = allObjects[id][0]
 			switch (eventType) {
 //				case 'bounds_changed':
 //					break;
@@ -329,8 +310,9 @@ function browserCallback(objectType, id, eventType, data) {
 				case 'click':
 					//TODO: show infoWindow?
 			}
-				
+			
 			break;
+	
 		default:
 			application.output('Unknown GoogleMaps objectType: ' + objectType)
 			break;
@@ -347,7 +329,7 @@ function browserCallback(objectType, id, eventType, data) {
  * @type {Array}
  * @properties={typeid:35,uuid:"F61367F4-BDE9-42B1-994E-22EA719A34D9",variableType:-4}
  */
-var specialTypes = [LatLng, MapTypeId, Marker, GoogleMap]
+var specialTypes = [LatLng, MapTypeId, Marker, Map]
 
 /**
  * Map holding references to the inner setup of all Objects (Maps, Markers, ...) and their storeState method.
@@ -518,13 +500,22 @@ var MapTypeIds = {
 
 /**
  * @constructor
+ *
+ * @properties={typeid:24,uuid:"9EF66E47-FA7E-4D26-9DCA-5A3DCA610C21"}
+ */
+function Animation() {
+	//TODO: implement
+}
+
+/**
+ * @constructor
  * @param {{animation: Animation=,
  * 			clickable: Boolean=,
  * 			cursor: String=,
  * 			draggable: Boolean=,
  * 			flat: Boolean=,
  * 			icon: String|MarkerImage|Symbol=,
- * 			map: RuntimeForm<GoogleMap>,//|StreetViewPanorama,
+ * 			map: RuntimeForm<GoogleMap>|StreetViewPanorama,
  * 			optimized: Boolean=,
  * 			position: LatLng,
  * 			raiseOnDrag: Boolean=,
@@ -583,7 +574,6 @@ function Marker(options) {
 	}
 	
 	updateState()
-
 	
 	/**
 	 * Internal API: DO NOT CALL
@@ -596,7 +586,7 @@ function Marker(options) {
 			type: 'reference', 
 			parts: ['svyDataViz','gmaps', 'objects', id],
 			marker: true
-		}
+			}
 		
 //		return {svySpecial: true, 
 //				type: 'constructor', 
@@ -620,7 +610,6 @@ function Marker(options) {
 //				}] 
 //			}
 	}
-	
 
 	//Constants
 	this.MAX_ZINDEX
@@ -770,6 +759,8 @@ function Marker(options) {
 	}
 	this.setTitle = function(title) {
 		markerSetup.options.title = title;
+		//TODO: update state missing?
+		
 	}
 	this.setVisible = function(visible) {
 		_visible = visible
@@ -808,6 +799,24 @@ function Marker(options) {
 
 /**
  * @constructor
+ *
+ * @properties={typeid:24,uuid:"4A0B07DF-42B0-4C50-A1E8-CCD43AF62A9E"}
+ */
+function MarkerImage() {
+	//TODO: implement
+}
+
+/**
+ * @constructor
+ *
+ * @properties={typeid:24,uuid:"16134509-41A8-45D9-8D63-BE232A780502"}
+ */
+function MarkerShape() {
+	//TODO: implement
+}
+
+/**
+ * @constructor
  * 
  * @properties={typeid:24,uuid:"1E81E90E-BBDA-4D0C-8AB9-467196F292BC"}
  */
@@ -821,6 +830,7 @@ function InfoWindow() {
  * TODO: persist switching to streetview: http://stackoverflow.com/questions/7251738/detecting-google-maps-streetview-mode
  * TODO: Impl. missing Types used in options
  * @constructor 
+ * 
  * @param {RuntimeTabPanel} container the panel in which the visualization is displayed. Note: all existing tabs in the panel will be removed
  * @param {String} [options.backgroundColor]
  * @param {LatLng} options.center
@@ -857,7 +867,7 @@ function InfoWindow() {
  * @param {ZoomControlOptions} [options.zoomControlOptions] 
  * @properties={typeid:24,uuid:"1E5BE0D4-5E7A-489D-AACA-7BECA54B2CD1"}
  */
-function GoogleMap(container, options) {
+function Map(container, options) {
 	/**@type {RuntimeForm<GoogleMap>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.GoogleMap)
 
@@ -914,8 +924,6 @@ function GoogleMap(container, options) {
 			parts: ['svyDataViz','gmaps', 'objects', mapSetup.id]
 		}
 	}
-	 
-	
 
 	/* Scripting API
 	 */
@@ -1096,4 +1104,22 @@ function GoogleMap(container, options) {
 	}
 	
 	allObjects[mapSetup.id] = [options, updateState]
+}
+
+/**
+ * @constructor
+ *
+ * @properties={typeid:24,uuid:"30E3B07A-0A00-47D1-B65D-79F4581BD859"}
+ */
+function Symbol() {
+	//TODO: implement
+}
+
+/**
+ * @constructor
+ * 
+ * @properties={typeid:24,uuid:"00998305-37A3-4165-8018-C86CF72476D3"}
+ */
+function StreetViewPanorama() {
+	//TODO: implement
 }
