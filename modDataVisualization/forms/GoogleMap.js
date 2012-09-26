@@ -14,6 +14,16 @@ function render() {
 	if (mrkrs.length > 0) {
 		copy.head.appendChild(<script>{mrkrs}</script>)
 	}
+	
+	var infWnds = ''
+	for each(var infoWindow in infoWindows) {
+		infoWindow.id = application.getUUID();
+		infWnds += 'svyDataViz.gmaps.todos.push(\'' + scopes.modDataVisualization.serializeObject(infoWindow, scopes.modGoogleMaps.specialTypes) + '\');'
+	}
+	if (infWnds.length > 0) {
+		copy.head.appendChild(<script>{infWnds}</script>)
+	}
+	
 	html = scopes.modDataVisualization.stripCDataTags(copy)
 }
 
@@ -26,6 +36,16 @@ function render() {
  * @properties={typeid:35,uuid:"92CAF31E-F19E-4483-A98E-0948BDC7C620",variableType:-4}
  */
 var markers = {}
+
+/**
+ * Convenient InfoWindow Store of all InfoWindows on the map
+ * When calling .setMap() on a InfoWindow, the InfoWindow will be added to this InfoWindow store on the relevant GoogleMap instance
+ * 
+ * @type {Array<scopes.modGoogleMaps.InfoWindow>}
+ * 
+ * @properties={typeid:35,uuid:"C4680005-2127-4662-876D-95CABB2DCFE8",variableType:-4}
+ */
+var infoWindows = {}
 
 
 

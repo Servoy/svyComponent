@@ -117,8 +117,6 @@ var init = function() {
 							}
 							
 						} else if (node && node.type == "marker"){
-							console.log("Marker");
-							console.log(node);
 							var marker = new google.maps.Marker(node.options)
 							marker.set('svyId',node.id)
 							this.objects[node.id] = marker
@@ -128,6 +126,18 @@ var init = function() {
 								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
 								google.maps.event.addListener(marker, events[j], handler);
 							}
+						} else if (node && node.type == "infoWindow"){
+							console.log("InfoWindow");
+							console.log(node);
+							var infoWindow = new google.maps.infoWindow(node.options)
+							infoWindow.set('svyId',node.id)
+							this.objects[node.id] = infoWindow
+							
+//							var events = ['closeclick'];
+//							for (var j = 0; j < events.length; j++) {
+//								var handler = new Function ("svyDataViz.gmaps.callbackInfoWindow.call(this, 'infoWindow', '"+node.id+"', '"+events[j]+"', event)");
+//								google.maps.event.addListener(infoWindow, events[j], handler);
+//							}
 						}
 					}
 					this.todos = []
@@ -233,7 +243,7 @@ var init = function() {
 	//solutionModel.newMedia('googleMapsHandler.js', bytes)
 	//plugins.WebClientUtils.addJsReference('media:///googleMapsHandler.js')
 
-	var callback = plugins.WebClientUtils.generateCallbackScript(googleMapCallback,['objectType', 'id', 'eventType', 'data'], false);
+	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'id', 'eventType', 'data'], false);
 	var script = 'svyDataViz.gmaps.mapsEventHandler = function(objectType, id, eventType, data){' + callback + '}';
 	bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
 	uuid = application.getUUID();
@@ -254,7 +264,7 @@ var init = function() {
  * @private 
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
-function googleMapCallback(objectType, id, eventType, data) {
+function browserCallback(objectType, id, eventType, data) {
 	var options = allObjects[id][0];
 	var o;
 	switch (objectType) {
@@ -332,7 +342,7 @@ var specialTypes = [LatLng, MapTypeId, Marker, Map]
 
 /**
  * Map holding references to the inner setup of all Objects (Maps, Markers, ...) and their storeState method.
- * Used by the browserCallback function to persists browserside updates to the map, without causing another render cycle towards the browser
+ * Used by the googleMapCallback function to persists browserside updates to the map, without causing another render cycle towards the browser
  * @private
  * @type {Object<Array>}
  * @properties={typeid:35,uuid:"1E3B2526-74A5-4BF3-80F7-E3D540136405",variableType:-4}
@@ -674,7 +684,7 @@ function Marker(options) {
 		_icon = icon
 	}
 	/**
-	 * @param {scopes.modGoogleMaps.GoogleMap} map
+	 * @param {scopes.modGoogleMaps.Map} map
 	 */
 	this.setMap = function(map) {
 		if (options.map == map) {
@@ -748,8 +758,8 @@ function Marker(options) {
 	this.setPosition = function(latLng) {
 		options.position = latLng;
 		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + markerSetup.id + '\'].setPosition(latLng);')		
-
 	}
+	
 	this.setShadow = function(shadow) {
 		_shadow = shadow
 	}
@@ -758,8 +768,7 @@ function Marker(options) {
 	}
 	this.setTitle = function(title) {
 		markerSetup.options.title = title;
-		//TODO: update state missing?
-		
+		updateState('svyDataViz.gmaps.objects[\'' + markerSetup.id + '\'].setTitle(latLng);')		
 	}
 	this.setVisible = function(visible) {
 		_visible = visible
@@ -819,8 +828,132 @@ function MarkerShape() {
  * 
  * @properties={typeid:24,uuid:"1E81E90E-BBDA-4D0C-8AB9-467196F292BC"}
  */
-function InfoWindow() {
-	//TODO: implement
+function InfoWindow(options) {
+	var id = application.getUUID().toString()
+	
+	var infoWindowSetup = {
+		id: id,
+		type: "infoWindow",
+		options: options
+	}
+	
+	var EVENT_TYPES = {
+		CLOSECLICK: 'closeclick',
+		CONTENT_CHANGED: 'content_changed',
+		DOMREADY: 'domready',
+		POSITION_CHANGED: 'position_changed',
+		ZINDEX_CHANGED: 'zindex_changed'
+	}
+	
+	/**
+	 * @param {String} [incrementalUpdateCode]
+	 */
+	function updateState(incrementalUpdateCode) {
+		if (infoWindowSetup.options.map) {
+			var _mapFormName = infoWindowSetup.options.map.toObjectPresentation().parts[infoWindowSetup.options.map.toObjectPresentation().parts.length-1];
+			if (_mapFormName in forms) {
+				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(infoWindowSetup, specialTypes))
+				
+				if (forms[_mapFormName].rendered) {
+					plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+				}
+			} else {
+				application.output('Invalid DataVisualizer reference') //TODO: better error messages
+			}
+		}
+	}
+	updateState()
+	
+	/**
+	 * Internal API: DO NOT CALL
+	 * @return {Object}
+	 */
+	this.toObjectPresentation = function() {
+		
+		return {
+			svySpecial: true, 
+			type: 'reference', 
+			parts: ['svyDataViz','gmaps', 'objects', id],
+			infoWindow: true
+		}
+	}
+	
+	this.close = function() {
+		//TODO: implement
+	}
+	
+	/**
+	 * @return {String}
+	 */
+	this.getContent = function() {
+		return options.content;
+	}
+	
+	/**
+	 * @return {LatLng}
+	 */
+	this.getPosition = function() {
+		return options.position;
+	}
+	
+	/**
+	 * @return {Number}
+	 */
+	this.getZIndex = function() {
+		return options.zIndex;
+	}
+	
+	/**
+	 * @param {Map} map
+	 * @param {Marker} [anchor]
+	 */
+	this.open = function(map, anchor) {
+		//TODO: implement
+		if (options.map == map) {
+			return
+		}
+		if (options.map == null) { 
+			options.map = map
+		} else if (options.map != map) {
+			//TODO: This should also trigger sync to browser to remove the marker from the map
+			delete options.map.removeMarker[id]
+			options.map = map
+		}
+		options.map.addInfoWindow(id, this)
+//		options.map.infoWindows[id] = this
+	
+	}
+	
+	/**
+	 * @param {String} string
+	 */
+	this.setContent = function(string) {
+		options.content = string;
+	}
+
+	/**
+	 * @param {Object} opts
+	 */
+	this.setOptions = function(opts) {
+		options = opts;
+	}
+	
+	/**
+	 * @param {LatLng} position
+	 */
+	this.setPosition = function(position) {
+		options.position = position;
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(position.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + infoWindowSetup.id + '\'].setPosition(latLng);')		
+	}
+	
+	/**
+	 * @param {Number} number
+	 */
+	this.setZIndex = function(number) {
+		options.zIndex = number;
+	}
+	
+	allObjects[infoWindowSetup.id] = [options, updateState]
 }
 
 /**
@@ -900,6 +1033,16 @@ function Map(container, options) {
 	 */
 	this.addMarker = function(id, marker) {
 		dv.markers[id] = marker	
+		updateState()//TODO: incremental code
+	}
+	
+	/**
+	 * Internal API, DO NOT CALL
+	 * @param {String} id
+	 * @param {Marker} marker
+	 */
+	this.addInfoWindow = function(id, infoWindow) {
+		dv.infoWindows[id] = infoWindow	
 		updateState()//TODO: incremental code
 	}
 	

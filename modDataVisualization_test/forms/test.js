@@ -99,7 +99,7 @@ function onLoad(event) {
 	})
 	maps.push(map)
 	
-	map = new scopes.modGoogleMaps.Map(elements.map2, {
+	var map2 = new scopes.modGoogleMaps.Map(elements.map2, {
 		zoom: 2,
 		center: new scopes.modGoogleMaps.LatLng(10, 20),
 		mapTypeId: scopes.modGoogleMaps.MapTypeIds.TERRAIN,
@@ -110,28 +110,34 @@ function onLoad(event) {
 		zoomControl: true,
 		mapMaker: false
 	})
-	maps.push(map)
+	maps.push(map2)
 	
 		
 	var m = new scopes.modGoogleMaps.Marker({
 		position: new scopes.modGoogleMaps.LatLng(10,20),
 		draggable: true,
 		title: 'Hello Paul',
-		map: map
+		map: map2
+	});
+	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
+	
+	m = new scopes.modGoogleMaps.Marker({
+		position: new scopes.modGoogleMaps.LatLng(52,5),
+		draggable: true,
+		title: 'Hello Joas',
+		map: map2
 	});
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DBLCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
-	m = new scopes.modGoogleMaps.Marker({
-		position: new scopes.modGoogleMaps.LatLng(52,5),
-		draggable: true,
-		title: 'Hello Joas',
-		map: map
-	});
-	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
+//	i = new scopes.modGoogleMaps.InfoWindow({
+//		position: new scopes.modGoogleMaps.LatLng(52,5),
+//		content: 'Hello Joas'
+//	});
+//	i.open(map2);
 	
 	var lineChart = new scopes.modFlotr2.LineChart(elements.flotr2$line)
 	lineChart.draw({

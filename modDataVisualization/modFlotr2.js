@@ -117,7 +117,7 @@ var init = function(){
 	plugins.WebClientUtils.addJsReference('media:///flotr2Handler_'+uuid+'.js')
 	
 	//TODO: make the callback script generic on DataVizualization level, instead of having to add one on every impl.
-	var callback = plugins.WebClientUtils.generateCallbackScript(flotrCallback,['objectType', 'id', 'eventType', 'data'], false);
+	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'id', 'eventType', 'data'], false);
 	var script = 'svyDataViz.flotr2.chartEventHandler = function(objectType, id, eventType, data){' + callback + '}';
 	bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
 	uuid = application.getUUID();
@@ -131,7 +131,7 @@ var init = function(){
  *
  * @properties={typeid:24,uuid:"D4DDD2B0-D830-45B0-AC21-D44BB8286730"}
  */
-function flotrCallback(args) {
+function browserCallback(args) {
 	application.output(args)
 }
 
