@@ -233,7 +233,7 @@ var init = function() {
 	//solutionModel.newMedia('googleMapsHandler.js', bytes)
 	//plugins.WebClientUtils.addJsReference('media:///googleMapsHandler.js')
 
-	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'id', 'eventType', 'data'], false);
+	var callback = plugins.WebClientUtils.generateCallbackScript(googleMapCallback,['objectType', 'id', 'eventType', 'data'], false);
 	var script = 'svyDataViz.gmaps.mapsEventHandler = function(objectType, id, eventType, data){' + callback + '}';
 	bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
 	uuid = application.getUUID();
@@ -254,12 +254,11 @@ var init = function() {
  * @private 
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
-function browserCallback(objectType, id, eventType, data) {
+function googleMapCallback(objectType, id, eventType, data) {
 	var options = allObjects[id][0];
 	var o;
 	switch (objectType) {
 		case 'map':
-			//var mapOptions = allObjects[id][0]
 			switch (eventType) {
 //				case 'bounds_changed':
 //					break;
