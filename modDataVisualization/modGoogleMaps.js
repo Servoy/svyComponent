@@ -136,7 +136,7 @@ var init = function() {
 			callbackIntermediate: function(objectType, id, eventType, event){
 				//Intermediate function to retrieve relevant data when events occur on a map and then send them to the server
 				var data
-				var map = this.objects[id]
+				var map = svyDataViz.gmaps.objects[id]
 				switch (eventType) {
 //					case 'bounds_changed':
 //						break;
@@ -185,7 +185,7 @@ var init = function() {
 			callbackMarker: function(objectType, id, eventType, event){
 				//Function to retrieve relevant data when events occur on a marker and then send them to the server
 				var data
-				var marker = this.objects[id]
+				var marker = svyDataViz.gmaps.objects[id]
 				switch (eventType) {
 //					case 'position_changed':
 //						console.log('position_changed');
@@ -214,7 +214,7 @@ var init = function() {
 						})		
 						break;
 				}
-				this.mapsEventHandler(objectType, id, eventType, data);
+				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType, data);
 			}
 		}
 		
