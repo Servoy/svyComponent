@@ -126,12 +126,15 @@ var init = function() {
 								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
 								google.maps.event.addListener(marker, events[j], handler);
 							}
-						} else if (node && node.type == "infoWindow"){
+						} else if (node) { // && node.type == "infoWindow"){
 							console.log("InfoWindow");
 							console.log(node);
-							var infoWindow = new google.maps.infoWindow(node.options)
-							infoWindow.set('svyId',node.id)
-							this.objects[node.id] = infoWindow
+							var infoWindow = new google.maps.InfoWindow({position: node.position, content: node.content})
+							infoWindow.open(node.map, node.marker);
+//							infoWindow.set('svyId',node.id)
+							
+								
+//							this.objects[node.id] = infoWindow
 							
 //							var events = ['closeclick'];
 //							for (var j = 0; j < events.length; j++) {
@@ -197,6 +200,13 @@ var init = function() {
 				var data
 				var marker = svyDataViz.gmaps.objects[id]
 				switch (eventType) {
+					case 'click': 
+//				       var infowindow = new google.maps.InfoWindow({
+//				            content: "hoi blabla"
+//				        });
+//
+//				        infowindow.open(marker.getMap(),marker);
+
 //					case 'position_changed':
 //						console.log('position_changed');
 //						data = JSON.stringify({
@@ -312,19 +322,27 @@ function browserCallback(objectType, id, eventType, data) {
 			break;
 		case 'marker':
 			switch (eventType) {
-				case 'dragend':
+				case 'dragend': //make sure the position is saved in the object on the servoy side
 					o = JSON.parse(data);
 					options.position = new scopes.modGoogleMaps.LatLng(o.position.lat, o.position.lng);
 					break;
 				case 'click':
-					//TODO: show infoWindow?
+					break;
+				default:
+					application.output('Unknown Marker eventType: ' + eventType)
+					return;
+			}
+			break;
+		case 'infoWindow':
+			switch (eventType) {
+				default:
+					application.output('Unknown InfoWindow eventType: ' + eventType)
+					return;
 			}
 			
-			break;
-	
 		default:
 			application.output('Unknown GoogleMaps objectType: ' + objectType)
-			break;
+			return;
 	}
 	allObjects[id][1](); //run the updateState method
 	
@@ -595,7 +613,7 @@ function Marker(options) {
 			type: 'reference', 
 			parts: ['svyDataViz','gmaps', 'objects', id],
 			marker: true
-			}
+		}
 		
 //		return {svySpecial: true, 
 //				type: 'constructor', 
@@ -869,12 +887,18 @@ function InfoWindow(options) {
 	 * @return {Object}
 	 */
 	this.toObjectPresentation = function() {
-		
 		return {
 			svySpecial: true, 
-			type: 'reference', 
-			parts: ['svyDataViz','gmaps', 'objects', id],
-			infoWindow: true
+			type: 'constructor', 
+			parts: ['google', 'maps', 'InfoWindow'], 
+			id: id,
+			infoWindow: true,
+			args: [{
+				map: infoWindowSetup.options.map,
+				position: infoWindowSetup.options.position,
+				content: infoWindowSetup.options.content,
+				anchor: infoWindowSetup.options.anchor
+			}] 
 		}
 	}
 	
@@ -915,8 +939,8 @@ function InfoWindow(options) {
 		if (options.map == null) { 
 			options.map = map
 		} else if (options.map != map) {
-			//TODO: This should also trigger sync to browser to remove the marker from the map
-			delete options.map.removeMarker[id]
+			//TODO: This should also trigger sync to browser to remove the infoWindow from the map
+			delete options.map.removeInfoWindow[id]
 			options.map = map
 		}
 		options.map.addInfoWindow(id, this)

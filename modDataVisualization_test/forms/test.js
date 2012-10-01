@@ -133,11 +133,11 @@ function onLoad(event) {
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
 	
-//	i = new scopes.modGoogleMaps.InfoWindow({
-//		position: new scopes.modGoogleMaps.LatLng(52,5),
-//		content: 'Hello Joas'
-//	});
-//	i.open(map2);
+	var i = new scopes.modGoogleMaps.InfoWindow({
+		position: new scopes.modGoogleMaps.LatLng(25,80),
+		content: 'Hello India'
+	});
+	i.open(map2);
 	
 	var lineChart = new scopes.modFlotr2.LineChart(elements.flotr2$line)
 	lineChart.draw({
