@@ -126,12 +126,12 @@ var init = function() {
 								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
 								google.maps.event.addListener(marker, events[j], handler);
 							}
-						} else if (node) { // && node.type == "infoWindow"){
+						} else if (node && node.type == "infoWindow"){
 							console.log("InfoWindow");
 							console.log(node);
 							var infoWindow = new google.maps.InfoWindow({position: node.position, content: node.content})
-							infoWindow.open(node.map, node.marker);
-//							infoWindow.set('svyId',node.id)
+//							infoWindow.open(node.map, node.marker);
+							infoWindow.set('svyId',node.id)
 							
 								
 //							this.objects[node.id] = infoWindow
@@ -848,6 +848,7 @@ function MarkerShape() {
  */
 function InfoWindow(options) {
 	var id = application.getUUID().toString()
+	options.type = "infoWindow";
 	
 	var infoWindowSetup = {
 		id: id,
@@ -932,12 +933,6 @@ function InfoWindow(options) {
 	 * @param {Marker} [anchor]
 	 */
 	this.open = function(map, anchor) {
-		//TODO: implement
-//		if (options.map == map) {
-//			return
-//		}
-		
-		
 		if (map) { 
 			options.map = map
 		}
