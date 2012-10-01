@@ -101,7 +101,7 @@ function onLoad(event) {
 	
 	var map2 = new scopes.modGoogleMaps.Map(elements.map2, {
 		zoom: 2,
-		center: new scopes.modGoogleMaps.LatLng(10, 20),
+		center: new scopes.modGoogleMaps.LatLng(30, 20),
 		mapTypeId: scopes.modGoogleMaps.MapTypeIds.TERRAIN,
 		overviewMapControl: true,
 		panControl: true,
@@ -112,7 +112,7 @@ function onLoad(event) {
 	})
 	maps.push(map2)
 	
-		
+	//Adding markers	
 	var m = new scopes.modGoogleMaps.Marker({
 		position: new scopes.modGoogleMaps.LatLng(10,20),
 		draggable: true,
@@ -132,12 +132,17 @@ function onLoad(event) {
 	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
-	
+	//Adding infoWindows
 	var i = new scopes.modGoogleMaps.InfoWindow({
-		position: new scopes.modGoogleMaps.LatLng(25,80),
 		content: 'Hello India'
 	});
-	i.open(map2);
+	i.open(map2, m);
+	
+	var i2 = new scopes.modGoogleMaps.InfoWindow({
+		position: new scopes.modGoogleMaps.LatLng(25,80),
+		content: 'Hello Joas'
+	});
+	i2.open(map2);	
 	
 	var lineChart = new scopes.modFlotr2.LineChart(elements.flotr2$line)
 	lineChart.draw({

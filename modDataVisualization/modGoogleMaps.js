@@ -933,16 +933,18 @@ function InfoWindow(options) {
 	 */
 	this.open = function(map, anchor) {
 		//TODO: implement
-		if (options.map == map) {
-			return
-		}
-		if (options.map == null) { 
-			options.map = map
-		} else if (options.map != map) {
-			//TODO: This should also trigger sync to browser to remove the infoWindow from the map
-			delete options.map.removeInfoWindow[id]
+//		if (options.map == map) {
+//			return
+//		}
+		
+		
+		if (map) { 
 			options.map = map
 		}
+		if (anchor) {
+			options.anchor = anchor
+		}
+		
 		options.map.addInfoWindow(id, this)
 //		options.map.infoWindows[id] = this
 	
