@@ -126,7 +126,6 @@ var init = function(){
 }()
 
 /**
- * // TODO generated, please specify type and doc for the params
  * @param {Any} args
  *
  * @properties={typeid:24,uuid:"D4DDD2B0-D830-45B0-AC21-D44BB8286730"}
@@ -135,45 +134,37 @@ function browserCallback(args) {
 	application.output(args)
 }
 
-/**
- * @properties={typeid:35,uuid:"4C22420A-8CE8-4900-9C72-F18015FA5D75",variableType:-4}
- */
-var defaultOptions = {
-	grid: {
-		outline: ''
-	}
-}
-
-/**
- * @properties={typeid:24,uuid:"246F66E8-E857-43BF-96B1-6B770CB02070"}
- */
-function Flotr2Chart() {
-	/**@type {RuntimeForm<GoogleGeoChart>}*/
-	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
-
-	var setup = {
-		id: dv.getId(),
-		data: null,
-		options: null
-	}
-
-	dv = null;
-	
-	/**
-	 * @param {String} [incrementalUpdateCode]
-	 */
-	function updateState(incrementalUpdateCode) {
-		if (setup.id in forms) {
-			forms[setup.id].storeState(scopes.modDataVisualization.serializeObject(setup))
-			
-			if (forms[setup.id].rendered) {
-				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
-			}
-		} else {
-			application.output('Invalid DataVisualizer reference') //TODO: better error messages
-		}
-	}
-}
+// Attempt to create a base class for all chart types, to prevent code duplication. Didn't continue due to lack of prototype support in the JS editor
+///**
+// * @properties={typeid:24,uuid:"246F66E8-E857-43BF-96B1-6B770CB02070"}
+// */
+//function Flotr2Chart() {
+//	/**@type {RuntimeForm<GoogleGeoChart>}*/
+//	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
+//
+//	var setup = {
+//		id: dv.getId(),
+//		data: null,
+//		options: null
+//	}
+//
+//	dv = null;
+//	
+//	/**
+//	 * @param {String} [incrementalUpdateCode]
+//	 */
+//	function updateState(incrementalUpdateCode) {
+//		if (setup.id in forms) {
+//			forms[setup.id].storeState(scopes.modDataVisualization.serializeObject(setup))
+//			
+//			if (forms[setup.id].rendered) {
+//				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+//			}
+//		} else {
+//			application.output('Invalid DataVisualizer reference') //TODO: better error messages
+//		}
+//	}
+//}
 
 /**
  * @constructor
@@ -217,22 +208,9 @@ function LineChart(container){
 /**
  * @constructor
  * @param {RuntimeTabPanel} container
- * @param {Object} data
- * @param {Object} options
  * @properties={typeid:24,uuid:"AA567D33-980B-440B-8452-9D2C100C40A6"}
  */
-function BarChart(container, data, options){
-	this.draw = function (data, options){}
-}
-
-/**
- * @constructor
- * @param {RuntimeTabPanel} container
- * @param {Object} data
- * @param {Object} options
- * @properties={typeid:24,uuid:"65F796B2-9CD4-490F-B5F1-CC768608D48C"}
- */
-function PieChart(container){
+function BarChart(container){
 	/**@type {RuntimeForm<GoogleGeoChart>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
 
@@ -269,21 +247,57 @@ function PieChart(container){
 /**
  * @constructor
  * @param {RuntimeTabPanel} container
- * @param {Object} data
- * @param {Object} options
- * @properties={typeid:24,uuid:"E1FBCD10-9C44-45B7-BDF3-99FFD668F071"}
+ * @properties={typeid:24,uuid:"65F796B2-9CD4-490F-B5F1-CC768608D48C"}
  */
-function BubbleChart(container, data, options){
-	this.draw = function (data, options){}
+function PieChart(container){
+	/**@type {RuntimeForm<GoogleGeoChart>}*/
+	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
+
+	var setup = {
+		id: dv.getId(),
+		data: null,
+		options: null
+	}
+
+	dv = null;
+	
+	/**
+	 * @param {String} [incrementalUpdateCode]
+	 */
+	function updateState(incrementalUpdateCode) {
+		if (setup.id in forms) {
+			forms[setup.id].storeState(scopes.modDataVisualization.serializeObject(setup))
+			
+			if (forms[setup.id].rendered) {
+				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+			}
+		} else {
+			application.output('Invalid DataVisualizer reference') //TODO: better error messages
+		}
+	}
+	
+	this.draw = function (data, options){
+		setup.data = data
+		setup.options = options
+		updateState()
+	}
 }
 
-/**
- * @constructor
- * @param {RuntimeTabPanel} container
- * @param {Object} data
- * @param {Object} options
- * @properties={typeid:24,uuid:"7F899AE2-3D3B-441E-ABA3-7C7E26709D9D"}
- */
-function CandleStickChart(container, data, options){
-	this.draw = function (data, options){}
-}
+//Still to implement
+///**
+// * @constructor
+// * @param {RuntimeTabPanel} container
+// * @properties={typeid:24,uuid:"E1FBCD10-9C44-45B7-BDF3-99FFD668F071"}
+// */
+//function BubbleChart(container){
+//	this.draw = function (data, options){}
+//}
+//
+///**
+// * @constructor
+// * @param {RuntimeTabPanel} container
+// * @properties={typeid:24,uuid:"7F899AE2-3D3B-441E-ABA3-7C7E26709D9D"}
+// */
+//function CandleStickChart(container){
+//	this.draw = function (data, options){}
+//}

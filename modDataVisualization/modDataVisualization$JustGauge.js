@@ -91,7 +91,6 @@ var init = function() {
  * TODO: check types of all options
  * @param {RuntimeTabPanel} container
  * @param {Object} options
- * @param options.id {String}  container element id
  * @param options.title {String}  gauge title text
  * @param options.titleFontColor {String} color title text
  * @param options.value {Number}  value gauge is showing
@@ -110,11 +109,33 @@ var init = function() {
  * @param options.levelColorsGradient {Boolean} use gradual or sector-based color change
  * @param options.labelFontColor {String} color of label showing label under value
  * @param options.startAnimationTime {Number} length of initial load animation
- * @param options.startAnimationType {Number} type of initial animation (linear, >, <, <>, bounce)
+ * @param options.startAnimationType {String} type of initial animation (linear, >, <, <>, bounce)
  * @param options.refreshAnimationTime {Number} length of refresh animation
  * @param options.refreshAnimationType {String} type of refresh animation (linear, >, <, <>, bounce)
- * @properties={typeid:24,uuid:"26D1A70A-F906-4BC1-A950-744327B83E6E"}
  * 
+ * @example <pre>var gauge = new scopes.modJustGauge.JustGauge(elements.tabless, {
+ *	title: '', //gauge title text                                                   
+ *	titleFontColor: 'gray', //color title text                                           
+ *	value: 67, //value gauge is showing                                             
+ *	valueFontColor: 'lightgray', //color of value text                                       
+ *	min: 0, //minimum value                                                         
+ *	max: 100, //maximum value                                                         
+ *	showMinMax: true, //hide or display min and max values                            
+ *	gaugeWidthScale: 20, // width of the gauge element                                
+ *	gaugeColor: 'transparent', //background color of gauge element                              
+ *	label: '', //text to show below value                                            
+ *	showInnerShadow: false, //whether to display inner shadow                          
+ *	shadowOpacity: 0, //shadow opacity, values 0 ~ 1                                
+ *	shadowSize: 5, //inner shadow size                                              
+ *	shadowVerticalOffset: 0, //how much is shadow offset from top                   
+ *	levelColors {Array<String>} colors of indicator, from lower to upper, in hex format
+ *	levelColorsGradient {Boolean} use gradual or sector-based color change             
+ *	labelFontColor: '', //color of label showing label under value                   
+ *	startAnimationTime: 10, //length of initial load animation                       
+ *	startAnimationType: '', //type of initial animation (linear, >, <, <>, bounce)   
+ *	refreshAnimationTime: 5, //length of refresh animation                          
+ *	refreshAnimationType: '', //type of refresh animation (linear, >, <, <>, bounce) 
+ *})<pre>
  * @properties={typeid:24,uuid:"26D1A70A-F906-4BC1-A950-744327B83E6E"}
  */
 function JustGauge(container, options) {

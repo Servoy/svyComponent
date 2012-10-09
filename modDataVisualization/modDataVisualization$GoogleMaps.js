@@ -808,6 +808,7 @@ function Marker(options) {
 		POSITION_CHANGED : 'position_changed',
 		RIGHTCLICK       : 'rightclick'
 	}
+	
 	this.addEventListener = function(eventHandler, eventType) {
 		scopes.svyEventManager.addListener(markerSetup.id, eventType, eventHandler);
 	}
@@ -929,10 +930,10 @@ function InfoWindow(options) {
 	}
 	
 	/**
-	 * @param {Map} map
-	 * @param {Marker} [anchor]
+	 * @param {scopes.modDataVisualization$GoogleMaps.Map} map
+	 * @param {scopes.modDataVisualization$GoogleMaps.Marker} [anchor]
 	 */
-	this.open = function(map, anchor) {
+	this.open = function(map, anchor) { //TODO: handle the scenario where a InfoWindow is re-opened on another Map
 		if (map) { 
 			options.map = map
 		}

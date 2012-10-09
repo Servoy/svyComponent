@@ -1,12 +1,12 @@
 /**
- * @type {Array<scopes.modJustGauge.JustGauge>}
+ * @type {Array<scopes.modDataVisualization$JustGauge.JustGauge>}
  *
  * @properties={typeid:35,uuid:"8151F77F-6C93-49A3-81E8-03DBE7CA0FBB",variableType:-4}
  */
 var gauges = []
 
 /**
- * @type {Array<scopes.modGoogleMaps.Map>}
+ * @type {Array<scopes.modDataVisualization$GoogleMaps.Map>}
  *
  * @properties={typeid:35,uuid:"0236ED8A-A80D-4577-B3E3-7603CA724ABD",variableType:-4}
  */
@@ -38,9 +38,9 @@ function update(force) {
 	}
 	
 	for (i = 0; i < maps.length; i++) {
-		var sw = new scopes.modGoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-		var ne = new scopes.modGoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-		var bounds = new scopes.modGoogleMaps.LatLngBounds(sw,ne)
+		var sw = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
+		var ne = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
+		var bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(sw,ne)
 		maps[i].setZoom(parseInt((Math.random() * 10).toFixed(0)))
 		maps[i].panToBounds(bounds)
 	}
@@ -55,24 +55,24 @@ function update(force) {
  */
 function onLoad(event) {
 	//Instantiate Gauges
-	gauges.push(new scopes.modJustGauge.JustGauge(elements.gauge1,{
+	gauges.push(new scopes.modDataVisualization$JustGauge.JustGauge(elements.gauge1,{
 		value: 67, 
 	    min: 0,
 	    max: 100,
 	    title: "Visitors"
 	}))
 	
-	gauges.push(new scopes.modJustGauge.JustGauge(elements.gauge2,{
+	gauges.push(new scopes.modDataVisualization$JustGauge.JustGauge(elements.gauge2,{
 		title: 'Features',
 		value: (Math.random() * 100).toFixed(0)
 	}))
 	
-	gauges.push(new scopes.modJustGauge.JustGauge(elements.gauge3,{
+	gauges.push(new scopes.modDataVisualization$JustGauge.JustGauge(elements.gauge3,{
 		title: 'Tasks',
 		value: (Math.random() * 100).toFixed(0)
 	}))
 	
-	gauges.push(new scopes.modJustGauge.JustGauge(elements.gauge4,{
+	gauges.push(new scopes.modDataVisualization$JustGauge.JustGauge(elements.gauge4,{
 		title: 'Bugs',
 		value: (Math.random() * 100).toFixed(0)
 	}))
@@ -89,20 +89,20 @@ function onLoad(event) {
 	var options = {
 		 colorAxis: {colors: ['yellow','red']}
 	}
-	scopes.modGoogleCharts.GeoChart(elements.geochart, data, options)
+	scopes.modDataVisualization$GoogleCharts.GeoChart(elements.geochart, data, options)
 	
 	//Instantiate GoogleMaps
-	var map = new scopes.modGoogleMaps.Map(elements.maps, {
+	var map = new scopes.modDataVisualization$GoogleMaps.Map(elements.maps, {
 		zoom: 8,
-		center: new scopes.modGoogleMaps.LatLng(-34.397, 150.644),
-		mapTypeId: scopes.modGoogleMaps.MapTypeIds.HYBRID
+		center: new scopes.modDataVisualization$GoogleMaps.LatLng(-34.397, 150.644),
+		mapTypeId: scopes.modDataVisualization$GoogleMaps.MapTypeIds.HYBRID
 	})
 	maps.push(map)
 	
-	var map2 = new scopes.modGoogleMaps.Map(elements.map2, {
+	var map2 = new scopes.modDataVisualization$GoogleMaps.Map(elements.map2, {
 		zoom: 2,
-		center: new scopes.modGoogleMaps.LatLng(30, 20),
-		mapTypeId: scopes.modGoogleMaps.MapTypeIds.TERRAIN,
+		center: new scopes.modDataVisualization$GoogleMaps.LatLng(30, 20),
+		mapTypeId: scopes.modDataVisualization$GoogleMaps.MapTypeIds.TERRAIN,
 		overviewMapControl: true,
 		panControl: true,
 		rotateControl: true,
@@ -113,16 +113,16 @@ function onLoad(event) {
 	maps.push(map2)
 	
 	//Adding markers	
-	var m = new scopes.modGoogleMaps.Marker({
-		position: new scopes.modGoogleMaps.LatLng(10,20),
+	var m = new scopes.modDataVisualization$GoogleMaps.Marker({
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng(10,20),
 		draggable: true,
 		title: 'Hello Paul',
 		map: map2
 	});
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
-	m = new scopes.modGoogleMaps.Marker({
-		position: new scopes.modGoogleMaps.LatLng(52,5),
+	m = new scopes.modDataVisualization$GoogleMaps.Marker({
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng(52,5),
 		draggable: true,
 		title: 'Hello Joas',
 		map: map2
@@ -133,18 +133,19 @@ function onLoad(event) {
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
 	//Adding infoWindows
-	var i = new scopes.modGoogleMaps.InfoWindow({
+	var i = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
 		content: 'Hello India'
 	});
 	i.open(map2, m);
 	
-	var i2 = new scopes.modGoogleMaps.InfoWindow({
-		position: new scopes.modGoogleMaps.LatLng(25,80),
-		content: 'Hello Joas'
+	//TODO: fix (partial) HTML content: currently shows up as "content":"&lt;span style="color: red"&gt;Hello Joas&lt;/span&gt;" in JSON
+	var i2 = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng(25,80),
+		content: '<span style=\'color: red\'>Hello Joas</span>'
 	});
 	i2.open(map2);	
 	
-	var lineChart = new scopes.modFlotr2.LineChart(elements.flotr2$line)
+	var lineChart = new scopes.modDataVisualization$Flotr2.LineChart(elements.flotr2$line)
 	lineChart.draw({
 				data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
 				lines: {
@@ -189,7 +190,7 @@ function onLoad(event) {
 				}
 			})
 	
-	var barChart = new scopes.modFlotr2.PieChart(elements.flotr2$pie)
+	var barChart = new scopes.modDataVisualization$Flotr2.PieChart(elements.flotr2$pie)
 	var d1 = [[0, 4]],
     d2 = [[0, 3]],
     d3 = [[0, 1.03]],
