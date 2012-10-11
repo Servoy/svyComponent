@@ -21,6 +21,18 @@ function stripCDataTags(html) {
 }
 
 /**
+ * Wraps arbitrary content in CDATA tags
+ * @param {String} content
+ * 
+ * @return {XML}
+ * 
+ * @properties={typeid:24,uuid:"D30E6A46-C3C7-4760-95F0-2ECD43F06127"}
+ */
+function CDataWrapper(content) {
+	return new XML('<![CDATA[' + content + ']]>')
+}
+
+/**
  * Internal API: DO NOT CALL
  * @param {Object} o
  * @param {Array} [specialTypes]
@@ -65,3 +77,11 @@ function createVisualizationContainer(panel, form) {
 
 	return dataVisualizerInstance
 }
+
+//Code to test for old IE and add excanvas if needed.
+////Add excanvas to conditionally only in IE to compensate for the lack of canvas support in IE up to IE9
+///**@type {Packages.org.apache.wicket.protocol.http.ClientProperties}*/
+//var clientProperties = Packages.org.apache.wicket.RequestCycle.get().getClientInfo().getProperties() 
+//if (clientProperties.isBrowserInternetExplorer()) {
+//	html.head.prependChild(<script type="text/javascript" src="media:///excanvas.js"></script>)
+//}

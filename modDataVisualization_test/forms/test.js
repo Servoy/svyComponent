@@ -141,7 +141,8 @@ function onLoad(event) {
 	//TODO: fix (partial) HTML content: currently shows up as "content":"&lt;span style="color: red"&gt;Hello Joas&lt;/span&gt;" in JSON
 	var i2 = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
 		position: new scopes.modDataVisualization$GoogleMaps.LatLng(25,80),
-		content: '<span style=\'color: red\'>Hello Joas</span>'
+		//content: '<span style=\'color: red\'>Hello Joas</span>' //TODO: this type of content fails
+		content: 'Hello Joas'
 	});
 	i2.open(map2);	
 	

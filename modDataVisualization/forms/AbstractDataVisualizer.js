@@ -1,20 +1,26 @@
+/*
+ * Base class for Datavisualization impl.
+ * 
+ * Implemenations that extend this base class must implement the methods marked as abstract
+ * 
+ * TODO: cleaning up of objects browserside when form gets unloaded
+ * TODO: Figure out how to best allow hiding and showing the DV again, without too much overhead
+ * - Guess that wicket isn't inserting the script tags again if they have been inserted previously
+ */
+
 /**
- * @protected
- * @type {Array<byte>}
+ * Variable containing the strinified version of the DOM variable after the render cycle. 
+ * This variable is dataprovider for the non-editable HMTL area through which the markup gets inserted into the browser
+ * @private
+ * @type {String}
  *
- * @properties={typeid:35,uuid:"97DEF22B-2844-41D3-9EF4-CADA14063C14",variableType:-4}
+ * @properties={typeid:35,uuid:"97DEF22B-2844-41D3-9EF4-CADA14063C14"}
  */
 var html;
 
 /**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"9CE6ECC4-F086-4134-8FB0-91FB590EFCB6"}
- */
-var browserId
-
-/**
- * TODO: hardcoded reference to gmap initializer, which is wrong
+ * Basic HTML in XMl format for easy manipulation. Used by {@link #render()} which copies this template, adds scripts and stringifies the XMl and puts it in the HTML variable
+ * @private 
  * @type {XML}
  * @properties={typeid:35,uuid:"E2EA30EC-9DF9-4FE4-A5B7-E102DB54CC0E",variableType:-4}
  */
@@ -27,71 +33,53 @@ var dom = <html>
 </html>
 
 /**
- * @type {Array}
- *
- * @properties={typeid:35,uuid:"0261CBF8-0C13-4FA1-88C0-31E2AADE7DAA",variableType:-4}
- */
-var scripts = <scripts/>;
-
-/**
+ * @private
+ * @type {Object<String>}
  * @properties={typeid:35,uuid:"EB18FD74-CBBD-4CF9-BAC3-6ACE7C79DBA9",variableType:-4}
  */
-var scriptObj = {};
+var scripts = {};
 
 /**
- * @param {Object} script
- * @param {Object} id
- *
- * @properties={typeid:24,uuid:"798D1B39-79DD-4C06-AF7E-53C747107059"}
- */
-function addScript(id, script) {
-	scriptObj[id] = script;
-}
-
-///**
-// * @param {String} code
-// *
-// * @properties={typeid:24,uuid:"87C182AD-B370-4FF3-BE54-EC60F9562971"}
-// */
-//function addCode(code) {
-//	if (rendered) {
-//		plugins.WebClientUtils.executeClientSideJS(code.charAt(-1) == ';' ? code : code + ';')
-//	}
-//	else {
-//		addScript(<script>{code}</script>)
-//	}
-//}
-
-/**
+ * 
  * @param {String} jsonString
  *
  * @properties={typeid:24,uuid:"0FB00B1F-C956-484C-9C50-595675A57E54"}
  */
 function storeState(jsonString) {
-	/** @type {{id: UUID}} */
+	/** @type {{id: String}} */
 	var obj = JSON.parse(jsonString);
 	
-	addScript(obj.id, <script>{'svyDataViz.' + getBrowserId() + '.todos.push(\'' + jsonString + '\')'}</script>);
-
-	scripts = <scripts/>;
-	for (var s in scriptObj) {
-		scripts.appendChild(scriptObj[s]);
+	//TODO: content of script tag ought to be wrapped in CDATA tags to prevent the XML impl. from escaping invalid XMl characters
+	//Testcase: GMap with InfoWindow containing HTML content
+	scripts[obj.id] = 'svyDataViz.' + getBrowserId() + '[\'' + obj.id + '\']=\'' +  jsonString + '\''
+	
+	dom.body.@onLoad = 'svyDataViz.' + getBrowserId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
+	var copy = dom.copy()
+	for (var script in scripts) {
+		copy.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
 	}
-	render();
-	plugins.WebClientUtils.setRendered(elements.visualizationContainer);
+	render(copy)
+	html = scopes.modDataVisualization.stripCDataTags(copy);
+	
+	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
+	plugins.WebClientUtils.setRendered(elements.visualizationContainer); 
 }
 
 /**
+ * Extension point for impl. to override in order to extend and modify the generated HTML content that gets injected to the browsers markup
+ * The render cycle does not remember state between invocations
+ * @param {XML} DOM
+ * @protected
  * @properties={typeid:24,uuid:"8E72F496-5DAE-4A2E-A763-F5EA640012A5"}
  */
-function render() {
-	var copy = dom.copy()
-	copy.body.@onLoad = 'svyDataViz.' + getBrowserId() + '.initialize()'
-	copy.head.setChildren(scripts.children())
-	html = scopes.modDataVisualization.stripCDataTags(copy)
+function render(DOM) {
 }
 
 /**
+ * Returns the UUID by which to rever to this DataVisualization 
+ * @final
+ * @return {String}
+ * 
  * @properties={typeid:24,uuid:"83DBC63F-DADD-4AE0-AE17-0B6F933F79B7"}
  */
 function getId() {
@@ -99,31 +87,43 @@ function getId() {
 }
 
 /**
+ * Abstract identifier, should be overridden on DataVisualizer instances and return the id under which all browser interaction takes place
+ * @abstract
+ * @protected 
  * TODO: write UnitTest to check for this implementation
- * Abstract identifier, should be overridden on Datavizualiser instances and return the id under which all browser interaction takes place
  * @properties={typeid:24,uuid:"67A9483F-B661-47CC-8E7A-5FB737C94A4A"}
  */
 function getBrowserId(){}
 
 /**
- * Callback method when form is destroyed.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @protected
- *
- * @properties={typeid:24,uuid:"0A8FE3BA-A64C-4298-AA00-AA0731573ABB"}
- */
-function onUnload(event) {
-	//TODO Implement whatever is needed to perform cleanup of references
-}
-
-/**
+ * Flag to be used by implementations to check whether or not to execute the incremental update code
+ * @private 
  * @type {Boolean}
  *
  * @properties={typeid:35,uuid:"132449CC-9E6E-4AC2-8AEE-DD4163C6034C",variableType:-4}
  */
 var rendered = false
+
+/**
+ * To check whether or not to execute the incremental update code
+ * @return {Boolean}
+ *
+ * @properties={typeid:24,uuid:"6439DFAC-70E6-46C5-93EE-F82030C04FCF"}
+ */
+function isRendered() {
+	return rendered
+}
+
+/**
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @protected 
+ *
+ * @properties={typeid:24,uuid:"3BB316B5-1CFF-41F7-B96A-4626898897F1"}
+ */
+function onLoad(event) {
+	dom.body.@onLoad = 'svyDataViz.' + getBrowserId() + '.initialize();'
+}
 
 /**
  * Callback method for when form is shown.
@@ -136,19 +136,17 @@ var rendered = false
  * @properties={typeid:24,uuid:"4C7A2CF9-E700-412C-BB7E-91E0A1002385"}
  */
 function onShow(firstShow, event) {
-	if (firstShow) {
-		rendered = true
-	}
+	rendered = true
 }
 
 /**
- * Handle hide window.
+ * Handle hide of DataVisualization
  *
+ * @protected
  * @param {JSEvent} event the event that triggered the action
  *
  * @returns {Boolean}
  *
- * @private
  *
  * @properties={typeid:24,uuid:"22CD8598-93D9-4261-952C-5129AE22778F"}
  */
@@ -156,4 +154,17 @@ function onHide(event) {
 	//TODO: browserSide cleanup?
 	rendered = false
 	return true
+}
+
+/**
+ * Callback method when form is destroyed.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @protected
+ *
+ * @properties={typeid:24,uuid:"0A8FE3BA-A64C-4298-AA00-AA0731573ABB"}
+ */
+function onUnload(event) {
+	//TODO Implement whatever is needed to perform cleanup of references
 }

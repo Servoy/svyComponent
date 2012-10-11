@@ -61,12 +61,11 @@ var init = function(){
 		}
 		svyDataViz.googleGeoChart = {
 			charts: { },
-			todos: [],
 			initialize: function() {
 				if (window.google && google.visualization && google.visualization.GeoChart) {	
-					for (var i = 0; i < svyDataViz.googleGeoChart.todos.length; i++) {
-						console.log(svyDataViz.googleGeoChart.todos[i])
-						var node = JSON.parse(svyDataViz.googleGeoChart.todos[i], svyDataViz.reviver)
+					for (var i = 0; i < arguments.length; i++) {
+						console.log(this[arguments[i] ])
+						var node = JSON.parse(this[arguments[i] ], svyDataViz.reviver)
 						if (node.id) {
 							var chart = new google.visualization.GeoChart(document.getElementById(node.id))
 							
@@ -76,10 +75,9 @@ var init = function(){
 							
 							var data = google.visualization.arrayToDataTable(node.data)
 							chart.draw(data, node.options)
-							svyDataViz.googleGeoChart.charts[node.id] = chart
+							this.charts[node.id] = chart
 						}
 					}
-					svyDataViz.googleGeoChart.todos = []
 				}
 			},
 			callbackIntermediate: function(id, eventType, event){
@@ -193,7 +191,7 @@ function GeoChart(container, data, options) {
 		if (options.id in forms) {
 			forms[options.id].storeState(scopes.modDataVisualization.serializeObject(setup))
 			
-			if (forms[options.id].rendered) {
+			if (incrementalUpdateCode && forms[options.id].isRendered()) {
 				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
 			}
 		} else {

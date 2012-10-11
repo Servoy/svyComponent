@@ -65,14 +65,11 @@ var init = function() {
 		}
 		svyDataViz.justGauge = {
 			gauges: { },
-			todos: [],
 			initialize: function() {
-				for (var i = 0; i < svyDataViz.justGauge.todos.length; i++) {
-					console.log(svyDataViz.justGauge.todos[i])
-					var node = JSON.parse(svyDataViz.justGauge.todos[i], svyDataViz.reviver)
-					svyDataViz.justGauge.gauges[node.id] = node.gauge
+				for (var i = 0; i < arguments.length; i++) {
+					var node = JSON.parse(this[arguments[i] ], svyDataViz.reviver)
+					this.gauges[node.id] = node.gauge
 				}
-				svyDataViz.justGauge.todos = []
 			}
 		}
 	]]>
@@ -88,7 +85,6 @@ var init = function() {
 /**
  * @constructor
  * 
- * TODO: check types of all options
  * @param {RuntimeTabPanel} container
  * @param {Object} options
  * @param options.title {String}  gauge title text
@@ -113,7 +109,14 @@ var init = function() {
  * @param options.refreshAnimationTime {Number} length of refresh animation
  * @param options.refreshAnimationType {String} type of refresh animation (linear, >, <, <>, bounce)
  * 
- * @example <pre>var gauge = new scopes.modJustGauge.JustGauge(elements.tabless, {
+ * @example <pre>//Simple example
+ *var gauge = new scopes.modJustGauge.JustGauge(elements.tabless, {
+ *	title: 'My Gauge',
+ *	value: 62
+ *})</pre>
+ *
+ * @example <pre>//Extended sample
+ *var gauge = new scopes.modJustGauge.JustGauge(elements.tabless, {
  *	title: '', //gauge title text                                                   
  *	titleFontColor: 'gray', //color title text                                           
  *	value: 67, //value gauge is showing                                             
@@ -135,7 +138,8 @@ var init = function() {
  *	startAnimationType: '', //type of initial animation (linear, >, <, <>, bounce)   
  *	refreshAnimationTime: 5, //length of refresh animation                          
  *	refreshAnimationType: '', //type of refresh animation (linear, >, <, <>, bounce) 
- *})<pre>
+ *})</pre>
+ * 
  * @properties={typeid:24,uuid:"26D1A70A-F906-4BC1-A950-744327B83E6E"}
  */
 function JustGauge(container, options) {
@@ -155,21 +159,27 @@ function JustGauge(container, options) {
 		}
 	}
 
-	function storeState() {
+	/**
+	 * @param {String} [incrementalUpdateCode] The code snippet to incrementally update the already rendered DataVisualization
+	 */
+	function updateState(incrementalUpdateCode) {
 		if (options.id in forms) {
 			forms[options.id].storeState(JSON.stringify(setup))
+			
+			//TODO: push this logic into forms.AbstractDataVisualization
+			if (incrementalUpdateCode && forms[options.id].isRendered()) {
+				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+			}
 		} else {
 			application.output('Invalid DataVisualizer reference') //TODO: better error messages
 		}
 	}
 
-	storeState()
+	updateState()
 
 	this.refresh = function(value){
 		options.value = value
-		storeState()
-		if (forms[options.id].rendered) {
-			plugins.WebClientUtils.executeClientSideJS('svyDataViz.justGauge.gauges[\'' + options.id + '\'].refresh(' + value + ');')
-		}
+		updateState('svyDataViz.justGauge.gauges[\'' + options.id + '\'].refresh(' + value + ');')
+
 	}
 }

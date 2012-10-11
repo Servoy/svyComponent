@@ -80,12 +80,11 @@ var init = function() {
 		}
 		svyDataViz.gmaps = {
 			objects: {},
-			todos: [],
 			initialize: function() {
 		    	if (window.google && google.maps) {
-		    		for (var i = 0; i < this.todos.length; i++) {
-		    			console.log(this.todos[i])
-		    			var node = JSON.parse(this.todos[i], svyDataViz.reviver)
+		    		for (var i = 0; i < arguments.length; i++) {
+		    			console.log(this[arguments[i] ])
+		    			var node = JSON.parse(this[arguments[i] ], svyDataViz.reviver)
 
 						if (node && node.type == "map") {
 							console.log("MAP:");
@@ -143,7 +142,6 @@ var init = function() {
 //							}
 						}
 					}
-					this.todos = []
 		    	}
 		    },
 			callbackIntermediate: function(objectType, id, eventType, event){
@@ -284,7 +282,7 @@ function browserCallback(objectType, id, eventType, data) {
 //					break;
 //				case 'center_changed':
 //					var o = JSON.parse(data)
-//					options.center = new scopes.modGoogleMaps.LatLng(o.lat,o.lng)
+//					options.center = new scopes.modDataVisualization$GoogleMaps.LatLng(o.lat,o.lng)
 //					break;
 //				case 'click':
 //					break; 
@@ -306,10 +304,10 @@ function browserCallback(objectType, id, eventType, data) {
 //					break;
 				case 'idle':
 					o = JSON.parse(data)
-					var sw = new scopes.modGoogleMaps.LatLng(o.bounds.sw.lat, o.bounds.sw.lng)
-					var ne = new scopes.modGoogleMaps.LatLng(o.bounds.ne.lat, o.bounds.ne.lng)
-					options.bounds = new scopes.modGoogleMaps.LatLngBounds(sw,ne)
-					options.center = new scopes.modGoogleMaps.LatLng(o.center.lat,o.center.lng)
+					var sw = new scopes.modDataVisualization$GoogleMaps.LatLng(o.bounds.sw.lat, o.bounds.sw.lng)
+					var ne = new scopes.modDataVisualization$GoogleMaps.LatLng(o.bounds.ne.lat, o.bounds.ne.lng)
+					options.bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(sw,ne)
+					options.center = new scopes.modDataVisualization$GoogleMaps.LatLng(o.center.lat,o.center.lng)
 					if (o.heading) options.heading = parseInt(o.heading)
 					options.mapTypeId = o.mapTypeId
 					options.tilt = o.tilt 
@@ -324,7 +322,7 @@ function browserCallback(objectType, id, eventType, data) {
 			switch (eventType) {
 				case 'dragend': //make sure the position is saved in the object on the servoy side
 					o = JSON.parse(data);
-					options.position = new scopes.modGoogleMaps.LatLng(o.position.lat, o.position.lng);
+					options.position = new scopes.modDataVisualization$GoogleMaps.LatLng(o.position.lat, o.position.lng);
 					break;
 				case 'click':
 					break;
@@ -565,7 +563,7 @@ function Marker(options) {
 //	var _draggable
 //	var _flat
 //	var _icon
-//	/**@type {scopes.modGoogleMaps.GoogleMap}*/
+//	/**@type {scopes.modDataVisualization$GoogleMaps.GoogleMap}*/
 //	var _map
 //	var _optimized
 //	var _position
@@ -592,7 +590,7 @@ function Marker(options) {
 		if (_mapFormName in forms) {
 			forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
 			
-			if (forms[_mapFormName].rendered) {
+			if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
 				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
 			}
 		} else {
@@ -702,7 +700,7 @@ function Marker(options) {
 		_icon = icon
 	}
 	/**
-	 * @param {scopes.modGoogleMaps.Map} map
+	 * @param {scopes.modDataVisualization$GoogleMaps.Map} map
 	 */
 	this.setMap = function(map) {
 		if (options.map == map) {
@@ -874,7 +872,7 @@ function InfoWindow(options) {
 			if (_mapFormName in forms) {
 				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(infoWindowSetup, specialTypes))
 				
-				if (forms[_mapFormName].rendered) {
+				if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
 					plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
 				}
 			} else {
@@ -1039,7 +1037,7 @@ function Map(container, options) {
 		if (mapSetup.id in forms) {
 			forms[mapSetup.id].storeState(scopes.modDataVisualization.serializeObject(mapSetup, specialTypes))
 			
-			if (forms[mapSetup.id].rendered) {
+			if (incrementalUpdateCode && forms[mapSetup.id].isRendered()) {
 				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
 			}
 		} else {
@@ -1175,7 +1173,7 @@ function Map(container, options) {
 	}
 
 	/**
-	 * @param {scopes.modGoogleMaps.LatLngBounds} bounds
+	 * @param {scopes.modDataVisualization$GoogleMaps.LatLngBounds} bounds
 	 */
 	this.panToBounds = function(bounds){
 		plugins.WebClientUtils.executeClientSideJS('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panToBounds(bounds);')
@@ -1256,7 +1254,7 @@ function Map(container, options) {
 		//RIGHTCLICK: 'rightclick',
 		//TILESLOADED: 'tilesloaded',
 		TILT_CHANGED: 'tilt_changed',
-		ZOOM_CHANGED: 'zoom_changed',
+		ZOOM_CHANGED: 'zoom_changed'
 	}
 	
 	/**
