@@ -17,7 +17,7 @@ var maps = []
  *
  * @properties={typeid:35,uuid:"742136BD-C97B-4989-8739-D4E86830A46D",variableType:-4}
  */
-var autoUpdate = true
+var autoUpdate = false
 
 /**
  * @properties={typeid:24,uuid:"4E2FEE74-8C57-42B5-9750-B8C5BA1098DF"}
@@ -116,9 +116,9 @@ function onLoad(event) {
 	var m = new scopes.modDataVisualization$GoogleMaps.Marker({
 		position: new scopes.modDataVisualization$GoogleMaps.LatLng(10,20),
 		draggable: true,
-		title: 'Hello Paul',
-		map: map2
+		title: 'Hello Paul'
 	});
+	m.setMap(map2)
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
 	m = new scopes.modDataVisualization$GoogleMaps.Marker({

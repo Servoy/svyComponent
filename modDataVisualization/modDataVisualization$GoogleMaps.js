@@ -128,12 +128,11 @@ var init = function() {
 						} else if (node && node.type == "infoWindow"){
 							console.log("InfoWindow");
 							console.log(node);
-							var infoWindow = new google.maps.InfoWindow({position: node.position, content: node.content})
-//							infoWindow.open(node.map, node.marker);
+							var infoWindow = new google.maps.InfoWindow(node.options)
 							infoWindow.set('svyId',node.id)
-							
-								
-//							this.objects[node.id] = infoWindow
+							this.objects[node.id] = infoWindow
+
+							infoWindow.open(node.options.map, node.options.anchor);
 							
 //							var events = ['closeclick'];
 //							for (var j = 0; j < events.length; j++) {
@@ -354,7 +353,7 @@ function browserCallback(objectType, id, eventType, data) {
  * @type {Array}
  * @properties={typeid:35,uuid:"F61367F4-BDE9-42B1-994E-22EA719A34D9",variableType:-4}
  */
-var specialTypes = [LatLng, MapTypeId, Marker, Map]
+var specialTypes = [LatLng, MapTypeId, Marker, InfoWindow, Map]
 
 /**
  * Map holding references to the inner setup of all Objects (Maps, Markers, ...) and their storeState method.
@@ -586,19 +585,19 @@ function Marker(options) {
 	 * @param {String} [incrementalUpdateCode]
 	 */
 	function updateState(incrementalUpdateCode) {
-		var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
-		if (_mapFormName in forms) {
-			forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
-			
-			if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
-				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
-			}
-		} else {
-			application.output('Invalid DataVisualizer reference') //TODO: better error messages
+		if (markerSetup.options.map) {
+			var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
+			if (_mapFormName in forms) {
+				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
+				
+				if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
+					plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+				}
+			} else {
+				application.output('Invalid DataVisualizer reference') //TODO: better error messages
+		}
 		}
 	}
-	
-	updateState()
 	
 	/**
 	 * Internal API: DO NOT CALL
@@ -635,6 +634,11 @@ function Marker(options) {
 //				}] 
 //			}
 	}
+	
+	if (options.map) {
+		options.map.addMarker(markerSetup.id, this)
+	}
+	updateState()
 
 	//Constants
 	this.MAX_ZINDEX
@@ -714,7 +718,8 @@ function Marker(options) {
 			options.map = map
 		}
 		options.map.addMarker(id, this)
-		options.map.markers[id] = this
+		updateState()
+		//options.map.markers[id] = this
 	}
 
 	//	this.setOptions = function(options) {
@@ -842,12 +847,17 @@ function MarkerShape() {
 
 /**
  * @constructor
- * 
+ * @param {Object} options
+ * @param {String} options.content
+ * @param {Boolean} options.disableAutoPan
+ * @param {Number} options.maxWidth
+ * @param {Size} options.pixelOffset
+ * @param {LatLng} options.position
+ * @param {Number} options.zIndex
  * @properties={typeid:24,uuid:"1E81E90E-BBDA-4D0C-8AB9-467196F292BC"}
  */
 function InfoWindow(options) {
 	var id = application.getUUID().toString()
-	options.type = "infoWindow";
 	
 	var infoWindowSetup = {
 		id: id,
@@ -880,7 +890,6 @@ function InfoWindow(options) {
 			}
 		}
 	}
-	updateState()
 	
 	/**
 	 * Internal API: DO NOT CALL
@@ -901,6 +910,8 @@ function InfoWindow(options) {
 			}] 
 		}
 	}
+	
+	updateState()
 	
 	this.close = function() {
 		//TODO: implement
@@ -941,7 +952,7 @@ function InfoWindow(options) {
 		
 		options.map.addInfoWindow(id, this)
 //		options.map.infoWindows[id] = this
-	
+		updateState()
 	}
 	
 	/**
@@ -1031,22 +1042,6 @@ function Map(container, options) {
 	}
 	
 	/**
-	 * @param {String} [incrementalUpdateCode]
-	 */
-	function updateState(incrementalUpdateCode) {
-		if (mapSetup.id in forms) {
-			forms[mapSetup.id].storeState(scopes.modDataVisualization.serializeObject(mapSetup, specialTypes))
-			
-			if (incrementalUpdateCode && forms[mapSetup.id].isRendered()) {
-				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
-			}
-		} else {
-			application.output('Invalid DataVisualizer reference') //TODO: better error messages
-		}
-	}
-	updateState()
-	
-	/**
 	 * Internal API, DO NOT CALL
 	 * @param {String} id
 	 * @param {Marker} marker
@@ -1086,7 +1081,23 @@ function Map(container, options) {
 			parts: ['svyDataViz','gmaps', 'objects', mapSetup.id]
 		}
 	}
-
+	
+	/**
+	 * @param {String} [incrementalUpdateCode]
+	 */
+	function updateState(incrementalUpdateCode) {
+		if (mapSetup.id in forms) {
+			forms[mapSetup.id].storeState(scopes.modDataVisualization.serializeObject(mapSetup, specialTypes))
+			
+			if (incrementalUpdateCode && forms[mapSetup.id].isRendered()) {
+				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+			}
+		} else {
+			application.output('Invalid DataVisualizer reference') //TODO: better error messages
+		}
+	}
+	updateState()
+	
 	/* Scripting API
 	 */
 	/**

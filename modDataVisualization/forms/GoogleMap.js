@@ -4,6 +4,7 @@
  * @properties={typeid:24,uuid:"1857E26E-8D58-4910-B86B-D4EFE64DB774"}
  */
 function render(DOM) {
+	return; //It currently works without the stuff below...
 	var mrkrs = ''
 	for each(var marker in markers) {
 		marker.id = application.getUUID();
@@ -19,8 +20,9 @@ function render(DOM) {
 		infWnds += 'svyDataViz.' + getBrowserId() + '[\'' + infoWindow.id + '\']=\'' + scopes.modDataVisualization.serializeObject(infoWindow, scopes.modDataVisualization$GoogleMaps.specialTypes) + '\';'
 	}
 	if (infWnds.length > 0) {
-		DOM.head.appendChild(new XML('<script><![CDATA[' + infWnds + ']]></script>'))
+		DOM.head.appendChild(<script>{infWnds}</script>)
 	}
+	application.output('-------------\n' + DOM.toXMLString() + '\n\n')
 }
 
 /**
