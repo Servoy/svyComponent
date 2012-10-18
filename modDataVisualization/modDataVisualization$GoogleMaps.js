@@ -83,14 +83,15 @@ var init = function() {
 			initialize: function() {
 		    	if (window.google && google.maps) {
 		    		for (var i = 0; i < arguments.length; i++) {
-		    			console.log(this[arguments[i] ])
 		    			var node = JSON.parse(this[arguments[i] ], svyDataViz.reviver)
 
 						if (node && node.type == "map") {
+							//Create new Map in the browser
 							var map = new google.maps.Map(document.getElementById(node.id), node.options)
 							map.set('svyId',node.id)
 							this.objects[node.id] = map
 							
+							//Add event listeners
 							var events = [
 								'idle',
 //								'bounds_changed', 
@@ -103,7 +104,6 @@ var init = function() {
 								'tilt_changed'
 //								'zoom_changed',
 							];
-							
 							for (var j = 0; j < events.length; j++) {
 								var handler = function(id, eventType){
 									return function(event) {
@@ -114,13 +114,14 @@ var init = function() {
 							}
 							
 						} else if (node && node.type == "marker"){
+							//Create marker in the browser
 							var marker = new google.maps.Marker(node.options)
 							marker.set('svyId',node.id)
 							this.objects[node.id] = marker
 							
+							//Add event listeners
 							var events = ['click', 'dblclick', 'dragend', 'rightclick'];
 							for (var j = 0; j < events.length; j++) {
-//								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
 								var handler = function(id, eventType){
 									return function(event) {
 										svyDataViz.gmaps.callbackIntermediate("marker", id, eventType, event)
@@ -129,13 +130,15 @@ var init = function() {
 								google.maps.event.addListener(marker, events[j], handler);
 							}
 						} else if (node && node.type == "infoWindow"){
-							console.log("InfoWindow");
-							console.log(node);
+							//The content was escaped because of possible html -> unescape
 							node.options.content = unescape(node.options.content);
+							
+							//Create infoWindow in the browser
 							var infoWindow = new google.maps.InfoWindow(node.options)
 							infoWindow.set('svyId',node.id)
 							this.objects[node.id] = infoWindow
 							
+							//Add event listeners
 							var events = ['closeclick'];
 							for (var j = 0; j < events.length; j++) {
 								var handler = function(id, eventType){
@@ -152,103 +155,82 @@ var init = function() {
 		    	}
 		    },
 			callbackIntermediate: function(objectType, id, eventType, event){
-				//Intermediate function to retrieve relevant data when events occur on a map and then send them to the server
-				var data
-				console.log("CALLBACKINTERMEDIATE: " + objectType + ", " +  id + ", " +  eventType + ", " +  event);
+				//Intermediate function to retrieve relevant data when events occur on a map/marker/infoWindow and then send them to the server
+				var data;
+//				console.log("CALLBACKINTERMEDIATE: " + objectType + ", " +  id + ", " +  eventType + ", " +  event);
+				var object = svyDataViz.gmaps.objects[id];
 				switch (objectType) {
 					case 'map': 
-						var map = svyDataViz.gmaps.objects[id];
 						switch (eventType) {
-		//					case 'bounds_changed':
-		//						break;
-		//					case 'center_changed':
-		//						data = JSON.stringify({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
-		//						break;
-		//					case 'click':
-		//						console.log('click');
-		//						break;
-		//					case 'position_changed':
-		//						console.log('click');
-		//						break;
-		//					case 'dblclick':
-		//						break;
-		//					case 'heading_changed':
-		//						data = map.getHeading() 
-		//						break;
-		//					case 'maptypeid_changed':
-		//						data = map.getMapTypeId()
-		//						break;
-		//					case 'projection_changed':
-		//						break;
-		//					case 'tilt_changed':
-		//						data = map.getTilt()
-		//						break;
-		//					case 'zoom_changed':
-		//						data = map.getZoom();
-		//						break;
+//							case 'bounds_changed':
+//								break;
+//							case 'center_changed':
+//								data = JSON.stringify({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
+//								break;
+//							case 'click':
+//								console.log('click');
+//								break;
+//							case 'position_changed':
+//								console.log('click');
+//								break;
+//							case 'dblclick':
+//								break;
+//							case 'heading_changed':
+//								data = map.getHeading() 
+//								break;
+//							case 'maptypeid_changed':
+//								data = map.getMapTypeId()
+//								break;
+//							case 'projection_changed':
+//								break;
+//							case 'tilt_changed':
+//								data = map.getTilt()
+//								break;
+//							case 'zoom_changed':
+//								data = map.getZoom();
+//								break;
 							case 'idle':
-								bounds = map.getBounds()
+								//Pass position and mapid to Servoy
+								bounds = object.getBounds()
 							
 								data = JSON.stringify({
 									bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
-									center: {lat: map.getCenter().lat(), lng: map.getCenter().lng()},
-									heading: map.getHeading(),
-									mapTypeId: map.getMapTypeId(),
-									tilt: map.getTilt(),
-									zoom: map.getZoom()
+									center: {lat: map.getCenter().lat(), lng: object.getCenter().lng()},
+									heading: object.getHeading(),
+									mapTypeId: object.getMapTypeId(),
+									tilt: object.getTilt(),
+									zoom: object.getZoom()
 								})
 								break;
 							default:
 								break;
 						}
-						this.mapsEventHandler(objectType, id, eventType,data)
 						break;
 					case 'marker':
-						var marker = svyDataViz.gmaps.objects[id];
 						switch (eventType) {
-							case 'click': 
-		//				       var infowindow = new google.maps.InfoWindow({
-		//				            content: "hoi blabla"
-		//				        });
-		//
-		//				        infowindow.open(marker.getMap(),marker);
-		
-		//					case 'position_changed':
-		//						console.log('position_changed');
-		//						data = JSON.stringify({
-		//							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
-		//							mapid: marker.map.svyId
-		//						})						
-		//					case 'dblclick':
-		//						break;
-		//					case 'idle':
-		//						bounds = map.getBounds()
-		//					
-		//						data = JSON.stringify({
-		//							bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
-		//							center: {lat: map.getCenter().lat(), lng: map.getCenter().lng()},
-		//							heading: map.getHeading(),
-		//							mapTypeId: map.getMapTypeId(),
-		//							tilt: map.getTilt(),
-		//							zoom: map.getZoom()
-		//						})
-		//						break;
+//							case 'click': 
+//						       var infowindow = new google.maps.InfoWindow({
+//						            content: "hoi blabla"
+//						        });
+//		
+//						        infowindow.open(marker.getMap(),marker);
+//								break;
 							default:
+								//Pass position and mapid to Servoy
 								data = JSON.stringify({
-									position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
-									mapid: marker.map.svyId
+									position: {lat: object.getPosition().lat(), lng: object.getPosition().lng()},
+									mapid: object.map.svyId
 								})		
 								break;
 						}
-						this.mapsEventHandler(objectType, id, eventType, data);
 						break;
 					
 					case 'infoWindow':
 						//eventType is only 'closeclick' for now
-						this.mapsEventHandler(objectType, id, eventType,data)
 						break;
 				}
-				
+				//Call the mapsEventHandler that will call the Servoy callback
+				this.mapsEventHandler(objectType, id, eventType,data)
 			}
 		}
 		
@@ -341,6 +323,8 @@ function browserCallback(objectType, id, eventType, data) {
 					options.position = new scopes.modDataVisualization$GoogleMaps.LatLng(o.position.lat, o.position.lng);
 					break;
 				case 'click':
+				case 'dblclick':
+				case 'rightclick':
 					break;
 				default:
 					application.output('Unknown Marker eventType: ' + eventType)
@@ -350,7 +334,6 @@ function browserCallback(objectType, id, eventType, data) {
 		case 'infoWindow':
 			switch (eventType) {
 				case 'closeclick':
-					//TODO: remove infowindow?
 					break;
 				default:
 					application.output('Unknown InfoWindow eventType: ' + eventType)
