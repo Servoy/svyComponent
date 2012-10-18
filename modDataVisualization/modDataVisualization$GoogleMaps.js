@@ -131,6 +131,7 @@ var init = function() {
 						} else if (node && node.type == "infoWindow"){
 							console.log("InfoWindow");
 							console.log(node);
+							node.options.content = unescape(node.options.content);
 							var infoWindow = new google.maps.InfoWindow(node.options)
 							infoWindow.set('svyId',node.id)
 							this.objects[node.id] = infoWindow
@@ -877,6 +878,8 @@ function MarkerShape() {
  */
 function InfoWindow(options) {
 	var id = application.getUUID().toString()
+	
+	options.content = escape(options.content);
 	
 	var infoWindowSetup = {
 		id: id,

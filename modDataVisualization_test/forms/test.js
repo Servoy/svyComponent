@@ -138,11 +138,9 @@ function onLoad(event) {
 	});
 	i.open(map2, m);
 	
-	//TODO: fix (partial) HTML content: currently shows up as "content":"&lt;span style="color: red"&gt;Hello Joas&lt;/span&gt;" in JSON
 	var i2 = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
 		position: new scopes.modDataVisualization$GoogleMaps.LatLng(25,80),
-		//content: '<span style=\'color: red\'>Hello Joas</span>' //TODO: this type of content fails
-		content: 'Hello Joas'
+		content: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>'
 	});
 	i2.open(map2);	
 	
@@ -263,4 +261,5 @@ function onLoad(event) {
 function markerCallback(event, data) {
 	application.output("MARKERCALLBACK: " + data);
 }
+
 
