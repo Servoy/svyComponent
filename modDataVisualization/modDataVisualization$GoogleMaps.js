@@ -87,8 +87,6 @@ var init = function() {
 		    			var node = JSON.parse(this[arguments[i] ], svyDataViz.reviver)
 
 						if (node && node.type == "map") {
-							console.log("MAP:");
-							console.log(node);
 							var map = new google.maps.Map(document.getElementById(node.id), node.options)
 							map.set('svyId',node.id)
 							this.objects[node.id] = map
@@ -122,7 +120,12 @@ var init = function() {
 							
 							var events = ['click', 'dblclick', 'dragend', 'rightclick'];
 							for (var j = 0; j < events.length; j++) {
-								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
+//								var handler = new Function ("svyDataViz.gmaps.callbackMarker.call(this, 'marker', '"+node.id+"', '"+events[j]+"', event)");
+								var handler = function(id, eventType){
+									return function(event) {
+										svyDataViz.gmaps.callbackIntermediate("marker", id, eventType, event)
+									}
+								}(node.id, events[j])
 								google.maps.event.addListener(marker, events[j], handler);
 							}
 						} else if (node && node.type == "infoWindow"){
@@ -131,14 +134,18 @@ var init = function() {
 							var infoWindow = new google.maps.InfoWindow(node.options)
 							infoWindow.set('svyId',node.id)
 							this.objects[node.id] = infoWindow
-
-							infoWindow.open(node.options.map, node.options.anchor);
 							
-//							var events = ['closeclick'];
-//							for (var j = 0; j < events.length; j++) {
-//								var handler = new Function ("svyDataViz.gmaps.callbackInfoWindow.call(this, 'infoWindow', '"+node.id+"', '"+events[j]+"', event)");
-//								google.maps.event.addListener(infoWindow, events[j], handler);
-//							}
+							var events = ['closeclick'];
+							for (var j = 0; j < events.length; j++) {
+								var handler = function(id, eventType){
+									return function(event) {
+										svyDataViz.gmaps.callbackIntermediate("infoWindow", id, eventType, event)
+									}
+								}(node.id, events[j])
+								google.maps.event.addListener(infoWindow, events[j], handler);
+							}
+//							infoWindow.open(node.options.map, node.options.anchor);
+											
 						}
 					}
 		    	}
@@ -146,92 +153,101 @@ var init = function() {
 			callbackIntermediate: function(objectType, id, eventType, event){
 				//Intermediate function to retrieve relevant data when events occur on a map and then send them to the server
 				var data
-				var map = svyDataViz.gmaps.objects[id]
-				switch (eventType) {
-//					case 'bounds_changed':
-//						break;
-//					case 'center_changed':
-//						data = JSON.stringify({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
-//						break;
-//					case 'click':
-//						console.log('click');
-//						break;
-//					case 'position_changed':
-//						console.log('click');
-//						break;
-//					case 'dblclick':
-//						break;
-//					case 'heading_changed':
-//						data = map.getHeading() 
-//						break;
-//					case 'maptypeid_changed':
-//						data = map.getMapTypeId()
-//						break;
-//					case 'projection_changed':
-//						break;
-//					case 'tilt_changed':
-//						data = map.getTilt()
-//						break;
-//					case 'zoom_changed':
-//						data = map.getZoom();
-//						break;
-					case 'idle':
-						bounds = map.getBounds()
+				console.log("CALLBACKINTERMEDIATE: " + objectType + ", " +  id + ", " +  eventType + ", " +  event);
+				switch (objectType) {
+					case 'map': 
+						var map = svyDataViz.gmaps.objects[id];
+						switch (eventType) {
+		//					case 'bounds_changed':
+		//						break;
+		//					case 'center_changed':
+		//						data = JSON.stringify({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
+		//						break;
+		//					case 'click':
+		//						console.log('click');
+		//						break;
+		//					case 'position_changed':
+		//						console.log('click');
+		//						break;
+		//					case 'dblclick':
+		//						break;
+		//					case 'heading_changed':
+		//						data = map.getHeading() 
+		//						break;
+		//					case 'maptypeid_changed':
+		//						data = map.getMapTypeId()
+		//						break;
+		//					case 'projection_changed':
+		//						break;
+		//					case 'tilt_changed':
+		//						data = map.getTilt()
+		//						break;
+		//					case 'zoom_changed':
+		//						data = map.getZoom();
+		//						break;
+							case 'idle':
+								bounds = map.getBounds()
+							
+								data = JSON.stringify({
+									bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
+									center: {lat: map.getCenter().lat(), lng: map.getCenter().lng()},
+									heading: map.getHeading(),
+									mapTypeId: map.getMapTypeId(),
+									tilt: map.getTilt(),
+									zoom: map.getZoom()
+								})
+								break;
+							default:
+								break;
+						}
+						this.mapsEventHandler(objectType, id, eventType,data)
+						break;
+					case 'marker':
+						var marker = svyDataViz.gmaps.objects[id];
+						switch (eventType) {
+							case 'click': 
+		//				       var infowindow = new google.maps.InfoWindow({
+		//				            content: "hoi blabla"
+		//				        });
+		//
+		//				        infowindow.open(marker.getMap(),marker);
+		
+		//					case 'position_changed':
+		//						console.log('position_changed');
+		//						data = JSON.stringify({
+		//							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
+		//							mapid: marker.map.svyId
+		//						})						
+		//					case 'dblclick':
+		//						break;
+		//					case 'idle':
+		//						bounds = map.getBounds()
+		//					
+		//						data = JSON.stringify({
+		//							bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
+		//							center: {lat: map.getCenter().lat(), lng: map.getCenter().lng()},
+		//							heading: map.getHeading(),
+		//							mapTypeId: map.getMapTypeId(),
+		//							tilt: map.getTilt(),
+		//							zoom: map.getZoom()
+		//						})
+		//						break;
+							default:
+								data = JSON.stringify({
+									position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
+									mapid: marker.map.svyId
+								})		
+								break;
+						}
+						this.mapsEventHandler(objectType, id, eventType, data);
+						break;
 					
-						data = JSON.stringify({
-							bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
-							center: {lat: map.getCenter().lat(), lng: map.getCenter().lng()},
-							heading: map.getHeading(),
-							mapTypeId: map.getMapTypeId(),
-							tilt: map.getTilt(),
-							zoom: map.getZoom()
-						})
-						break;
-					default:
+					case 'infoWindow':
+						//eventType is only 'closeclick' for now
+						this.mapsEventHandler(objectType, id, eventType,data)
 						break;
 				}
-				this.mapsEventHandler('map', id, eventType,data)
-			},
-			callbackMarker: function(objectType, id, eventType, event){
-				//Function to retrieve relevant data when events occur on a marker and then send them to the server
-				var data
-				var marker = svyDataViz.gmaps.objects[id]
-				switch (eventType) {
-					case 'click': 
-//				       var infowindow = new google.maps.InfoWindow({
-//				            content: "hoi blabla"
-//				        });
-//
-//				        infowindow.open(marker.getMap(),marker);
-
-//					case 'position_changed':
-//						console.log('position_changed');
-//						data = JSON.stringify({
-//							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
-//							mapid: marker.map.svyId
-//						})						
-//					case 'dblclick':
-//						break;
-//					case 'idle':
-//						bounds = map.getBounds()
-//					
-//						data = JSON.stringify({
-//							bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
-//							center: {lat: map.getCenter().lat(), lng: map.getCenter().lng()},
-//							heading: map.getHeading(),
-//							mapTypeId: map.getMapTypeId(),
-//							tilt: map.getTilt(),
-//							zoom: map.getZoom()
-//						})
-//						break;
-					default:
-						data = JSON.stringify({
-							position: {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()},
-							mapid: marker.map.svyId
-						})		
-						break;
-				}
-				svyDataViz.gmaps.mapsEventHandler(objectType, id, eventType, data);
+				
 			}
 		}
 		
@@ -332,6 +348,9 @@ function browserCallback(objectType, id, eventType, data) {
 			break;
 		case 'infoWindow':
 			switch (eventType) {
+				case 'closeclick':
+					//TODO: remove infowindow?
+					break;
 				default:
 					application.output('Unknown InfoWindow eventType: ' + eventType)
 					return;
@@ -586,17 +605,17 @@ function Marker(options) {
 	 */
 	function updateState(incrementalUpdateCode) {
 		if (markerSetup.options.map) {
-			var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
-			if (_mapFormName in forms) {
-				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
-				
-				if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
-					plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
-				}
-			} else {
-				application.output('Invalid DataVisualizer reference') //TODO: better error messages
+		var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
+		if (_mapFormName in forms) {
+			forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
+			
+			if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
+				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+			}
+		} else {
+			application.output('Invalid DataVisualizer reference') //TODO: better error messages
 		}
-		}
+	}
 	}
 	
 	/**
@@ -634,7 +653,7 @@ function Marker(options) {
 //				}] 
 //			}
 	}
-	
+
 	if (options.map) {
 		options.map.addMarker(markerSetup.id, this)
 	}
@@ -865,12 +884,16 @@ function InfoWindow(options) {
 		options: options
 	}
 	
-	var EVENT_TYPES = {
+	this.EVENT_TYPES = {
 		CLOSECLICK: 'closeclick',
 		CONTENT_CHANGED: 'content_changed',
 		DOMREADY: 'domready',
 		POSITION_CHANGED: 'position_changed',
 		ZINDEX_CHANGED: 'zindex_changed'
+	}
+	
+	this.addEventListener = function(eventHandler, eventType) {
+		scopes.svyEventManager.addListener(infoWindowSetup.id, eventType, eventHandler);
 	}
 	
 	/**
@@ -1059,6 +1082,7 @@ function Map(container, options) {
 	this.addInfoWindow = function(id, infoWindow) {
 		dv.infoWindows[id] = infoWindow	
 		updateState()//TODO: incremental code
+//		updateState('var infoWindow = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(infoWindow.toObjectPresentation()) + '\', svyDataViz.reviver); infoWindow.setPosition(new google.maps.LatLng(-25.363882,131.044922)); infoWindow.open(svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'])'); 
 	}
 	
 	/**
@@ -1081,7 +1105,7 @@ function Map(container, options) {
 			parts: ['svyDataViz','gmaps', 'objects', mapSetup.id]
 		}
 	}
-	
+
 	/**
 	 * @param {String} [incrementalUpdateCode]
 	 */
