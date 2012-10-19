@@ -1,6 +1,12 @@
 [
 {
 mimeType:"text/javascript",
+name:"excanvas.compiled.js",
+typeid:37,
+uuid:"2BAE2563-DC5B-42CD-86F8-E8914192D8C6"
+},
+{
+mimeType:"text/javascript",
 name:"flotr2.min.js",
 typeid:37,
 uuid:"E70BD609-778A-4AF9-B519-576FB9874558"
