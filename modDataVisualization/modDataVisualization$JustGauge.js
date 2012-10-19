@@ -10,6 +10,7 @@ var init = function() {
 	//TODO: allow devs to optimalizise external lib inclusion
 	plugins.WebClientUtils.addJsReference('media:///raphael.2.1.0.min.js')
 	plugins.WebClientUtils.addJsReference('media:///justgage.1.0.1.min.js')
+	//plugins.WebClientUtils.addJsReference('https://raw.github.com/toorshia/justgage/master/justgage.1.0.1.js')
 	
 	//TODO: don't duplicate the generic part 
 	var code = <script type='text/javascript'>

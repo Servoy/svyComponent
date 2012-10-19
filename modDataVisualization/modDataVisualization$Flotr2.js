@@ -2,16 +2,9 @@
  * @properties={typeid:35,uuid:"E4A3D57C-AECE-4CF9-9817-D47A3306EEE3",variableType:-4}
  */
 var init = function(){
-	//TODO: include excanvas for IE, through the main modDatavisualization scope, to prevent duplication
-//	//Add excanvas to conditionally only in IE to compensate for the lack of canvas support in IE up to IE9
-//	/**@type {Packages.org.apache.wicket.protocol.http.ClientProperties}*/
-//	var clientProperties = Packages.org.apache.wicket.RequestCycle.get().getClientInfo().getProperties() 
-//    if (clientProperties.isBrowserInternetExplorer()) {
-//		html.head.prependChild(<script type="text/javascript" src="media:///excanvas.js"></script>)
-//	}
-	
-	plugins.WebClientUtils.addJsReference('https://raw.github.com/HumbleSoftware/Flotr2/master/flotr2.min.js')
-	
+	scopes.modDataVisualization.includeExCanvasForIE(8)
+//	plugins.WebClientUtils.addJsReference('https://raw.github.com/HumbleSoftware/Flotr2/master/flotr2.min.js')
+	plugins.WebClientUtils.addJsReference('media:///flotr2.min.js')
 	//TODO: don't duplicate the generic part 
 	var code = <script type='text/javascript'>
 	<![CDATA[
@@ -371,6 +364,15 @@ function LineChart(container){
 		setup.data = data
 		setup.options = options
 		updateState()
+	}
+	
+	/**
+	 * @return {DataSet}
+	 */
+	function DataSet() {
+		this.label = function(text){
+			return this
+		}
 	}
 }
 

@@ -78,10 +78,25 @@ function createVisualizationContainer(panel, form) {
 	return dataVisualizerInstance
 }
 
-//Code to test for old IE and add excanvas if needed.
-////Add excanvas to conditionally only in IE to compensate for the lack of canvas support in IE up to IE9
-///**@type {Packages.org.apache.wicket.protocol.http.ClientProperties}*/
-//var clientProperties = Packages.org.apache.wicket.RequestCycle.get().getClientInfo().getProperties() 
-//if (clientProperties.isBrowserInternetExplorer()) {
-//	html.head.prependChild(<script type="text/javascript" src="media:///excanvas.js"></script>)
-//}
+/**
+ * @private
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"2156677A-6133-40CB-A2B4-2090BE039B62",variableType:4}
+ */
+var maxIEVersion = 8
+
+/**
+ * @param {Number} maxVersion the max version of IE for which excanvas ought to be included. (default is IE8)
+ * @properties={typeid:24,uuid:"FB38F277-182A-4971-8534-401EEC07EBFF"}
+ */
+function includeExCanvasForIE(maxVersion) {
+	//TODO: use maxVersion properly
+	//Code to test for old IE and add excanvas if needed.
+	//Add excanvas to conditionally only in IE to compensate for the lack of canvas support in IE up to IE9
+	/**@type {Packages.org.apache.wicket.protocol.http.ClientProperties}*/
+	var clientProperties = Packages.org.apache.wicket.RequestCycle.get().getClientInfo().getProperties() 
+	if (clientProperties.isBrowserInternetExplorer()) {
+		plugins.WebClientUtils.addJsReference('media:///excanvas.js')
+	}	
+}
