@@ -195,7 +195,7 @@ var init = function() {
 							
 								data = JSON.stringify({
 									bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
-									center: {lat: map.getCenter().lat(), lng: object.getCenter().lng()},
+									center: {lat: object.getCenter().lat(), lng: object.getCenter().lng()},
 									heading: object.getHeading(),
 									mapTypeId: object.getMapTypeId(),
 									tilt: object.getTilt(),
@@ -589,17 +589,17 @@ function Marker(options) {
 	 */
 	function updateState(incrementalUpdateCode) {
 		if (markerSetup.options.map) {
-		var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
-		if (_mapFormName in forms) {
-			forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
-			
-			if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
-				plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+			var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
+			if (_mapFormName in forms) {
+				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
+				
+				if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
+					plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+				}
+			} else {
+				application.output('Invalid DataVisualizer reference') //TODO: better error messages
 			}
-		} else {
-			application.output('Invalid DataVisualizer reference') //TODO: better error messages
 		}
-	}
 	}
 	
 	/**
@@ -819,10 +819,6 @@ function Marker(options) {
 		scopes.svyEventManager.addListener(markerSetup.id, eventType, eventHandler);
 	}
 	
-//	function addEventListener(eventHandler, eventType) {
-//		scopes.svyEventManager.addListener(this, eventType, eventHandler)
-//	}
-//	
 	this.getEventHandler = function(eventType) {
 		return listeners[eventType];
 	}
@@ -1057,13 +1053,13 @@ function Map(container, options) {
 	 */
 	this.addMarker = function(id, marker) {
 		dv.markers[id] = marker	
-		updateState()//TODO: incremental code
+		updateState(); //TODO: incremental code
 	}
 	
 	/**
 	 * Internal API, DO NOT CALL
 	 * @param {String} id
-	 * @param {Marker} marker
+	 * @param {InfoWindow} infoWindow
 	 */
 	this.addInfoWindow = function(id, infoWindow) {
 		dv.infoWindows[id] = infoWindow	
