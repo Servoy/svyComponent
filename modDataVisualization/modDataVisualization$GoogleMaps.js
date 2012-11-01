@@ -467,7 +467,10 @@ function LatLngBounds(sw, ne){
 	 * @return {Boolean}
 	 */
 	this.contains = function(latLng){
-		//TODO: implement
+		var containsLat = latLng.lat() < ne.lat() && latLng.lat() > sw.lat();
+		var containsLng = latLng.lng() < ne.lng() && latLng.lng() > sw.lng();
+		
+		return containsLat && containsLng;
 	}
 	/**
 	 * @param {LatLngBounds} other
@@ -484,10 +487,13 @@ function LatLngBounds(sw, ne){
 		//TODO: implement
 	}
 	/**
-	 * @return {LatLng}
+	 * @return {scopes.modDataVisualization$GoogleMaps.LatLng}
 	 */
 	this.getCenter = function(){
-		//TODO: implement
+		var centerLat = (ne.lat() + sw.lat()) / 2;
+		var centerLng = (ne.lng() + sw.lng()) / 2;
+		
+		return new scopes.modDataVisualization$GoogleMaps.LatLng(centerLat, centerLng);
 	}
 	/**
 	 * @return {LatLng}
@@ -506,13 +512,21 @@ function LatLngBounds(sw, ne){
 	 * @return {Boolean}
 	 */
 	this.intersects = function(other){
-		//TODO: implement
+		return (! 
+				(other.getSouthWest().lng() > ne.lng()) || //other.left   > this.right
+				(other.getNorthEast().lng() < sw.lng()) || //other.right  < this.left
+				(other.getSouthWest().lat() > ne.lat()) || //other.bottom > this.top
+				(other.getNorthEast().lat() < sw.lat())    //other.top    < this.bottom
+			);
 	}
 	/**
 	 * @return {Boolean}
 	 */
 	this.isEmpty = function(){
-		//TODO: implement
+		var latEmpty = (ne.lat() <= sw.lat());
+		var lngEmpty = (ne.lng() <= sw.lng());
+		
+		return latEmpty || lngEmpty;
 	}
 	/**
 	 * @return {LatLng}
@@ -538,7 +552,10 @@ function LatLngBounds(sw, ne){
 	 * @return {LatLngBounds}
 	 */
 	this.union = function(other){
-		//TODO: implement
+		this.extend(other.getNorthEast());
+		this.extend(other.getSouthWest());
+		
+		return this;
 	}
 }
 
