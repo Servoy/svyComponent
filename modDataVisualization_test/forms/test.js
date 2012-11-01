@@ -41,8 +41,30 @@ function update(force) {
 		var sw = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
 		var ne = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
 		var bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(sw,ne)
-		maps[i].setZoom(parseInt((Math.random() * 10).toFixed(0)))
-		maps[i].panToBounds(bounds)
+//		maps[i].setZoom(parseInt((Math.random() * 10).toFixed(0)))
+//		maps[i].panToBounds(bounds)
+		
+		addMarker(null, maps[i]);
+		addMarker(null, maps[i]);
+		
+		var markers = forms[maps[i].getId()].markers
+		
+		var maxLat = 0, minLat = 0, maxLng = 0, minLng = 0;
+		for (var j in markers) {
+			var lat = markers[j].getPosition().lat()
+			var lng = markers[j].getPosition().lng()
+			
+			if (lat > maxLat) maxLat = lat;
+			if (lat < minLat) maxLat = lat;
+			
+			if (lng > maxLng) maxLng = lng;
+			if (lng < minLng) minLng = lng;
+			
+			
+		}
+		application.output("map: " + i + ", " + minLat + "<>" + maxLat + ", " + minLng + "<>" + maxLng);
+		
+		
 	}
 }
 
@@ -124,7 +146,7 @@ function onLoad(event) {
 	m = new scopes.modDataVisualization$GoogleMaps.Marker({
 		position: new scopes.modDataVisualization$GoogleMaps.LatLng(52,5),
 		draggable: true,
-		title: 'Hello Joas',
+		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
 		map: map2
 	});
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
@@ -146,48 +168,48 @@ function onLoad(event) {
 	
 	var lineChart = new scopes.modDataVisualization$Flotr2.LineChart(elements.flotr2$line)
 	lineChart.draw({
-				data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
-				lines: {
-					lineWidth: 0.5, show: true, fill: true, fillColor: ['#fcefe3', '#efbc93'], fillOpacity: 0.34
-				}, 
-				points: { show: true, fill: true, fillColor: '#e79a70', hitRadius: 7 }
+		data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
+		lines: {
+			lineWidth: 0.5, show: true, fill: true, fillColor: ['#fcefe3', '#efbc93'], fillOpacity: 0.34
+		}, 
+		points: { show: true, fill: true, fillColor: '#e79a70', hitRadius: 7 }
 	}, {
-				colors: ['#e79a70'],
-				shadowSize: 0,
-				fontColor: '#e1e1e1',
-				fontSize: 20,
-				xaxis: {
-					noTicks: 9,
-					min: 1.5,
-					max: 10.5
-				},
-				yaxis: {
-					showLabels: true,
-					min: 0,
-					max: 25100,
-					margin: false
-				},
-				grid: {
-					outline: 's',
-					verticalLines: false,
-					hoverable: true,
-					clickable: true,
-					color: '#a7a7a7'
-	
-				},
-				selection: {
-					mode: 'x'
-				},
-				mouse: {
-					track: true,
-					relative: true,
-					position: 'n',
-					
-					lineColor: '#e79a70',
-					fillOpacity: 0,
-					sensibility: 20
-				}
-			})
+		colors: ['#e79a70'],
+		shadowSize: 0,
+		fontColor: '#e1e1e1',
+		fontSize: 20,
+		xaxis: {
+			noTicks: 9,
+			min: 1.5,
+			max: 10.5
+		},
+		yaxis: {
+			showLabels: true,
+			min: 0,
+			max: 25100,
+			margin: false
+		},
+		grid: {
+			outline: 's',
+			verticalLines: false,
+			hoverable: true,
+			clickable: true,
+			color: '#a7a7a7'
+
+		},
+		selection: {
+			mode: 'x'
+		},
+		mouse: {
+			track: true,
+			relative: true,
+			position: 'n',
+			
+			lineColor: '#e79a70',
+			fillOpacity: 0,
+			sensibility: 20
+		}
+	})
 	
 	var barChart = new scopes.modDataVisualization$Flotr2.PieChart(elements.flotr2$pie)
 	var d1 = [[0, 4]],
@@ -195,15 +217,15 @@ function onLoad(event) {
     d3 = [[0, 1.03]],
     d4 = [[0, 3.5]]
 	barChart.draw([
-    { data : d1, label : 'Comedy' },
-    { data : d2, label : 'Action' },
-    { data : d3, label : 'Romance',
-      pie : {
-        explode : 50
-      }
-    },
-    { data : d4, label : 'Drama' }
-  ], {
+	    { data : d1, label : 'Comedy' },
+	    { data : d2, label : 'Action' },
+	    { data : d3, label : 'Romance',
+	      pie : {
+	        explode : 50
+	      }
+	    },
+	    { data : d4, label : 'Drama' }
+	  ], {
 	    HtmlText : false,
 	    grid : {
 	      outline: '',
@@ -263,3 +285,57 @@ function markerCallback(event, data) {
 }
 
 
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} [event] the event that triggered the action
+ * @param {scopes.modDataVisualization$GoogleMaps.Map} map
+ *
+ * @properties={typeid:24,uuid:"BC59C8F4-194C-44B9-996C-4DA40ABD1AC5"}
+ */
+function addMarker(event, map) {
+	//Adding random marker
+	var marker = new scopes.modDataVisualization$GoogleMaps.Marker({
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180),
+		draggable: true,
+		title: 'Random marker'
+	})
+	marker.setMap(map);
+	
+	//Add infowindow on the click event
+	marker.addEventListener(addInfoWindow, marker.EVENT_TYPES.CLICK);
+}
+
+
+/**
+ * @param {Object} event
+ * @param {Object} args
+ *
+ * @properties={typeid:24,uuid:"884AC979-A6FC-4E1B-AD24-C8BF439AA98E"}
+ */
+function addInfoWindow(event, args) {
+	if (args) {
+		/** @type {scopes.modDataVisualization$GoogleMaps.Marker} */
+		var marker;
+		
+		var marker_id = args[1];
+		
+		var mapid = JSON.parse(args[3]).mapid;
+		if (mapid && forms[mapid]) {
+			marker = forms[mapid].markers[marker_id];
+		}
+	}
+	
+	//Get content from marker if available 
+	var content;
+	if (marker) {
+		content = marker.getTitle();
+	}
+	
+	//Adding infoWindow
+	var infoWindow = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
+		content: content
+	});
+//	infoWindow.addEventListener(infoWindow, infoWindow.EVENT_TYPES.CLOSECLICK);
+	infoWindow.open(maps[mapid], marker);
+}

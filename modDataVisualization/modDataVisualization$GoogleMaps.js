@@ -85,6 +85,52 @@ var init = function() {
 		svyDataViz.gmaps = {
 			objects: {},
 			todos: {},
+			
+			createMarker: function(node) {
+				console.log(node);
+				var marker = new google.maps.Marker(node.options)
+				marker.set('svyId',node.id)
+				svyDataViz.gmaps.objects[node.id] = marker
+				
+				//Add event listeners
+				var events = ['click', 'dblclick', 'dragend', 'rightclick'];
+				for (var j = 0; j < events.length; j++) {
+					var handler = function(id, eventType){
+						return function(event) {
+							svyDataViz.gmaps.callbackIntermediate("marker", id, eventType, event)
+						}
+					}(node.id, events[j])
+					google.maps.event.addListener(marker, events[j], handler);
+				}
+				return marker;
+			},
+			
+			createInfoWindow: function(node) {
+				console.log('createInfoWindow');
+				//The content was escaped because of possible html -> unescape
+				node.options.content = unescape(node.options.content);
+				
+				//Create infoWindow in the browser
+				var infoWindow = new google.maps.InfoWindow(node.options)
+				infoWindow.set('svyId',node.id)
+				svyDataViz.gmaps.objects[node.id] = infoWindow
+				
+				//Add event listeners
+				var events = ['closeclick'];
+				for (var j = 0; j < events.length; j++) {
+					var handler = function(id, eventType){
+						return function(event) {
+							svyDataViz.gmaps.callbackIntermediate("infoWindow", id, eventType, event)
+						}
+					}(node.id, events[j])
+					google.maps.event.addListener(infoWindow, events[j], handler);
+				}
+				console.log(node.option.map);
+				console.log(node.option.marker);
+				infoWindow.open(node.options.map, node.options.anchor);
+				return infoWindow;
+			},
+			
 			initialize: function() {
 				console.log('CHECK: initialize called for GMAPS: ' + arguments.length + ' - '+ window.google)
 		    	
@@ -113,15 +159,15 @@ var init = function() {
 						//Add event listeners
 						var events = [
 							'idle',
-//								'bounds_changed', 
-//								'center_changed', 
+//							'bounds_changed', 
+//							'center_changed', 
 							'click', 
 							'dblclick', 
 							'heading_changed', 
 							'maptypeid_changed', 
 							'projection_changed',
 							'tilt_changed'
-//								'zoom_changed',
+//							'zoom_changed',
 						];
 						
 						for (var j = 0; j < events.length; j++) {
@@ -135,44 +181,15 @@ var init = function() {
 						
 					} else if (node && node.type == "marker"){
 						//Create marker in the browser
-						var marker = new google.maps.Marker(node.options)
-						marker.set('svyId',node.id)
-						svyDataViz.gmaps.objects[node.id] = marker
-						
-						//Add event listeners
-						var events = ['click', 'dblclick', 'dragend', 'rightclick'];
-						for (var j = 0; j < events.length; j++) {
-								var handler = function(id, eventType){
-									return function(event) {
-										svyDataViz.gmaps.callbackIntermediate("marker", id, eventType, event)
-									}
-								}(node.id, events[j])
-							google.maps.event.addListener(marker, events[j], handler);
-						}
-					} else if (node && node.type == "infoWindow"){
-						//The content was escaped because of possible html -> unescape
-						node.options.content = unescape(node.options.content);
-						
+//						console.log(id);
+						svyDataViz.gmaps.createMarker(node);
+					} else if (node && node.type == "infoWindow") {
 						//Create infoWindow in the browser
-						var infoWindow = new google.maps.InfoWindow(node.options)
-						infoWindow.set('svyId',node.id)
-						svyDataViz.gmaps.objects[node.id] = infoWindow
-
-							//Add event listeners
-							var events = ['closeclick'];
-							for (var j = 0; j < events.length; j++) {
-								var handler = function(id, eventType){
-									return function(event) {
-										svyDataViz.gmaps.callbackIntermediate("infoWindow", id, eventType, event)
-									}
-								}(node.id, events[j])
-								google.maps.event.addListener(infoWindow, events[j], handler);
-							}
-//							infoWindow.open(node.options.map, node.options.anchor);
-							
+						svyDataViz.gmaps.createInfoWindow(node)
 					}
 				})
 		    },
+			
 			callbackIntermediate: function(objectType, id, eventType, event){
 				//Intermediate function to retrieve relevant data when events occur on a map/marker/infoWindow and then send them to the server
 				var data;
@@ -257,6 +274,7 @@ var init = function() {
 			console.log('CHECK: gmap API loaded, callback invoked')
 			svyDataViz.gmaps.initialize()
 		}
+		
 	]]>
 	</script>
 	
@@ -295,6 +313,7 @@ function browserCallback(objectType, id, eventType, data) {
 	var o;
 	switch (objectType) {
 		case 'map':
+			mapid = id;
 			switch (eventType) {
 //				case 'bounds_changed':
 //					break;
@@ -618,44 +637,51 @@ function Marker(options) {
 				}
 			} else {
 				application.output('Invalid DataVisualizer reference') //TODO: better error messages
-		}
+			}
 		}
 	}
+//	updateState()
 	
 	/**
 	 * Internal API: DO NOT CALL
 	 * @return {Object}
 	 */
-	this.toObjectPresentation = function() {
+	this.toObjectPresentation = function(createNew) {
 		
-		return {
-			svySpecial: true, 
-			type: 'reference', 
-			parts: ['svyDataViz','gmaps', 'objects', id],
-			marker: true
+		if (!createNew) {
+			return {
+				svySpecial: true, 
+				type: 'reference', 
+				parts: ['svyDataViz','gmaps', 'objects', id],
+				marker: true
+			}
+		} else {
+			return {
+	//				svySpecial: true, 
+					type: 'marker', 
+					id: id,
+	//				parts: ['svyDataViz','gmaps', 'Marker'],
+					options: {
+	//					svySpecial: true,
+						parts: ['svyDataViz','gmaps', 'Marker'],
+	//					animation: _animation,
+	//					clickable: _clickable,
+	//					cursor: _cursor,
+						draggable: markerSetup.options.draggable,
+	//					flat: _flat,
+	//					icon: _icon,
+						map: markerSetup.options.map,
+	//					optimized: _optimized,
+						position: markerSetup.options.position,
+	//					raiseOnDrag: _raiseOnDrag,
+	//					shadow: _shadow,
+	//					shape: _shape,
+						title: markerSetup.options.title
+	//					visible: _visible,
+	//					zIndex: _zIndex
+					}
+				}
 		}
-		
-//		return {svySpecial: true, 
-//				type: 'constructor', 
-//				parts: ['google', 'maps', 'Marker'], 
-//				id: id,
-//				args: [{animation: _animation,
-//					clickable: _clickable,
-//					cursor: _cursor,
-//					draggable: _draggable,
-//					flat: _flat,
-//					icon: _icon,
-//					map: _map,
-//					optimized: _optimized,
-//					position: _position,
-//					raiseOnDrag: _raiseOnDrag,
-//					shadow: _shadow,
-//					shape: _shape,
-//					title: _title,
-//					visible: _visible,
-//					zIndex: _zIndex
-//				}] 
-//			}
 	}
 	
 	if (options.map) {
@@ -686,7 +712,7 @@ function Marker(options) {
 		return _icon
 	}
 	this.getMap = function() {
-		return _map
+		return options.map;
 	}
 	this.getPosition = function() {
 		return options.position
@@ -741,8 +767,11 @@ function Marker(options) {
 			options.map = map
 		}
 		options.map.addMarker(id, this)
-		updateState()
-		//options.map.markers[id] = this
+		application.output(id);
+		
+		var str = scopes.modDataVisualization.serializeObject(this.toObjectPresentation(true), specialTypes);
+
+		updateState('svyDataViz.gmaps.createMarker(JSON.parse(\'' + str + '\', svyDataViz.reviver));');
 	}
 
 	//	this.setOptions = function(options) {
@@ -873,12 +902,14 @@ function MarkerShape() {
  * @param {Size} options.pixelOffset
  * @param {LatLng} options.position
  * @param {Number} options.zIndex
+ * @param {Marker} options.anchor
+ * @param {Map} options.map
  * @properties={typeid:24,uuid:"1E81E90E-BBDA-4D0C-8AB9-467196F292BC"}
  */
 function InfoWindow(options) {
 	var id = application.getUUID().toString()
 	
-	options.content = escape(options.content);
+//	options.content = escape(options.content);
 	
 	var infoWindowSetup = {
 		id: id,
@@ -896,24 +927,6 @@ function InfoWindow(options) {
 	
 	this.addEventListener = function(eventHandler, eventType) {
 		scopes.svyEventManager.addListener(infoWindowSetup.id, eventType, eventHandler);
-	}
-	
-	/**
-	 * @param {String} [incrementalUpdateCode]
-	 */
-	function updateState(incrementalUpdateCode) {
-		if (infoWindowSetup.options.map) {
-			var _mapFormName = infoWindowSetup.options.map.toObjectPresentation().parts[infoWindowSetup.options.map.toObjectPresentation().parts.length-1];
-			if (_mapFormName in forms) {
-				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(infoWindowSetup, specialTypes))
-				
-				if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
-					plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
-				}
-			} else {
-				application.output('Invalid DataVisualizer reference') //TODO: better error messages
-			}
-		}
 	}
 	
 	/**
@@ -937,6 +950,25 @@ function InfoWindow(options) {
 	}
 	
 	updateState()
+	
+	
+	/**
+	 * @param {String} [incrementalUpdateCode]
+	 */
+	function updateState(incrementalUpdateCode) {
+		if (infoWindowSetup.options.map) {
+			var _mapFormName = infoWindowSetup.options.map.toObjectPresentation().parts[infoWindowSetup.options.map.toObjectPresentation().parts.length-1];
+			if (_mapFormName in forms) {
+				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(infoWindowSetup, specialTypes))
+				
+				if (incrementalUpdateCode && forms[_mapFormName].isRendered()) {
+					plugins.WebClientUtils.executeClientSideJS(incrementalUpdateCode)
+				}
+			} else {
+				application.output('Invalid DataVisualizer reference') //TODO: better error messages
+			}
+		}
+	}
 	
 	this.close = function() {
 		//TODO: implement
@@ -973,11 +1005,12 @@ function InfoWindow(options) {
 		}
 		if (anchor) {
 			options.anchor = anchor
+			if (!options.map) {
+				options.map = anchor.getMap();
+			}
 		}
 		
 		options.map.addInfoWindow(id, this)
-//		options.map.infoWindows[id] = this
-		updateState()
 	}
 	
 	/**
@@ -1083,8 +1116,9 @@ function Map(container, options) {
 	 */
 	this.addInfoWindow = function(id, infoWindow) {
 		dv.infoWindows[id] = infoWindow	
-		updateState()//TODO: incremental code
-//		updateState('var infoWindow = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(infoWindow.toObjectPresentation()) + '\', svyDataViz.reviver); infoWindow.setPosition(new google.maps.LatLng(-25.363882,131.044922)); infoWindow.open(svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'])'); 
+
+		var str = scopes.modDataVisualization.serializeObject(infoWindow.toObjectPresentation(), specialTypes);
+		updateState('var infoWindow = svyDataViz.gmaps.createInfoWindow(JSON.parse(\'' + str + '\', svyDataViz.reviver));'); 
 	}
 	
 	/**
@@ -1107,6 +1141,15 @@ function Map(container, options) {
 			parts: ['svyDataViz','gmaps', 'objects', mapSetup.id]
 		}
 	}
+	
+	/**
+	 * Internal API, DO NOT CALL
+	 * @return {String}
+	 */
+	this.getId = function() {
+		return mapSetup.id;
+	}
+	
 	
 	/**
 	 * @param {String} [incrementalUpdateCode]
