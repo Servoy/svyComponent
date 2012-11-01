@@ -380,3 +380,10 @@ function getLatLng(address) {
 	}
 	return null
 }
+
+/**
+ * @properties={typeid:24,uuid:"A275C2E0-4BA2-423E-80E9-49E02C03705F"}
+ */
+function testCCCFail() {
+	jsunit.assertEquals(1,2)
+}
