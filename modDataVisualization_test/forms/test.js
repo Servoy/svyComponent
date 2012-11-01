@@ -144,7 +144,7 @@ function onLoad(event) {
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
 	m = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(52,5),
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng(48.16780746339156,59.84375),
 		draggable: true,
 		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
 		map: map2
@@ -160,56 +160,71 @@ function onLoad(event) {
 	});
 	i.open(map2, m);
 	
+	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
+	
 	var i2 = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(25,80),
-		content: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>'
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng(pos.lat,pos.lng),
+		content: scopes.modDataVisualization.stripCDataTags(<div>
+			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
+			<p>De Brand 65<br/>
+			3823 LJ Amersfoort<br/>
+			The Netherlands<br/>
+			Voice: +31 33 455 9877<br/>
+			Fax: +31 84 883 2297<br/>
+			<br/>
+			<span style="display: block;width: 100%; height: 1px; border: 0px solid lightgray; border-bottom-width: 1px"/>
+			<br/>
+			<a href="javascript:void()">20 likes</a>
+			</p>
+		</div>)
+	
 	});
 	i2.open(map2);	
 	
 	var lineChart = new scopes.modDataVisualization$Flotr2.LineChart(elements.flotr2$line)
 	lineChart.draw({
-		data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
-		lines: {
-			lineWidth: 0.5, show: true, fill: true, fillColor: ['#fcefe3', '#efbc93'], fillOpacity: 0.34
-		}, 
-		points: { show: true, fill: true, fillColor: '#e79a70', hitRadius: 7 }
+				data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
+				lines: {
+					lineWidth: 0.5, show: true, fill: true, fillColor: ['#fcefe3', '#efbc93'], fillOpacity: 0.34
+				}, 
+				points: { show: true, fill: true, fillColor: '#e79a70', hitRadius: 7 }
 	}, {
-		colors: ['#e79a70'],
-		shadowSize: 0,
-		fontColor: '#e1e1e1',
-		fontSize: 20,
-		xaxis: {
-			noTicks: 9,
-			min: 1.5,
-			max: 10.5
-		},
-		yaxis: {
-			showLabels: true,
-			min: 0,
-			max: 25100,
-			margin: false
-		},
-		grid: {
-			outline: 's',
-			verticalLines: false,
-			hoverable: true,
-			clickable: true,
-			color: '#a7a7a7'
-
-		},
-		selection: {
-			mode: 'x'
-		},
-		mouse: {
-			track: true,
-			relative: true,
-			position: 'n',
-			
-			lineColor: '#e79a70',
-			fillOpacity: 0,
-			sensibility: 20
-		}
-	})
+				colors: ['#e79a70'],
+				shadowSize: 0,
+				fontColor: '#e1e1e1',
+				fontSize: 20,
+				xaxis: {
+					noTicks: 9,
+					min: 1.5,
+					max: 10.5
+				},
+				yaxis: {
+					showLabels: true,
+					min: 0,
+					max: 25100,
+					margin: false
+				},
+				grid: {
+					outline: 's',
+					verticalLines: false,
+					hoverable: true,
+					clickable: true,
+					color: '#a7a7a7'
+	
+				},
+				selection: {
+					mode: 'x'
+				},
+				mouse: {
+					track: true,
+					relative: true,
+					position: 'n',
+					
+					lineColor: '#e79a70',
+					fillOpacity: 0,
+					sensibility: 20
+				}
+			})
 	
 	var barChart = new scopes.modDataVisualization$Flotr2.PieChart(elements.flotr2$pie)
 	var d1 = [[0, 4]],
@@ -217,15 +232,15 @@ function onLoad(event) {
     d3 = [[0, 1.03]],
     d4 = [[0, 3.5]]
 	barChart.draw([
-	    { data : d1, label : 'Comedy' },
-	    { data : d2, label : 'Action' },
-	    { data : d3, label : 'Romance',
-	      pie : {
-	        explode : 50
-	      }
-	    },
-	    { data : d4, label : 'Drama' }
-	  ], {
+    { data : d1, label : 'Comedy' },
+    { data : d2, label : 'Action' },
+    { data : d3, label : 'Romance',
+      pie : {
+        explode : 50
+      }
+    },
+    { data : d4, label : 'Drama' }
+  ], {
 	    HtmlText : false,
 	    grid : {
 	      outline: '',
@@ -284,7 +299,6 @@ function markerCallback(event, data) {
 	application.output("MARKERCALLBACK: " + data);
 }
 
-
 /**
  * Perform the element default action.
  *
@@ -305,7 +319,6 @@ function addMarker(event, map) {
 	//Add infowindow on the click event
 	marker.addEventListener(addInfoWindow, marker.EVENT_TYPES.CLICK);
 }
-
 
 /**
  * @param {Object} event
@@ -338,4 +351,32 @@ function addInfoWindow(event, args) {
 	});
 //	infoWindow.addEventListener(infoWindow, infoWindow.EVENT_TYPES.CLOSECLICK);
 	infoWindow.open(maps[mapid], marker);
+}
+
+/**
+ * Warning: this function utilizes Google Maps API. See https://developers.google.com/maps/terms#section_10_12 for the Terms of Service
+ * 
+ * TODO: properly handle exceptions, like other status codes than OK, figure out what to return or to throw exceptions 
+ * 
+ * @see https://developers.google.com/maps/documentation/geocoding/
+ * 
+ * @param {String} address
+ * @return {{lat: Number, lng: Number}}
+ *
+ * @properties={typeid:24,uuid:"3D54D77D-7B61-4094-B980-A87669315F75"}
+ */
+function getLatLng(address) {
+	var baseUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
+	var url = baseUrl + 'address=' + encodeURIComponent(address) + '&sensor=false'
+	var client = plugins.http.createNewHttpClient()
+	var request = client.createGetRequest(url)
+	var response = request.executeRequest()
+	if (response.getStatusCode() == plugins.http.HTTP_STATUS.SC_OK) {
+		/** @type {{results: Array<{}>, status: String}}*/
+		var result = JSON.parse(response.getResponseBody())
+		if (result.status == 'OK') {
+			return {lat: result.results[0].geometry.location.lat, lng: result.results[0].geometry.location.lng}
+		}
+	}
+	return null
 }
