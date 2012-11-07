@@ -313,7 +313,10 @@ function addInfoWindow(event, args) {
 		
 		var marker_id = args[1];
 		
-		var mapid = JSON.parse(args[3]).mapid;
+		/** @type {{mapid: UUID}} */
+		var params = JSON.parse(args[3]);
+		
+		var mapid = params.mapid;
 		if (mapid && forms[mapid]) {
 			marker = forms[mapid].markers[marker_id];
 		}

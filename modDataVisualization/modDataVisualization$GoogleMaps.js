@@ -310,10 +310,18 @@ var init = function() {
  */
 function browserCallback(objectType, id, eventType, data) {
 	var options = allObjects[id][0];
+	/** @type {{
+	 * 		bounds: {sw: scopes.modDataVisualization$GoogleMaps.LatLng, ne: scopes.modDataVisualization$GoogleMaps.LatLng}, 
+	 * 		center:scopes.modDataVisualization$GoogleMaps.LatLng,
+	 * 		tilt: Object,
+	 * 		zoom: Object,
+	 * 		heading: String,
+	 * 		mapTypeId: Object
+	 * }} 
+	 */
 	var o;
 	switch (objectType) {
 		case 'map':
-			mapid = id;
 			switch (eventType) {
 //				case 'bounds_changed':
 //					break;
@@ -339,20 +347,20 @@ function browserCallback(objectType, id, eventType, data) {
 //				case 'zoom_changed':
 //					options.zoom = parseInt(data)
 //					break;
-				case 'idle':
-					o = JSON.parse(data)
-					var sw = new scopes.modDataVisualization$GoogleMaps.LatLng(o.bounds.sw.lat, o.bounds.sw.lng)
-					var ne = new scopes.modDataVisualization$GoogleMaps.LatLng(o.bounds.ne.lat, o.bounds.ne.lng)
-					options.bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(sw,ne)
-					options.center = new scopes.modDataVisualization$GoogleMaps.LatLng(o.center.lat,o.center.lng)
-					if (o.heading) options.heading = parseInt(o.heading)
-					options.mapTypeId = o.mapTypeId
-					options.tilt = o.tilt 
-					options.zoom = o.zoom
-					break;
-				default:
-					application.output('Unknown Map eventType: ' + eventType)
-					return;
+			case 'idle':
+				o = JSON.parse(data)
+				var sw = new scopes.modDataVisualization$GoogleMaps.LatLng(o.bounds.sw.lat, o.bounds.sw.lng)
+				var ne = new scopes.modDataVisualization$GoogleMaps.LatLng(o.bounds.ne.lat, o.bounds.ne.lng)
+				options.bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(sw,ne)
+				options.center = new scopes.modDataVisualization$GoogleMaps.LatLng(o.center.lat,o.center.lng)
+				if (o.heading) options.heading = parseInt(o.heading)
+				options.mapTypeId = o.mapTypeId
+				options.tilt = o.tilt 
+				options.zoom = o.zoom
+				break;
+			default:
+				application.output('Unknown Map eventType: ' + eventType)
+				return;
 			}
 			break;
 		case 'marker':
@@ -420,28 +428,36 @@ function LatLng(lat, lng) {
 	 * @return {Boolean}
 	 */
 	this.equals = function (other){
-		//TODO: implement
+		return (other.lat() == lat && other.lng() == lng);
 	}
+	
 	/**
 	 * @return {Number}
 	 */
-	this.lat = function(){ return lat}
+	this.lat = function(){
+		return lat
+	}
+	
 	/**
 	 * @return {Number}
 	 */
-	this.lng = function(){ return lng}
+	this.lng = function(){
+		return lng
+	}
+	
 	/**
 	 * @return {String}
 	 */
 	this.toString = function (){
-		return lat + "," + lng;
+		return "(" + lat + ", " + lng + ")";
 	}
-	/**
-	 * @return {String}
-	 */
-	this.toUrlValue = function (){
-		//TODO: implement
-	}
+	
+//	/**
+//	 * @return {String}
+//	 */
+//	this.toUrlValue = function (){
+//		//TODO: implement
+//	}
 }
 
 /**
@@ -474,7 +490,7 @@ function LatLngBounds(sw, ne){
 	 * @param {LatLng} latLng
 	 * @return {Boolean}
 	 */
-	this.contains = function(latLng){
+	this.contains = function(latLng) {
 		var containsLat = latLng.lat() < ne.lat() && latLng.lat() > sw.lat();
 		var containsLng = latLng.lng() < ne.lng() && latLng.lng() > sw.lng();
 		
@@ -485,8 +501,9 @@ function LatLngBounds(sw, ne){
 	 * @return {Boolean}
 	 */
 	this.equals = function(other){
-		//TODO: implement
+		return sw.equals(other.getSouthWest()) && ne.equals(other.getNorthEast());
 	}
+	
 	/**
 	 * @param {LatLng} point
 	 * @return {LatLngBounds}
@@ -553,16 +570,16 @@ function LatLngBounds(sw, ne){
 		return latEmpty || lngEmpty;
 	}
 	/**
-	 * @return {LatLng}
+	 * @return {scopes.modDataVisualization$GoogleMaps.LatLng}
 	 */
 	this.toSpan = function(){
-		//TODO: implement
+		return new scopes.modDataVisualization$GoogleMaps.LatLng(sw.lat(),ne.lat());
 	}
 	/**
 	 * @return {String}
 	 */
 	this.toString = function(){
-		//TODO: implement
+		return "(" + sw.toString() + ", " + ne.toString() + ")";
 	}
 	/**
 	 * @param {Number} precision
@@ -571,6 +588,7 @@ function LatLngBounds(sw, ne){
 	this.toUrlValue = function(precision){
 		//TODO: implement
 	}
+	
 	/**
 	 * @param {LatLngBounds} other
 	 * @return {LatLngBounds}
@@ -624,7 +642,7 @@ function Animation() {
  * 			icon: String|MarkerImage|Symbol=,
  * 			map: RuntimeForm<GoogleMap>|StreetViewPanorama,
  * 			optimized: Boolean=,
- * 			position: LatLng,
+ * 			position: scopes.modDataVisualization$GoogleMaps.LatLng,
  * 			raiseOnDrag: Boolean=,
  * 			shadow: String|MarkerImage|Symbol=,
  * 			shape: MarkerShape=,
@@ -737,65 +755,69 @@ function Marker(options) {
 	this.MAX_ZINDEX
 
 	//Getters
-	this.getAnimation = function() {
-		return _animation
-	}
-	this.getClickable = function() {
-		return _clickable
-	}
-	this.getCursor = function() {
-		return _cursor
-	}
+//	this.getAnimation = function() {
+//		return _animation
+//	}
+//	this.getClickable = function() {
+//		return _clickable
+//	}
+//	this.getCursor = function() {
+//		return _cursor
+//	}
 	this.getDraggable = function() {
 		return options.draggable;
 	}
-	this.getFlat = function() {
-		return _flat
-	}
-	this.getIcon = function() {
-		return _icon
-	}
+//	this.getFlat = function() {
+//		return _flat
+//	}
+//	this.getIcon = function() {
+//		return _icon
+//	}
 	this.getMap = function() {
 		return options.map;
 	}
+	
+	/**
+	 * @return {scopes.modDataVisualization$GoogleMaps.LatLng}
+	 */
 	this.getPosition = function() {
 		return options.position
 	}
-	this.getShadow = function() {
-		return _shadow
-	}
-	this.getShape = function() {
-		return _shape
-	}
+//	this.getShadow = function() {
+//		return _shadow
+//	}
+//	this.getShape = function() {
+//		return _shape
+//	}
 	this.getTitle = function() {
 		return options.title;
 	}
-	this.getVisible = function() {
-		return _visible
-	}
-	this.getZIndex = function() {
-		return _zIndex
-	}
+//	this.getVisible = function() {
+//		return _visible
+//	}
+//	this.getZIndex = function() {
+//		return _zIndex
+//	}
 
 	//Setters
-	this.setAnimation = function(animation) {
-		_animation = animation
-	}
-	this.setClickable = function(flag) {
-		_clickable = flag
-	}
-	this.setCursor = function(cursor) {
-		_cursor = cursor
-	}
+//	this.setAnimation = function(animation) {
+//		_animation = animation
+//	}
+//	this.setClickable = function(flag) {
+//		_clickable = flag
+//	}
+//	this.setCursor = function(cursor) {
+//		_cursor = cursor
+//	}
 	this.setDraggable = function(flag) {
 		options.draggable = flag
 	}
-	this.setFlat = function(flag) {
-		_flat = flag
-	}
-	this.setIcon = function(icon) {
-		_icon = icon
-	}
+//	this.setFlat = function(flag) {
+//		_flat = flag
+//	}
+//	this.setIcon = function(icon) {
+//		_icon = icon
+//	}
 	/**
 	 * @param {scopes.modDataVisualization$GoogleMaps.Map} map
 	 */
@@ -877,22 +899,22 @@ function Marker(options) {
 		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + markerSetup.id + '\'].setPosition(latLng);')		
 	}
 	
-	this.setShadow = function(shadow) {
-		_shadow = shadow
-	}
-	this.setShape = function(shape) {
-		_shape = shape
-	}
+//	this.setShadow = function(shadow) {
+//		_shadow = shadow
+//	}
+//	this.setShape = function(shape) {
+//		_shape = shape
+//	}
 	this.setTitle = function(title) {
 		markerSetup.options.title = title;
 		updateState('svyDataViz.gmaps.objects[\'' + markerSetup.id + '\'].setTitle(latLng);')		
 	}
-	this.setVisible = function(visible) {
-		_visible = visible
-	}
-	this.setZIndex = function(zIndex) {
-		_zIndex = zIndex
-	}
+//	this.setVisible = function(visible) {
+//		_visible = visible
+//	}
+//	this.setZIndex = function(zIndex) {
+//		_zIndex = zIndex
+//	}
 
 	this.EVENT_TYPES = { 
 		CLICK            : 'click',
@@ -943,7 +965,6 @@ function MarkerShape() {
  * @param {String} options.content
  * @param {Boolean} options.disableAutoPan
  * @param {Number} options.maxWidth
- * @param {Size} options.pixelOffset
  * @param {LatLng} options.position
  * @param {Number} options.zIndex
  * @param {Marker} options.anchor
@@ -1108,28 +1129,20 @@ function InfoWindow(options) {
  * @param {Boolean} [options.keyboardShortcuts]
  * @param {Boolean} [options.mapMaker]
  * @param {Boolean} [options.mapTypeControl]
- * @param {MapTypeControlOptions} [options.mapTypeControlOptions]
  * @param {MapTypeId} options.mapTypeId
  * @param {Number} [options.maxZoom]
  * @param {Number} [options.minZoom]
  * @param {Boolean} [options.noClear]
  * @param {Boolean} [options.overviewMapControl]
- * @param {OverviewMapControlOptions} [options.overviewMapControlOptions]
  * @param {Boolean} [options.panControl]
- * @param {PanControlOptions} [options.panControlOptions]
  * @param {Boolean} [options.rotateControl]
- * @param {RotateControlOptions} [options.rotateControlOptions]
  * @param {Boolean} [options.scaleControl]
- * @param {ScaleControlOptions} [options.scaleControlOptions]
  * @param {Boolean} [options.scrollwheel]
  * @param {StreetViewPanorama} [options.streetView]
  * @param {Boolean} [options.streetViewControl]
- * @param {StreetViewControlOptions} [options.streetViewControlOptions]
- * @param {Array<MapTypeStyle>} [options.styles]
  * @param {Number} [options.tilt]
  * @param {Number} options.zoom
  * @param {Boolean} [options.zoomControl]
- * @param {ZoomControlOptions} [options.zoomControlOptions] 
  * @properties={typeid:24,uuid:"1E5BE0D4-5E7A-489D-AACA-7BECA54B2CD1"}
  */
 function Map(container, options) {
@@ -1252,18 +1265,18 @@ function Map(container, options) {
 		return options.mapTypeId
 	}
 
-	/**
-	 * @return {Projection}
-	 */
-	this.getProjection = function() {
-		return options.projection
-	}
-
-	/**
-	 * @return {StreetViewPanorama}
-	 */
-	this.getStreetView = function() {
-	}
+//	/**
+//	 * @return {Projection}
+//	 */
+//	this.getProjection = function() {
+//		return options.projection
+//	}
+//
+//	/**
+//	 * @return {StreetViewPanorama}
+//	 */
+//	this.getStreetView = function() {
+//	}
 
 	/**
 	 * @return {Number}
@@ -1289,10 +1302,10 @@ function Map(container, options) {
 	}
 
 	/**
-	 * @param {LatLng} latLng
+	 * @param {scopes.modDataVisualization$GoogleMaps.LatLng} latLng
 	 */
 	this.panTo = function(latLng) {
-		options.center = latLng
+		options.center = latLng;
 		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panTo(latLng);')		
 	}
 
@@ -1304,7 +1317,7 @@ function Map(container, options) {
 	}
 
 	/**
-	 * @param {LatLng} latLng
+	 * @param {scopes.modDataVisualization$GoogleMaps.LatLng} latLng
 	 */
 	this.setCenter = function(latLng) {
 		options.center = latLng
@@ -1330,7 +1343,8 @@ function Map(container, options) {
 	/**
 	 * @param {MapOptions} options
 	 */
-	this.setOptions = function(options) {}
+	this.setOptions = function(options) {
+	}
 
 	/**
 	 * @param {StreetViewPanorama} panorama
