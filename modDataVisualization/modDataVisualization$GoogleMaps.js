@@ -434,7 +434,7 @@ function LatLng(lat, lng) {
 	 * @return {String}
 	 */
 	this.toString = function (){
-		//TODO: implement
+		return lat + "," + lng;
 	}
 	/**
 	 * @return {String}
@@ -447,18 +447,26 @@ function LatLng(lat, lng) {
 /**
  * Implements https://developers.google.com/maps/documentation/javascript/reference#LatLngBounds
  * @constructor 
- * @param {LatLng} sw
- * @param {LatLng} ne
+ * @param {scopes.modDataVisualization$GoogleMaps.LatLng} sw
+ * @param {scopes.modDataVisualization$GoogleMaps.LatLng} ne
  *
  * @properties={typeid:24,uuid:"D48855F6-0418-4E46-A5E4-1A716C3D17B3"}
  */
 function LatLngBounds(sw, ne){
+	var minLat = Math.min(sw.lat(), ne.lat());
+	var maxLat = Math.max(sw.lat(), ne.lat());
+	var minLng = Math.min(sw.lng(), ne.lng());
+	var maxLng = Math.max(sw.lng(), ne.lng());
+	
+	sw = new scopes.modDataVisualization$GoogleMaps.LatLng(minLat, minLng);
+	ne = new scopes.modDataVisualization$GoogleMaps.LatLng(maxLat, maxLng);
+	
 	this.toObjectPresentation = function(){
 		return {
 			svySpecial: true,
 			type: 'constructor',
 			parts: ['google','maps','LatLngBounds'],
-			args: [this.getNorthEast(), this.getSouthWest()]
+			args: [sw, ne]
 		}
 	}
 	
@@ -484,7 +492,23 @@ function LatLngBounds(sw, ne){
 	 * @return {LatLngBounds}
 	 */
 	this.extend = function(point){
-		//TODO: implement
+		if (point.lat() > ne.lat()) {
+			//point is north of the bounds
+			ne = new scopes.modDataVisualization$GoogleMaps.LatLng(point.lat(), ne.lng());
+		}
+		if (point.lng() > ne.lng()) {
+			//point is east of the bounds
+			ne = new scopes.modDataVisualization$GoogleMaps.LatLng(ne.lat(), point.lng());
+		}
+		if (point.lat() < sw.lat()) {
+			//point is south of the bounds
+			sw = new scopes.modDataVisualization$GoogleMaps.LatLng(point.lat(), sw.lng());
+		}
+		if (point.lng() < sw.lng()) {
+			//point is west of the bounds
+			sw = new scopes.modDataVisualization$GoogleMaps.LatLng(sw.lat(), point.lng());
+		}
+		return this;
 	}
 	/**
 	 * @return {scopes.modDataVisualization$GoogleMaps.LatLng}
@@ -496,13 +520,13 @@ function LatLngBounds(sw, ne){
 		return new scopes.modDataVisualization$GoogleMaps.LatLng(centerLat, centerLng);
 	}
 	/**
-	 * @return {LatLng}
+	 * @return {scopes.modDataVisualization$GoogleMaps.LatLng}
 	 */
 	this.getNorthEast = function(){
 		return ne
 	}
 	/**
-	 * @return {LatLng}
+	 * @return {scopes.modDataVisualization$GoogleMaps.LatLng}
 	 */
 	this.getSouthWest = function(){
 		return sw
@@ -632,6 +656,9 @@ function Marker(options) {
 //	var _visible
 //	var _zIndex
 
+	//escape 
+	options.title = options.title.replace(/['"]/g,"\\$1");
+	
 	var markerSetup = {
 		id: id,
 		type: "marker",
@@ -1187,7 +1214,7 @@ function Map(container, options) {
 	/* Scripting API
 	 */
 	/**
-	 * @param {LatLngBounds} bounds
+	 * @param {scopes.modDataVisualization$GoogleMaps.LatLngBounds} bounds
 	 */
 	this.fitBounds = function(bounds) {
 		updateState('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].fitBounds(bounds);')

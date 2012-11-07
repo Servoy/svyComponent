@@ -38,33 +38,12 @@ function update(force) {
 	}
 	
 	for (i = 0; i < maps.length; i++) {
-		var sw = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-		var ne = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-		var bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(sw,ne)
-//		maps[i].setZoom(parseInt((Math.random() * 10).toFixed(0)))
-//		maps[i].panToBounds(bounds)
-		
-		addMarker(null, maps[i]);
 		addMarker(null, maps[i]);
 		
-		var markers = forms[maps[i].getId()].markers
-		
-		var maxLat = 0, minLat = 0, maxLng = 0, minLng = 0;
-		for (var j in markers) {
-			var lat = markers[j].getPosition().lat()
-			var lng = markers[j].getPosition().lng()
-			
-			if (lat > maxLat) maxLat = lat;
-			if (lat < minLat) maxLat = lat;
-			
-			if (lng > maxLng) maxLng = lng;
-			if (lng < minLng) minLng = lng;
-			
-			
+		var bounds = getMarkerBounds(maps[i])
+		if (bounds) {
+			maps[i].fitBounds(bounds);
 		}
-		application.output("map: " + i + ", " + minLat + "<>" + maxLat + ", " + minLng + "<>" + maxLng);
-		
-		
 	}
 }
 
@@ -146,7 +125,8 @@ function onLoad(event) {
 	m = new scopes.modDataVisualization$GoogleMaps.Marker({
 		position: new scopes.modDataVisualization$GoogleMaps.LatLng(48.16780746339156,59.84375),
 		draggable: true,
-		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
+		title: 'hoi',
+//		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
 		map: map2
 	});
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
@@ -342,7 +322,7 @@ function addInfoWindow(event, args) {
 	//Get content from marker if available 
 	var content;
 	if (marker) {
-		content = marker.getTitle();
+		content = "<b>" + marker.getTitle() + "</b><br>Position: (" + marker.getPosition().lat() + "," + marker.getPosition().lng() + ")";
 	}
 	
 	//Adding infoWindow
@@ -386,4 +366,47 @@ function getLatLng(address) {
  */
 function testCCCFail() {
 	jsunit.assertEquals(1,2)
+}
+
+/**
+ * Creates a LatLngBound including all markers and calls fitBounds on the map, so it zooms to show all markers 
+ *
+ * @param {Object} event
+ *
+ * @properties={typeid:24,uuid:"BDFE1CC7-EBF4-4DDE-9261-59EB31E39150"}
+ */
+function fitBounds(event) {
+	for (var i = 0; i < maps.length; i++) {
+		var bounds = getMarkerBounds(maps[i])
+		if (bounds) {
+			maps[i].fitBounds(bounds);
+		}
+	}
+}
+
+/**
+ * Returns LatLngBounds including all markers on the map
+ * 
+ * @param {scopes.modDataVisualization$GoogleMaps.Map} map
+ * 
+ * @return {scopes.modDataVisualization$GoogleMaps.LatLngBounds}
+ *
+ * @properties={typeid:24,uuid:"92C09082-F003-4165-92F9-0D1FE182DA12"}
+ */
+function getMarkerBounds(map) {
+	var bounds, pos1, index = 1;
+	if (forms[map.getId()].markers) {
+		for (var i in forms[map.getId()].markers) {
+			//TODO: make this nicer
+			if (index == 1) {
+				pos1 = forms[map.getId()].markers[i].getPosition();
+			} else if (index == 2) {
+				bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(forms[map.getId()].markers[i].getPosition(), pos1);
+			} else {
+				bounds.extend(forms[map.getId()].markers[i].getPosition());
+			}
+			index++;
+		}
+	}
+	return bounds;
 }

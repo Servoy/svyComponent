@@ -1,11 +1,11 @@
 /**
- * @properties={typeid:35,uuid:"A1F3067D-111E-4F5D-96C7-372511D26E46",variableType:-4}
+ * @properties={typeid:35,uuid:"73EDCB99-65A9-4F61-B781-7A304A81EBE6",variableType:-4}
  */
-var m;
+var m, m2;
 
 /**
  *
- * @properties={typeid:35,uuid:"FA93B6AB-9388-4E17-9420-71077A386405",variableType:-4}
+ * @properties={typeid:35,uuid:"686A88EF-B9A8-4244-B14A-B33493601879",variableType:-4}
  */
 var i, map2;
 
@@ -24,17 +24,13 @@ function update(force) {
 	if (!force && !autoUpdate) return
 	
 	for (i = 0; i < maps.length; i++) {
-		var sw = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-		var ne = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
+//		var sw = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
+//		var ne = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
 //		var bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(sw,ne)
 //		maps[i].setZoom(parseInt((Math.random() * 10).toFixed(0)))
 //		maps[i].panToBounds(bounds)
 		
 		//Add random marker;
-		addMarker(null, maps[i]);
-		addMarker(null, maps[i]);
-		addMarker(null, maps[i]);
-		addMarker(null, maps[i]);
 		addMarker(null, maps[i]);
 	}
 }
@@ -73,15 +69,22 @@ function onLoad(event) {
 //	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
 	m = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(52,5),
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng(42,5),
 		draggable: true,
-		title: 'Hello <b>Joas</b>'
+		title: 'Hello Joas'
 	});
 	m.setMap(map2);
 	m.addEventListener(addInfoWindow,m.EVENT_TYPES.CLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DBLCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
+	
+	m2 = new scopes.modDataVisualization$GoogleMaps.Marker({
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng(62,30),
+		draggable: true,
+		title: 'Hello Joas'
+	});
+	m2.setMap(map2);
 	
 //	m.addInfoWindow()
 	
@@ -96,14 +99,14 @@ function onLoad(event) {
 //	i.addEventListener(infoWindowCallback, i.EVENT_TYPES.CLOSECLICK);
 //	i.open(map2, m);
 //	
-	i = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(25,80),
-		content: 'Hello Joas'
-	});
-	i.addEventListener(infoWindowCallback, i.EVENT_TYPES.CLOSECLICK);
-//	i.open(maps[0]);
-
-	i.open(map2, m);	
+//	i = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
+//		position: new scopes.modDataVisualization$GoogleMaps.LatLng(25,80),
+//		content: 'Hello Joas'
+//	});
+//	i.addEventListener(infoWindowCallback, i.EVENT_TYPES.CLOSECLICK);
+////	i.open(maps[0]);
+//
+//	i.open(map2, m);	
 	
 	//Start automatic update
 //	plugins.scheduler.addJob('test',new Date(Date.now()+10000),update,10000)
@@ -139,4 +142,17 @@ function infoWindowCallback(event, data, ok) {
  */
 function openInfoWindow() {
 	i.open(map2, m);
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"B05AF299-FA0F-48F8-81AB-B9C6C8A1F538"}
+ */
+function panToBounds(event) {
+	var bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(m2.getPosition(),m.getPosition());
+//	map2.fitBounds(bounds);
+	map2.panToBounds(bounds);
 }

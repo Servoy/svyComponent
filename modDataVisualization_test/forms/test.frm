@@ -1,5 +1,15 @@
 items:[
 {
+location:"180,11",
+onActionMethodID:"BDFE1CC7-EBF4-4DDE-9261-59EB31E39150",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"90,20",
+text:"fitBounds",
+typeid:7,
+uuid:"007C24E2-FBBB-48A5-A958-BFEBB169E603"
+},
+{
 anchors:3,
 location:"866,251",
 name:"gauge4",
