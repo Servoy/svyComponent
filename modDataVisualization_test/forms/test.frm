@@ -21,7 +21,7 @@ typeid:16,
 uuid:"025B29F1-A347-478A-8BEC-473147E126D3"
 },
 {
-anchors:13,
+anchors:12,
 location:"30,440",
 name:"flotr2$pie",
 printable:false,
@@ -53,7 +53,7 @@ typeid:16,
 uuid:"376F3C78-4B51-4B0F-A884-0CDA7A22DC05"
 },
 {
-anchors:7,
+anchors:6,
 location:"632,440",
 name:"geochart",
 printable:false,
@@ -70,6 +70,7 @@ typeid:19,
 uuid:"8111887E-2AC9-41C0-9B68-F221E7DF39B7"
 },
 {
+anchors:13,
 location:"30,61",
 name:"maps",
 printable:false,
@@ -111,7 +112,7 @@ typeid:16,
 uuid:"B51E6F36-287D-4AC1-9CCA-47F5C2448861"
 },
 {
-anchors:15,
+anchors:14,
 location:"390,440",
 name:"flotr2$line",
 printable:false,
