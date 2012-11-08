@@ -40,7 +40,7 @@ function update(force) {
 	for (i = 0; i < maps.length; i++) {
 		addMarker(null, maps[i]);
 		
-		var bounds = getMarkerBounds(maps[i])
+		var bounds = maps[i].getMarkerBounds()
 		if (bounds) {
 			maps[i].fitBounds(bounds);
 		}
@@ -380,36 +380,9 @@ function testCCCFail() {
  */
 function fitBounds(event) {
 	for (var i = 0; i < maps.length; i++) {
-		var bounds = getMarkerBounds(maps[i])
+		var bounds = maps[i].getMarkerBounds()
 		if (bounds) {
 			maps[i].fitBounds(bounds);
 		}
 	}
-}
-
-/**
- * Returns LatLngBounds including all markers on the map
- * 
- * @param {scopes.modDataVisualization$GoogleMaps.Map} map
- * 
- * @return {scopes.modDataVisualization$GoogleMaps.LatLngBounds}
- *
- * @properties={typeid:24,uuid:"92C09082-F003-4165-92F9-0D1FE182DA12"}
- */
-function getMarkerBounds(map) {
-	var bounds, pos1, index = 1;
-	if (forms[map.getId()].markers) {
-		for (var i in forms[map.getId()].markers) {
-			//TODO: make this nicer
-			if (index == 1) {
-				pos1 = forms[map.getId()].markers[i].getPosition();
-			} else if (index == 2) {
-				bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(forms[map.getId()].markers[i].getPosition(), pos1);
-			} else {
-				bounds.extend(forms[map.getId()].markers[i].getPosition());
-			}
-			index++;
-		}
-	}
-	return bounds;
 }

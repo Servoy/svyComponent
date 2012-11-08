@@ -1234,10 +1234,36 @@ function Map(container, options) {
 	}
 
 	/**
-	 * @return {LatLngBounds}
+	 * @return {scopes.modDataVisualization$GoogleMaps.LatLngBounds}
 	 */
 	this.getBounds = function() {}
 
+	/**
+	 * @return {scopes.modDataVisualization$GoogleMaps.LatLngBounds}
+	 */
+	this.getMarkerBounds = function() {
+		/** @type {scopes.modDataVisualization$GoogleMaps.LatLngBounds} */
+		var bounds;
+		var pos1, index = 1;
+		
+		/** @type {RuntimeForm<GoogleMap>} */
+		var form = forms[this.getId()]
+		if (form.markers) {
+			for (var i in form.markers) {
+				//TODO: make this nicer
+				if (index == 1) {
+					pos1 = form.markers[i].getPosition();
+				} else if (index == 2) {
+					bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(form.markers[i].getPosition(), pos1);
+				} else {
+					bounds.extend(form.markers[i].getPosition());
+				}
+				index++;
+			}
+		}
+		return bounds;
+	}
+	
 	/**
 	 * @return {LatLng}
 	 */
