@@ -506,7 +506,7 @@ function LatLngBounds(sw, ne){
 	}
 	
 	/**
-	 * @param {LatLng} point
+	 * @param {scopes.modDataVisualization$GoogleMaps.LatLng} point
 	 * @return {LatLngBounds}
 	 */
 	this.extend = function(point){
@@ -582,14 +582,14 @@ function LatLngBounds(sw, ne){
 	this.toString = function(){
 		return "(" + sw.toString() + ", " + ne.toString() + ")";
 	}
-	/**
-	 * @param {Number} precision
-	 * @return {String}
-	 */
-	this.toUrlValue = function(precision){
-		//TODO: implement
-	}
-	
+//	/**
+//	 * @param {Number} precision
+//	 * @return {String}
+//	 */
+//	this.toUrlValue = function(precision){
+//		//TODO: implement
+//	}
+//	
 	/**
 	 * @param {LatLngBounds} other
 	 * @return {LatLngBounds}
@@ -677,6 +677,7 @@ function Marker(options) {
 	//escape 
 	options.title = options.title.replace(/['"]/g,"\\$1");
 	
+	/** @type {{id: UUID, type: String, options: {map: scopes.modDataVisualization$GoogleMaps.Map}}} */
 	var markerSetup = {
 		id: id,
 		type: "marker",
@@ -690,7 +691,7 @@ function Marker(options) {
 	 */
 	function updateState(incrementalUpdateCode) {
 		if (markerSetup.options.map) {
-			var _mapFormName = markerSetup.options.map.toObjectPresentation().parts[markerSetup.options.map.toObjectPresentation().parts.length-1];
+			var _mapFormName = markerSetup.options.map.getId();
 			if (_mapFormName in forms) {
 				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
 				
@@ -1018,7 +1019,7 @@ function InfoWindow(options) {
 	 */
 	function updateState(incrementalUpdateCode) {
 		if (infoWindowSetup.options.map) {
-			var _mapFormName = infoWindowSetup.options.map.toObjectPresentation().parts[infoWindowSetup.options.map.toObjectPresentation().parts.length-1];
+			var _mapFormName = infoWindowSetup.options.map.getId();
 			if (_mapFormName in forms) {
 				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(infoWindowSetup, specialTypes))
 				
@@ -1093,7 +1094,7 @@ function InfoWindow(options) {
 	 */
 	this.setPosition = function(position) {
 		options.position = position;
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(position.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + infoWindowSetup.id + '\'].setPosition(latLng);')		
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(position["toObjectPresentation"](), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + infoWindowSetup.id + '\'].setPosition(latLng);')		
 	}
 	
 	/**
