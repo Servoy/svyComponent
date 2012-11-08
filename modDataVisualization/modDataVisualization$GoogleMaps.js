@@ -295,10 +295,10 @@ var init = function() {
 	plugins.WebClientUtils.addJsReference('media:///googleMapsHandlerCallback_'+uuid+'.js')
 	
 	//Setup toObjectPresentation function through prototype on constructor functions that need to be serialized to client
-	LatLng.prototype.toObjectPresentation = function() {
+	scopes.modDataVisualization$GoogleMaps.LatLng.prototype["toObjectPresentation"] = function() {
 		return { svySpecial: true, type: 'constructor', parts: ['google', 'maps', 'LatLng'], args: [this.lat(), this.lng()] }
 	}
-	MapTypeId.prototype.toObjectPresentation = function() {
+	scopes.modDataVisualization$GoogleMaps.MapTypeId.prototype["toObjectPresentation"] = function() {
 		return { svySpecial: true, type: 'reference', parts: ['google', 'maps', 'MapTypeId', this.type] }
 	}
 }()
@@ -469,6 +469,7 @@ function LatLng(lat, lng) {
  * @properties={typeid:24,uuid:"D48855F6-0418-4E46-A5E4-1A716C3D17B3"}
  */
 function LatLngBounds(sw, ne){
+	//Change the points so that
 	var minLat = Math.min(sw.lat(), ne.lat());
 	var maxLat = Math.max(sw.lat(), ne.lat());
 	var minLng = Math.min(sw.lng(), ne.lng());
@@ -602,7 +603,6 @@ function LatLngBounds(sw, ne){
 }
 
 /**
- * @private
  * @constructor
  * @param {Object} type
  *
@@ -640,7 +640,7 @@ function Animation() {
  * 			draggable: Boolean=,
  * 			flat: Boolean=,
  * 			icon: String|MarkerImage|Symbol=,
- * 			map: RuntimeForm<GoogleMap>|StreetViewPanorama,
+ * 			map: scopes.modDataVisualization$GoogleMaps.Map,
  * 			optimized: Boolean=,
  * 			position: scopes.modDataVisualization$GoogleMaps.LatLng,
  * 			raiseOnDrag: Boolean=,
@@ -751,8 +751,8 @@ function Marker(options) {
 	}
 	updateState()
 
-	//Constants
-	this.MAX_ZINDEX
+//	//Constants
+//	this.MAX_ZINDEX
 
 	//Getters
 //	this.getAnimation = function() {
@@ -827,12 +827,8 @@ function Marker(options) {
 		}
 		if (options.map == null) { 
 			options.map = map
-		} else if (options.map != map) {
-			//TODO: This should also trigger sync to browser to remove the marker from the map
-			delete options.map.removeMarker[id]
-			options.map = map
 		}
-		options.map.addMarker(id, this)
+		map.addMarker(id, this)
 		application.output(id);
 		
 		var str = scopes.modDataVisualization.serializeObject(this.toObjectPresentation(true), specialTypes);
@@ -1233,10 +1229,10 @@ function Map(container, options) {
 		updateState('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].fitBounds(bounds);')
 	}
 
-	/**
-	 * @return {scopes.modDataVisualization$GoogleMaps.LatLngBounds}
-	 */
-	this.getBounds = function() {}
+//	/**
+//	 * @return {scopes.modDataVisualization$GoogleMaps.LatLngBounds}
+//	 */
+//	this.getBounds = function() {}
 
 	/**
 	 * @return {scopes.modDataVisualization$GoogleMaps.LatLngBounds}
@@ -1332,7 +1328,7 @@ function Map(container, options) {
 	 */
 	this.panTo = function(latLng) {
 		options.center = latLng;
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panTo(latLng);')		
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng["toObjectPresentation"](), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panTo(latLng);')		
 	}
 
 	/**
@@ -1347,7 +1343,7 @@ function Map(container, options) {
 	 */
 	this.setCenter = function(latLng) {
 		options.center = latLng
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setCenter(latLng);')
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng["toObjectPresentation"](), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setCenter(latLng);')
 	}
 
 	/**
@@ -1366,11 +1362,11 @@ function Map(container, options) {
 		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setMapTypId(' + mapTypeId + ');')
 	}
 
-	/**
-	 * @param {MapOptions} options
-	 */
-	this.setOptions = function(options) {
-	}
+//	/**
+//	 * @param {MapOptions} options
+//	 */
+//	this.setOptions = function(options) {
+//	}
 
 	/**
 	 * @param {StreetViewPanorama} panorama
