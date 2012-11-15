@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/example_data/customers",
+joinType:1,
+name:"customers_to_customers",
+primaryDataSource:"db:/example_data/customers",
+typeid:22,
+uuid:"F0FEC1B8-6C58-4C0F-A166-1B23DB109F42"
