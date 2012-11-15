@@ -87,7 +87,6 @@ var init = function() {
 			todos: {},
 			
 			createMarker: function(node) {
-				console.log(node);
 				var marker = new google.maps.Marker(node.options)
 				marker.set('svyId',node.id)
 				svyDataViz.gmaps.objects[node.id] = marker
@@ -106,12 +105,11 @@ var init = function() {
 			},
 			
 			createInfoWindow: function(node) {
-				console.log('createInfoWindow');
 				//The content was escaped because of possible html -> unescape
-				node.options.content = unescape(node.options.content);
+				node.content = unescape(node.content);
 				
 				//Create infoWindow in the browser
-				var infoWindow = new google.maps.InfoWindow(node.options)
+				var infoWindow = new google.maps.InfoWindow(node)
 				infoWindow.set('svyId',node.id)
 				svyDataViz.gmaps.objects[node.id] = infoWindow
 				
@@ -125,10 +123,12 @@ var init = function() {
 					}(node.id, events[j])
 					google.maps.event.addListener(infoWindow, events[j], handler);
 				}
-				console.log(node.option.map);
-				console.log(node.option.marker);
-				infoWindow.open(node.options.map, node.options.anchor);
+//				infoWindow.open(node.map, node.anchor);
 				return infoWindow;
+			},
+			removeMarker: function(id) {
+				svyDataViz.gmaps.objects[id].setMap(null);
+				svyDataViz.gmaps.objects[id] = null;
 			},
 			
 			initialize: function() {
@@ -197,73 +197,73 @@ var init = function() {
 				var object = svyDataViz.gmaps.objects[id];
 				switch (objectType) {
 					case 'map': 
-				switch (eventType) {
-//					case 'bounds_changed':
-//						break;
-//					case 'center_changed':
-//						data = JSON.stringify({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
-//						break;
-//					case 'click':
-//						console.log('click');
-//						break;
-//					case 'position_changed':
-//						console.log('click');
-//						break;
-//					case 'dblclick':
-//						break;
-//					case 'heading_changed':
-//						data = map.getHeading() 
-//						break;
-//					case 'maptypeid_changed':
-//						data = map.getMapTypeId()
-//						break;
-//					case 'projection_changed':
-//						break;
-//					case 'tilt_changed':
-//						data = map.getTilt()
-//						break;
-//					case 'zoom_changed':
-//						data = map.getZoom();
-//						break;
-					case 'idle':
-								//Pass position and mapid to Servoy
-								bounds = object.getBounds()
-					
-						data = JSON.stringify({
-							bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
-									center: {lat: object.getCenter().lat(), lng: object.getCenter().lng()},
-									heading: object.getHeading(),
-									mapTypeId: object.getMapTypeId(),
-									tilt: object.getTilt(),
-									zoom: object.getZoom()
-						})
-						break;
-					default:
-						break;
-				}
-						break;
+						switch (eventType) {
+		//					case 'bounds_changed':
+		//						break;
+		//					case 'center_changed':
+		//						data = JSON.stringify({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
+		//						break;
+		//					case 'click':
+		//						console.log('click');
+		//						break;
+		//					case 'position_changed':
+		//						console.log('click');
+		//						break;
+		//					case 'dblclick':
+		//						break;
+		//					case 'heading_changed':
+		//						data = map.getHeading() 
+		//						break;
+		//					case 'maptypeid_changed':
+		//						data = map.getMapTypeId()
+		//						break;
+		//					case 'projection_changed':
+		//						break;
+		//					case 'tilt_changed':
+		//						data = map.getTilt()
+		//						break;
+		//					case 'zoom_changed':
+		//						data = map.getZoom();
+		//						break;
+							case 'idle':
+										//Pass position and mapid to Servoy
+										bounds = object.getBounds()
+							
+								data = JSON.stringify({
+									bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
+											center: {lat: object.getCenter().lat(), lng: object.getCenter().lng()},
+											heading: object.getHeading(),
+											mapTypeId: object.getMapTypeId(),
+											tilt: object.getTilt(),
+											zoom: object.getZoom()
+								})
+								break;
+							default:
+								break;
+						}
+						break; //break 'map' case
 					case 'marker':
-				switch (eventType) {
-//							case 'click': 
-//				       var infowindow = new google.maps.InfoWindow({
-//				            content: "hoi blabla"
-//				        });
-//
-//				        infowindow.open(marker.getMap(),marker);
-//						break;
-					default:
-								//Pass position and mapid to Servoy
-						data = JSON.stringify({
-									position: {lat: object.getPosition().lat(), lng: object.getPosition().lng()},
-									mapid: object.map.svyId
-						})		
-						break;
-				}
-						break;
+						switch (eventType) {
+		//					case 'click': 
+		//				       var infowindow = new google.maps.InfoWindow({
+		//				            content: "hoi blabla"
+		//				        });
+		//
+		//				        infowindow.open(marker.getMap(),marker);
+		//						break;
+							default:
+										//Pass position and mapid to Servoy
+								data = JSON.stringify({
+											position: {lat: object.getPosition().lat(), lng: object.getPosition().lng()},
+											mapid: object.map.svyId
+								})		
+								break;
+						}
+						break; //break 'marker' case
 					
 					case 'infoWindow':
 						//eventType is only 'closeclick' for now
-						break;
+						break; //break 'infowindow' case
 				}
 				//Call the mapsEventHandler that will call the Servoy callback
 				this.mapsEventHandler(objectType, id, eventType,data)
@@ -309,15 +309,19 @@ var init = function() {
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
 function browserCallback(objectType, id, eventType, data) {
-	var options = allObjects[id][0];
+	var options;
+	if (allObjects[id]) {
+		options = allObjects[id][0];
+	}
 	/** @type {{
-	 * 		bounds: {sw: scopes.modDataVisualization$GoogleMaps.LatLng, ne: scopes.modDataVisualization$GoogleMaps.LatLng}, 
-	 * 		center:scopes.modDataVisualization$GoogleMaps.LatLng,
+	 * 		bounds: {sw: {lat:Number, lng:Number}, ne:  {lat:Number, lng:Number}}, 
+	 * 		center: {lat:Number, lng:Number},
 	 * 		tilt: Object,
 	 * 		zoom: Object,
 	 * 		heading: String,
-	 * 		mapTypeId: Object
-	 * }} 
+	 * 		mapTypeId: Object,
+	 * 		position: {lat:Number, lng:Number}
+	 * }}
 	 */
 	var o;
 	switch (objectType) {
@@ -391,7 +395,10 @@ function browserCallback(objectType, id, eventType, data) {
 			application.output('Unknown GoogleMaps objectType: ' + objectType)
 			return;
 	}
-	allObjects[id][1](); //run the updateState method
+	
+	if (allObjects[id]) {
+		allObjects[id][1](); //run the updateState method
+	}
 	
 	//Fire event that the user potentially has attached
 	scopes.svyEventManager.fireEvent(null, id, eventType, [objectType, id, eventType, data]);
@@ -623,14 +630,14 @@ var MapTypeIds = {
 	TERRAIN: new MapTypeId('TERRAIN')
 }
 
-/**
- * @constructor
- *
- * @properties={typeid:24,uuid:"9EF66E47-FA7E-4D26-9DCA-5A3DCA610C21"}
- */
-function Animation() {
-	//TODO: implement
-}
+///**
+// * @constructor
+// *
+// * @properties={typeid:24,uuid:"9EF66E47-FA7E-4D26-9DCA-5A3DCA610C21"}
+// */
+//function Animation() {
+//	//TODO: implement
+//}
 
 /**
  * @constructor
@@ -639,7 +646,7 @@ function Animation() {
  * 			cursor: String=,
  * 			draggable: Boolean=,
  * 			flat: Boolean=,
- * 			icon: String|MarkerImage|Symbol=,
+ *			icon: String|MarkerImage|Symbol=,
  * 			map: scopes.modDataVisualization$GoogleMaps.Map,
  * 			optimized: Boolean=,
  * 			position: scopes.modDataVisualization$GoogleMaps.LatLng,
@@ -677,7 +684,6 @@ function Marker(options) {
 	//escape 
 	options.title = options.title.replace(/['"]/g,"\\$1");
 	
-	/** @type {{id: UUID, type: String, options: {map: scopes.modDataVisualization$GoogleMaps.Map}}} */
 	var markerSetup = {
 		id: id,
 		type: "marker",
@@ -691,7 +697,9 @@ function Marker(options) {
 	 */
 	function updateState(incrementalUpdateCode) {
 		if (markerSetup.options.map) {
-			var _mapFormName = markerSetup.options.map.getId();
+			/** @type {scopes.modDataVisualization$GoogleMaps.Map} */
+			var gmap = markerSetup.options.map;
+			var _mapFormName = gmap.getId();
 			if (_mapFormName in forms) {
 				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(markerSetup, specialTypes))
 				
@@ -748,10 +756,20 @@ function Marker(options) {
 	}
 	
 	if (options.map) {
-		options.map.addMarker(markerSetup.id, this)
+		/** @type {scopes.modDataVisualization$GoogleMaps.Map} */
+		var gmap = options.map
+		gmap.addMarker(markerSetup.id, this)
 	}
 	updateState()
 
+	/**
+	 * Internal API, DO NOT CALL
+	 * @return {String}
+	 */
+	this.getId = function() {
+		return markerSetup.id;
+	}
+	
 //	//Constants
 //	this.MAX_ZINDEX
 
@@ -938,23 +956,23 @@ function Marker(options) {
 	allObjects[markerSetup.id] = [options, updateState]
 }
 
-/**
- * @constructor
- *
- * @properties={typeid:24,uuid:"4A0B07DF-42B0-4C50-A1E8-CCD43AF62A9E"}
- */
-function MarkerImage() {
-	//TODO: implement
-}
+///**
+// * @constructor
+// *
+// * @properties={typeid:24,uuid:"4A0B07DF-42B0-4C50-A1E8-CCD43AF62A9E"}
+// */
+//function MarkerImage() {
+//	//TODO: implement
+//}
 
-/**
- * @constructor
- *
- * @properties={typeid:24,uuid:"16134509-41A8-45D9-8D63-BE232A780502"}
- */
-function MarkerShape() {
-	//TODO: implement
-}
+///**
+// * @constructor
+// *
+// * @properties={typeid:24,uuid:"16134509-41A8-45D9-8D63-BE232A780502"}
+// */
+//function MarkerShape() {
+//	//TODO: implement
+//}
 
 /**
  * @constructor
@@ -971,7 +989,7 @@ function MarkerShape() {
 function InfoWindow(options) {
 	var id = application.getUUID().toString()
 	
-//	options.content = escape(options.content);
+	options.content = escape(options.content);
 	
 	var infoWindowSetup = {
 		id: id,
@@ -1019,7 +1037,9 @@ function InfoWindow(options) {
 	 */
 	function updateState(incrementalUpdateCode) {
 		if (infoWindowSetup.options.map) {
-			var _mapFormName = infoWindowSetup.options.map.getId();
+			/** @type {scopes.modDataVisualization$GoogleMaps.Map} */
+			var gmap = infoWindowSetup.options.map;
+			var _mapFormName = gmap.getId();
 			if (_mapFormName in forms) {
 				forms[_mapFormName].storeState(scopes.modDataVisualization.serializeObject(infoWindowSetup, specialTypes))
 				
@@ -1071,8 +1091,9 @@ function InfoWindow(options) {
 				options.map = anchor.getMap();
 			}
 		}
-		
-		options.map.addInfoWindow(id, this)
+		/** @type {scopes.modDataVisualization$GoogleMaps.Map} */
+		var gmap = options.map
+		gmap.addInfoWindow(id, this)
 	}
 	
 	/**
@@ -1181,7 +1202,7 @@ function Map(container, options) {
 	 */
 	this.removeMarker = function (id) {
 		delete dv.markers[id]
-		updateState() //TODO: incremental code
+		updateState("svyDataViz.gmaps.removeMarker('"+id+"')");
 	}
 	
 	/**
@@ -1241,17 +1262,14 @@ function Map(container, options) {
 	this.getMarkerBounds = function() {
 		/** @type {scopes.modDataVisualization$GoogleMaps.LatLngBounds} */
 		var bounds;
-		var pos1, index = 1;
+		var index = 1;
 		
 		/** @type {RuntimeForm<GoogleMap>} */
 		var form = forms[this.getId()]
 		if (form.markers) {
 			for (var i in form.markers) {
-				//TODO: make this nicer
 				if (index == 1) {
-					pos1 = form.markers[i].getPosition();
-				} else if (index == 2) {
-					bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(form.markers[i].getPosition(), pos1);
+					bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(form.markers[i].getPosition(), form.markers[i].getPosition());
 				} else {
 					bounds.extend(form.markers[i].getPosition());
 				}
@@ -1394,9 +1412,7 @@ function Map(container, options) {
 	this.mapTypes = null //TODO: implement what needs implementing for this property
 	this.overlayMapTypes = [] //TODO: implement what needs implementing for this property
 	
-	/**
-	 */
-	var EVENT_TYPES = {
+	this.EVENT_TYPES = {
 		BOUNDS_CHANGED: 'bounds_changed',
 		CENTER_CHANGED: 'center_changed',
 		CLICK: 'click',
@@ -1429,20 +1445,20 @@ function Map(container, options) {
 	allObjects[mapSetup.id] = [options, updateState]
 }
 
-/**
- * @constructor
- *
- * @properties={typeid:24,uuid:"30E3B07A-0A00-47D1-B65D-79F4581BD859"}
- */
-function Symbol() {
-	//TODO: implement
-}
+///**
+// * @constructor
+// *
+// * @properties={typeid:24,uuid:"30E3B07A-0A00-47D1-B65D-79F4581BD859"}
+// */
+//function Symbol() {
+//	//TODO: implement
+//}
 
-/**
- * @constructor
- * 
- * @properties={typeid:24,uuid:"00998305-37A3-4165-8018-C86CF72476D3"}
- */
-function StreetViewPanorama() {
-	//TODO: implement
-}
+///**
+// * @constructor
+// * 
+// * @properties={typeid:24,uuid:"00998305-37A3-4165-8018-C86CF72476D3"}
+// */
+//function StreetViewPanorama() {
+//	//TODO: implement
+//}
