@@ -102,7 +102,7 @@ function addInfoWindow(event, args) {
 				<b>{customerRec.companyname}</b>
 				<p>{customerRec.address}<br/>
 				{customerRec.postalcode} {customerRec.city}<br/>
-				{customerRec.country}<br/>
+				{customerRec.country.toUpperCase()}<br/>
 				Voice: {customerRec.phone}<br/>
 				Fax: {customerRec.fax}<br/>
 				<br/>
