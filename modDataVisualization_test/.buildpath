@@ -4,4 +4,6 @@
 	<buildpathentry exported="true" kind="prj" path="/modDataVis$flotr2"/>
 	<buildpathentry exported="true" kind="prj" path="/modDataVis$googleCharts"/>
 	<buildpathentry exported="true" kind="prj" path="/modDataVis$justGage"/>
+	<buildpathentry exported="true" kind="prj" path="/modUtils"/>
+	<buildpathentry exported="true" kind="prj" path="/mod_dialog"/>
 </buildpath>

@@ -1,5 +1,5 @@
 firstFormID:"6810A813-A1CD-43A3-8E74-952777EDF609",
-modulesNames:"modDataVis$flotr2,modDataVis$googleCharts,modDataVis$justGage",
+modulesNames:"modDataVis$flotr2,modDataVis$googleCharts,modDataVis$justGage,modUtils,mod_dialog",
 onOpenMethodID:"79B5DC9E-3287-4850-8C63-320BFB83C92F",
 typeid:43,
 uuid:"B9385544-092E-44D1-8333-DD0887225B28"
