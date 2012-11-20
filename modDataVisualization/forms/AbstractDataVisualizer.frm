@@ -28,5 +28,6 @@ onShowMethodID:"4C7A2CF9-E700-412C-BB7E-91E0A1002385",
 onUnLoadMethodID:"0A8FE3BA-A64C-4298-AA00-AA0731573ABB",
 showInMenu:true,
 size:"10,10",
+transparent:true,
 typeid:3,
 uuid:"24AF8285-98EB-412B-AEE6-86E2AB653B43"

@@ -1,62 +1,26 @@
 /**
+ * @private
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"84F74049-8A2B-4780-A0FA-BB12D120EC77"}
+ */
+var handlerName
+
+/**
+ * @private
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"354156BC-CC27-4018-BFC9-523974D74155"}
+ */
+var callbackName
+
+/**
  * @properties={typeid:35,uuid:"E4A3D57C-AECE-4CF9-9817-D47A3306EEE3",variableType:-4}
  */
 var init = function(){
-	scopes.modDataVisualization.includeExCanvasForIE(8)
-//	plugins.WebClientUtils.addJsReference('https://raw.github.com/HumbleSoftware/Flotr2/master/flotr2.min.js')
-	plugins.WebClientUtils.addJsReference('media:///flotr2.min.js')
-	//TODO: don't duplicate the generic part 
 	var code = <script type='text/javascript'>
 	<![CDATA[
-		if (window.svyDataViz == undefined) var svyDataViz = {
-			dynConstructor: function (Constructor) {
-				//Helper function form dynamically calling a constructor function with arguments
-				//http://stackoverflow.com/questions/3362471/how-can-i-call-a-javascript-constructor-using-call-or-apply
-				var args = Array.prototype.slice.call(arguments, 1);
-				return function() {
-
-					var Temp = function() {}, // temporary constructor
-						inst, ret; // other vars
-
-					// Give the Temp constructor the Constructor's prototype
-					Temp.prototype = Constructor.prototype;
-
-					// Create a new instance
-					inst = new Temp;
-
-					// Call the original Constructor with the temp
-					// instance as its context (i.e. its 'this' value)
-					ret = Constructor.apply(inst, args);
-
-					// If an object has been returned then return it otherwise
-					// return the original instance.
-					// (consistent with behaviour of the new operator)
-					return Object(ret) === ret ? ret : inst;
-				}
-			},
-			reviver: function (key, value) {
-				//Helper function to deserialize JSON containing special objects that should map to clientside API
-	    		if (value.hasOwnProperty('svySpecial') && value.svySpecial == true) {
-	    			var object = value.scope||window
-					for (var i = 0; i < value.parts.length; i++) {
-						object = object[value.parts[i] ]
-					}
-					switch (value.type) {
-						case 'call':
-							return object.apply(value.scope ? window[value.scope] : null, value.args)
-						case 'constructor':
-							return svyDataViz.dynConstructor.apply(this, [object].concat(value.args))()
-						case 'reference':
-							return object
-//								case 'domReference':
-//									return document.getElementbyId(args[0])
-						default:
-							return
-					}
-	    		}
-	    		return value
-	    	}
-		}
+		
 		svyDataViz.flotr2 = {
 			charts: { },
 			initialize: function() {
@@ -92,17 +56,15 @@ var init = function(){
 	
 	//TODO: find a better way to do this: adding the UUID will prevent browsers caching the .js file
 	var bytes = new Packages.java.lang.String(code).getBytes('UTF-8')
-	var uuid = application.getUUID();
-	solutionModel.newMedia('flotr2Handler_'+uuid+'.js', bytes)
-	plugins.WebClientUtils.addJsReference('media:///flotr2Handler_'+uuid+'.js')
+	handlerName = 'flotr2Handler_' + application.getUUID() + '.js';
+	solutionModel.newMedia(handlerName, bytes)
 	
 	//TODO: make the callback script generic on DataVizualization level, instead of having to add one on every impl.
 	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'id', 'eventType', 'data'], false);
 	var script = 'svyDataViz.flotr2.chartEventHandler = function(objectType, id, eventType, data){' + callback + '}';
 	bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
-	uuid = application.getUUID();
-	solutionModel.newMedia('flotr2HandlerCallback_'+uuid+'.js', bytes)
-	plugins.WebClientUtils.addJsReference('media:///flotr2HandlerCallback_'+uuid+'.js')
+	callbackName = 'flotr2HandlerCallback_' + application.getUUID() + '.js';
+	solutionModel.newMedia(callbackName, bytes)
 }()
 
 /**
@@ -147,6 +109,22 @@ function browserCallback(args) {
 //}
 
 /**
+ * @private
+ * @param container
+ *
+ * @properties={typeid:24,uuid:"AC7DA501-241C-4817-A0A7-CABC256BCC76"}
+ */
+function addDependancies(container) {
+	
+	scopes.modDataVisualization.includeExCanvasForIE(container, 8)
+//	plugins.WebClientUtils.addJsReference('https://raw.github.com/HumbleSoftware/Flotr2/master/flotr2.min.js')
+	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///flotr2.min.js', container)
+		.addJavaScriptDependancy('media:///svyDataVis.js', container)
+		.addJavaScriptDependancy('media:///' + handlerName, container)	
+		.addJavaScriptDependancy('media:///' + callbackName, container)	
+}
+
+/**
  * @constructor
  * 
  * @param {RuntimeTabPanel} container
@@ -154,6 +132,7 @@ function browserCallback(args) {
  * @properties={typeid:24,uuid:"0541D364-9DF2-473D-B72F-E8D6F9DE6857"}
  */
 function LineChart(container){
+	addDependancies(container)
 	/**@type {RuntimeForm<GoogleGeoChart>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
 
@@ -382,6 +361,7 @@ function LineChart(container){
  * @properties={typeid:24,uuid:"AA567D33-980B-440B-8452-9D2C100C40A6"}
  */
 function BarChart(container){
+	addDependancies(container)
 	/**@type {RuntimeForm<GoogleGeoChart>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
 
@@ -421,6 +401,7 @@ function BarChart(container){
  * @properties={typeid:24,uuid:"65F796B2-9CD4-490F-B5F1-CC768608D48C"}
  */
 function PieChart(container){
+	addDependancies(container)
 	/**@type {RuntimeForm<GoogleGeoChart>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
 

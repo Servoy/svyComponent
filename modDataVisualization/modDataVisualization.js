@@ -88,19 +88,17 @@ var maxIEVersion = 8
 
 /**
  * Utility method to conditionally include excanvas.js when running IE <= 8, to add canvas support in those IE version
+ * @param {RuntimeComponent} container
  * @param {Number} maxVersion the max version of IE for which excanvas ought to be included. (default is IE8)
  * @properties={typeid:24,uuid:"FB38F277-182A-4971-8534-401EEC07EBFF"}
  */
-function includeExCanvasForIE(maxVersion) {
+function includeExCanvasForIE(container, maxVersion) {
 	if (maxVersion > maxIEVersion) {
 		maxIEVersion = maxVersion
 	}
 	//Add excanvas to conditionally only in IE to compensate for the lack of canvas support in IE up to and including IE8
-	/**@type {Packages.org.apache.wicket.protocol.http.request.WebClientInfo}*/
-	var clientInfo = Packages.org.apache.wicket.RequestCycle.get().getClientInfo()
-	/**@type {Packages.org.apache.wicket.protocol.http.ClientProperties}*/
-	var clientProperties = clientInfo.getProperties() 
+	var clientProperties = scopes.modUtils$WebClient.getBrowserInfo().getProperties()
 	if (clientProperties.isBrowserInternetExplorer() && clientProperties.getBrowserVersionMajor() <= maxIEVersion) {
-		plugins.WebClientUtils.addJsReference('media:///excanvas.compiled.js')
+		scopes.modUtils$WebClient.addJavaScriptDependancy('media:///excanvas.compiled.js', container)
 	}	
 }

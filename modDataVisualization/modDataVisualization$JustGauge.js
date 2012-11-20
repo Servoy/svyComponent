@@ -1,69 +1,22 @@
+/**
+ * @private 
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"6A109E94-D004-4E32-ADD6-109ADD28AB9F"}
+ */
+var handlerName
+
 /*
  * Implementation of http://justgage.com/
-*/
+ */
 /**
  * @private 
  * @SuppressWarnings(unused)
  * @properties={typeid:35,uuid:"B4689D91-3D5D-4E8E-86DC-C598ED52B960",variableType:-4}
  */
 var init = function() {
-	//TODO: allow devs to optimalizise external lib inclusion
-	plugins.WebClientUtils.addJsReference('media:///raphael.2.1.0.min.js')
-	plugins.WebClientUtils.addJsReference('media:///justgage.1.0.1.min.js')
-	//plugins.WebClientUtils.addJsReference('https://raw.github.com/toorshia/justgage/master/justgage.1.0.1.js')
-	
-	//TODO: don't duplicate the generic part 
 	var code = <script type='text/javascript'>
 	<![CDATA[
-		if (window.svyDataViz == undefined) var svyDataViz = {
-			dynConstructor: function (Constructor) {
-				//Helper function form dynamically calling a constructor function with arguments
-				//http://stackoverflow.com/questions/3362471/how-can-i-call-a-javascript-constructor-using-call-or-apply
-				var args = Array.prototype.slice.call(arguments, 1);
-				return function() {
-
-					var Temp = function() {}, // temporary constructor
-						inst, ret; // other vars
-
-					// Give the Temp constructor the Constructor's prototype
-					Temp.prototype = Constructor.prototype;
-
-					// Create a new instance
-					inst = new Temp;
-
-					// Call the original Constructor with the temp
-					// instance as its context (i.e. its 'this' value)
-					ret = Constructor.apply(inst, args);
-
-					// If an object has been returned then return it otherwise
-					// return the original instance.
-					// (consistent with behaviour of the new operator)
-					return Object(ret) === ret ? ret : inst;
-				}
-			},
-			reviver: function (key, value) {
-				//Helper function to deserialize JSON containing special objects that should map to clientside API
-	    		if (value.hasOwnProperty('svySpecial') && value.svySpecial == true) {
-	    			var object = value.scope||window
-					for (var i = 0; i < value.parts.length; i++) {
-						object = object[value.parts[i] ]
-					}
-					switch (value.type) {
-						case 'call':
-							return object.apply(value.scope ? window[value.scope] : null, value.args)
-						case 'constructor':
-							return svyDataViz.dynConstructor.apply(this, [object].concat(value.args))()
-						case 'reference':
-							return object
-//							case 'domReference':
-//								return document.getElementbyId(args[0])
-						default:
-							return
-					}
-	    		}
-	    		return value
-	    	}
-		}
 		svyDataViz.justGauge = {
 			gauges: { },
 			initialize: function() {
@@ -78,10 +31,23 @@ var init = function() {
 	
 	//TODO: find a better way to do this: adding the UUID will prevent browsers caching the .js file
 	var bytes = new Packages.java.lang.String(code).getBytes('UTF-8')
-	var uuid = application.getUUID();
-	solutionModel.newMedia('justGaugeHandler_'+uuid+'.js', bytes)
-	plugins.WebClientUtils.addJsReference('media:///justGaugeHandler_'+uuid+'.js')
+	handlerName = 'justGaugeHandler_' + application.getUUID() + '.js'
+	solutionModel.newMedia(handlerName, bytes)
 }()
+
+/**
+ * @private 
+ *
+ * @properties={typeid:24,uuid:"BAA4305E-B923-43DC-B45A-38F919BFA53F"}
+ */
+function addDependancies(container) {
+	//TODO: allow devs to optimalizise external lib inclusion
+	//plugins.WebClientUtils.addJsReference('https://raw.github.com/toorshia/justgage/master/justgage.1.0.1.js')
+	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///raphael.2.1.0.min.js', container)
+		.addJavaScriptDependancy('media:///justgage.1.0.1.min.js', container)
+		.addJavaScriptDependancy('media:///svyDataVis.js', container)
+		.addJavaScriptDependancy('media:///' + handlerName, container)
+}
 
 /**
  * @constructor
@@ -144,6 +110,8 @@ var init = function() {
  * @properties={typeid:24,uuid:"26D1A70A-F906-4BC1-A950-744327B83E6E"}
  */
 function JustGauge(container, options) {
+	addDependancies(container)
+	
 	/**@type {RuntimeForm<JustGauge>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.JustGauge)
 	options.id = dv.getId()
