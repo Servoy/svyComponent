@@ -27,12 +27,12 @@ var init = function() {
 		$("document").ready(function() {
 	   		var script = document.createElement("script");
 	    	script.type = "text/javascript";
-	    	script.src = 'http://maps.googleapis.com/maps/api/js?v=3.9&key=AIzaSyD6A559b-KBYGBBM6mmDPcYYNpAzv_Rv1Y&sensor=false&callback=svyDataVizGMapCallback';
-//	    	script.src = 'http://maps.googleapis.com/maps/api/js?key=' + apiKey + '&sensor=false&callback=svyDataVizGMapCallback';
+	    	script.src = 'http://maps.googleapis.com/maps/api/js?v=3.9&key=AIzaSyD6A559b-KBYGBBM6mmDPcYYNpAzv_Rv1Y&sensor=false&callback=svyDataVisGMapCallback';
+//	    	script.src = 'http://maps.googleapis.com/maps/api/js?key=' + apiKey + '&sensor=false&callback=svyDataVisGMapCallback';
 	    	document.head.appendChild(script);
 		});
 		
-		if (window.svyDataViz == undefined) var svyDataViz = {
+		if (window.svyDataVis == undefined) var svyDataVis = {
 			dynConstructor: function (Constructor) {
 				//Helper function form dynamically calling a constructor function with arguments
 				//http://stackoverflow.com/questions/3362471/how-can-i-call-a-javascript-constructor-using-call-or-apply
@@ -70,7 +70,7 @@ var init = function() {
 						case 'call':
 							return object.apply(value.scope ? window[value.scope] : null, value.args)
 						case 'constructor':
-							return svyDataViz.dynConstructor.apply(this, [object].concat(value.args))()
+							return svyDataVis.dynConstructor.apply(this, [object].concat(value.args))()
 						case 'reference':
 							return object
 //							case 'domReference':
@@ -82,21 +82,21 @@ var init = function() {
 	    		return value
 	    	}
 		}
-		svyDataViz.gmaps = {
+		svyDataVis.gmaps = {
 			objects: {},
 			todos: {},
 			
 			createMarker: function(node) {
 				var marker = new google.maps.Marker(node.options)
 				marker.set('svyId',node.id)
-				svyDataViz.gmaps.objects[node.id] = marker
+				svyDataVis.gmaps.objects[node.id] = marker
 				
 				//Add event listeners
 				var events = ['click', 'dblclick', 'dragend', 'rightclick'];
 				for (var j = 0; j < events.length; j++) {
 					var handler = function(id, eventType){
 						return function(event) {
-							svyDataViz.gmaps.callbackIntermediate("marker", id, eventType, event)
+							svyDataVis.gmaps.callbackIntermediate("marker", id, eventType, event)
 						}
 					}(node.id, events[j])
 					google.maps.event.addListener(marker, events[j], handler);
@@ -111,14 +111,14 @@ var init = function() {
 				//Create infoWindow in the browser
 				var infoWindow = new google.maps.InfoWindow(node)
 				infoWindow.set('svyId',node.id)
-				svyDataViz.gmaps.objects[node.id] = infoWindow
+				svyDataVis.gmaps.objects[node.id] = infoWindow
 				
 				//Add event listeners
 				var events = ['closeclick'];
 				for (var j = 0; j < events.length; j++) {
 					var handler = function(id, eventType){
 						return function(event) {
-							svyDataViz.gmaps.callbackIntermediate("infoWindow", id, eventType, event)
+							svyDataVis.gmaps.callbackIntermediate("infoWindow", id, eventType, event)
 						}
 					}(node.id, events[j])
 					google.maps.event.addListener(infoWindow, events[j], handler);
@@ -127,15 +127,15 @@ var init = function() {
 				return infoWindow;
 			},
 			removeMarker: function(id) {
-				svyDataViz.gmaps.objects[id].setMap(null);
-				svyDataViz.gmaps.objects[id] = null;
+				svyDataVis.gmaps.objects[id].setMap(null);
+				svyDataVis.gmaps.objects[id] = null;
 			},
 			
 			initialize: function() {
 				console.log('CHECK: initialize called for GMAPS: ' + arguments.length + ' - '+ window.google)
 		    	
 				$.each(arguments, function(key, value){
-					svyDataViz.gmaps.todos[value] = true
+					svyDataVis.gmaps.todos[value] = true
 				})
 //				for (var i = 0; i <= arguments.length; i++) {
 //	    			this.todos[arguments[i] ] = true
@@ -147,14 +147,14 @@ var init = function() {
 				
 		    	$.each(this.todos, function(value){
 	    		//for (var i = 0; i < this.todos.length; i++) {
-	    			console.log(svyDataViz.gmaps[value])
-	    			var node = JSON.parse(svyDataViz.gmaps[value], svyDataViz.reviver)
+	    			console.log(svyDataVis.gmaps[value])
+	    			var node = JSON.parse(svyDataVis.gmaps[value], svyDataVis.reviver)
 
 					if (node && node.type == "map") {
 						//Create new Map in the browser
 						var map = new google.maps.Map(document.getElementById(node.id), node.options)
 						map.set('svyId',node.id)
-						svyDataViz.gmaps.objects[node.id] = map
+						svyDataVis.gmaps.objects[node.id] = map
 						
 						//Add event listeners
 						var events = [
@@ -173,7 +173,7 @@ var init = function() {
 						for (var j = 0; j < events.length; j++) {
 							var handler = function(id, eventType){
 								return function(event) {
-									svyDataViz.gmaps.callbackIntermediate("map", id, eventType, event)
+									svyDataVis.gmaps.callbackIntermediate("map", id, eventType, event)
 								}
 							}(node.id, events[j])
 							google.maps.event.addListener(map, events[j], handler);
@@ -182,10 +182,10 @@ var init = function() {
 					} else if (node && node.type == "marker"){
 						//Create marker in the browser
 //						console.log(id);
-						svyDataViz.gmaps.createMarker(node);
+						svyDataVis.gmaps.createMarker(node);
 					} else if (node && node.type == "infoWindow") {
 						//Create infoWindow in the browser
-						svyDataViz.gmaps.createInfoWindow(node)
+						svyDataVis.gmaps.createInfoWindow(node)
 					}
 				})
 		    },
@@ -194,7 +194,7 @@ var init = function() {
 				//Intermediate function to retrieve relevant data when events occur on a map/marker/infoWindow and then send them to the server
 				var data;
 //				console.log("CALLBACKINTERMEDIATE: " + objectType + ", " +  id + ", " +  eventType + ", " +  event);
-				var object = svyDataViz.gmaps.objects[id];
+				var object = svyDataVis.gmaps.objects[id];
 				switch (objectType) {
 					case 'map': 
 						switch (eventType) {
@@ -270,9 +270,9 @@ var init = function() {
 			}
 		}
 		
-		function svyDataVizGMapCallback() {
+		function svyDataVisGMapCallback() {
 			console.log('CHECK: gmap API loaded, callback invoked')
-			svyDataViz.gmaps.initialize()
+			svyDataVis.gmaps.initialize()
 		}
 		
 	]]>
@@ -288,7 +288,7 @@ var init = function() {
 	//plugins.WebClientUtils.addJsReference('media:///googleMapsHandler.js')
 
 	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'id', 'eventType', 'data'], false);
-	var script = 'svyDataViz.gmaps.mapsEventHandler = function(objectType, id, eventType, data){' + callback + '}';
+	var script = 'svyDataVis.gmaps.mapsEventHandler = function(objectType, id, eventType, data){' + callback + '}';
 	bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
 	uuid = application.getUUID();
 	solutionModel.newMedia('googleMapsHandlerCallback_'+uuid+'.js', bytes)
@@ -723,7 +723,7 @@ function Marker(options) {
 			return {
 				svySpecial: true, 
 				type: 'reference', 
-				parts: ['svyDataViz','gmaps', 'objects', id],
+				parts: ['svyDataVis','gmaps', 'objects', id],
 				marker: true
 			}
 		} else {
@@ -731,10 +731,10 @@ function Marker(options) {
 	//				svySpecial: true, 
 					type: 'marker', 
 					id: id,
-	//				parts: ['svyDataViz','gmaps', 'Marker'],
+	//				parts: ['svyDataVis','gmaps', 'Marker'],
 					options: {
 	//					svySpecial: true,
-						parts: ['svyDataViz','gmaps', 'Marker'],
+						parts: ['svyDataVis','gmaps', 'Marker'],
 	//					animation: _animation,
 	//					clickable: _clickable,
 	//					cursor: _cursor,
@@ -852,7 +852,7 @@ function Marker(options) {
 		
 		var str = scopes.modDataVisualization.serializeObject(this.toObjectPresentation(true), specialTypes);
 
-		updateState('svyDataViz.gmaps.createMarker(JSON.parse(\'' + str + '\', svyDataViz.reviver));');
+		updateState('svyDataVis.gmaps.createMarker(JSON.parse(\'' + str + '\', svyDataVis.reviver));');
 	}
 
 	//	this.setOptions = function(options) {
@@ -911,7 +911,7 @@ function Marker(options) {
 //	}
 	this.setPosition = function(latLng) {
 		options.position = latLng;
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + markerSetup.id + '\'].setPosition(latLng);')		
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng.toObjectPresentation(), specialTypes) + '\', svyDataVis.reviver);svyDataVis.gmaps.objects[\'' + markerSetup.id + '\'].setPosition(latLng);')		
 	}
 	
 //	this.setShadow = function(shadow) {
@@ -922,7 +922,7 @@ function Marker(options) {
 //	}
 	this.setTitle = function(title) {
 		markerSetup.options.title = title;
-		updateState('svyDataViz.gmaps.objects[\'' + markerSetup.id + '\'].setTitle(latLng);')		
+		updateState('svyDataVis.gmaps.objects[\'' + markerSetup.id + '\'].setTitle(latLng);')		
 	}
 //	this.setVisible = function(visible) {
 //		_visible = visible
@@ -1115,7 +1115,7 @@ function InfoWindow(options) {
 	 */
 	this.setPosition = function(position) {
 		options.position = position;
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(position["toObjectPresentation"](), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + infoWindowSetup.id + '\'].setPosition(latLng);')		
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(position["toObjectPresentation"](), specialTypes) + '\', svyDataVis.reviver);svyDataVis.gmaps.objects[\'' + infoWindowSetup.id + '\'].setPosition(latLng);')		
 	}
 	
 	/**
@@ -1193,7 +1193,7 @@ function Map(container, options) {
 		dv.infoWindows[id] = infoWindow	
 
 		var str = scopes.modDataVisualization.serializeObject(infoWindow.toObjectPresentation(), specialTypes);
-		updateState('var infoWindow = svyDataViz.gmaps.createInfoWindow(JSON.parse(\'' + str + '\', svyDataViz.reviver));'); 
+		updateState('var infoWindow = svyDataVis.gmaps.createInfoWindow(JSON.parse(\'' + str + '\', svyDataVis.reviver));'); 
 	}
 	
 	/**
@@ -1202,7 +1202,7 @@ function Map(container, options) {
 	 */
 	this.removeMarker = function (id) {
 		delete dv.markers[id]
-		updateState("svyDataViz.gmaps.removeMarker('"+id+"')");
+		updateState("svyDataVis.gmaps.removeMarker('"+id+"')");
 	}
 	
 	/**
@@ -1213,7 +1213,7 @@ function Map(container, options) {
 		return {
 			svySpecial: true, 
 			type: 'reference', 
-			parts: ['svyDataViz','gmaps', 'objects', mapSetup.id]
+			parts: ['svyDataVis','gmaps', 'objects', mapSetup.id]
 		}
 	}
 	
@@ -1248,7 +1248,7 @@ function Map(container, options) {
 	 * @param {scopes.modDataVisualization$GoogleMaps.LatLngBounds} bounds
 	 */
 	this.fitBounds = function(bounds) {
-		updateState('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].fitBounds(bounds);')
+		updateState('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataVis.reviver);svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].fitBounds(bounds);')
 	}
 
 //	/**
@@ -1339,7 +1339,7 @@ function Map(container, options) {
 	 */
 	this.panBy = function(x, y) {
 		//No state update, because no way to determine the new center. State will be updated async
-		plugins.WebClientUtils.executeClientSideJS('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panBy(' + x + ','+ y + ');')		
+		plugins.WebClientUtils.executeClientSideJS('svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].panBy(' + x + ','+ y + ');')		
 	}
 
 	/**
@@ -1347,14 +1347,14 @@ function Map(container, options) {
 	 */
 	this.panTo = function(latLng) {
 		options.center = latLng;
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng["toObjectPresentation"](), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panTo(latLng);')		
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng["toObjectPresentation"](), specialTypes) + '\', svyDataVis.reviver);svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].panTo(latLng);')		
 	}
 
 	/**
 	 * @param {scopes.modDataVisualization$GoogleMaps.LatLngBounds} bounds
 	 */
 	this.panToBounds = function(bounds){
-		plugins.WebClientUtils.executeClientSideJS('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].panToBounds(bounds);')
+		plugins.WebClientUtils.executeClientSideJS('var bounds = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(bounds.toObjectPresentation(), specialTypes) + '\', svyDataVis.reviver);svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].panToBounds(bounds);')
 	}
 
 	/**
@@ -1362,7 +1362,7 @@ function Map(container, options) {
 	 */
 	this.setCenter = function(latLng) {
 		options.center = latLng
-		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng["toObjectPresentation"](), specialTypes) + '\', svyDataViz.reviver);svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setCenter(latLng);')
+		updateState('var latLng = JSON.parse(\'' + scopes.modDataVisualization.serializeObject(latLng["toObjectPresentation"](), specialTypes) + '\', svyDataVis.reviver);svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].setCenter(latLng);')
 	}
 
 	/**
@@ -1370,7 +1370,7 @@ function Map(container, options) {
 	 */
 	this.setHeading = function(heading) {
 		options.heading = heading
-		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setHeading(' + heading + ');')
+		updateState('svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].setHeading(' + heading + ');')
 	}
 
 	/**
@@ -1378,7 +1378,7 @@ function Map(container, options) {
 	 */
 	this.setMapTypeId = function(mapTypeId) {
 		options.mapTypeId = mapTypeId
-		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setMapTypId(' + mapTypeId + ');')
+		updateState('svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].setMapTypId(' + mapTypeId + ');')
 	}
 
 //	/**
@@ -1397,7 +1397,7 @@ function Map(container, options) {
 	 */
 	this.setTilt = function(tilt) {
 		options.tilt = tilt
-		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setTilt(' + tilt + ');')
+		updateState('svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].setTilt(' + tilt + ');')
 	}
 	
 	/**
@@ -1405,7 +1405,7 @@ function Map(container, options) {
 	 */
 	this.setZoom = function(zoom) {
 		options.zoom = zoom
-		updateState('svyDataViz.gmaps.objects[\'' + mapSetup.id + '\'].setZoom(' + zoom + ');')
+		updateState('svyDataVis.gmaps.objects[\'' + mapSetup.id + '\'].setZoom(' + zoom + ');')
 	}
 	
 	this.controls = [] //TODO: implement what needs implementing for this property

@@ -8,7 +8,7 @@ function render(DOM) {
 //	var mrkrs = ''
 //	for each(var marker in markers) {
 //		marker.id = application.getUUID();
-//		mrkrs += 'svyDataViz.' + getBrowserId() + '[\'' + marker.id + '\']=\'' + scopes.modDataVisualization.serializeObject(marker, scopes.modDataVisualization$GoogleMaps.specialTypes) + '\';'
+//		mrkrs += 'svyDataVis.' + getBrowserId() + '[\'' + marker.id + '\']=\'' + scopes.modDataVisualization.serializeObject(marker, scopes.modDataVisualization$GoogleMaps.specialTypes) + '\';'
 //	}
 //	if (mrkrs.length > 0) {
 //		DOM.head.appendChild(<script>{mrkrs}</script>)
@@ -17,7 +17,7 @@ function render(DOM) {
 //	var infWnds = ''
 //	for each(var infoWindow in infoWindows) {
 //		infoWindow.id = application.getUUID();
-//		infWnds += 'svyDataViz.' + getBrowserId() + '[\'' + infoWindow.id + '\']=\'' + scopes.modDataVisualization.serializeObject(infoWindow, scopes.modDataVisualization$GoogleMaps.specialTypes) + '\';'
+//		infWnds += 'svyDataVis.' + getBrowserId() + '[\'' + infoWindow.id + '\']=\'' + scopes.modDataVisualization.serializeObject(infoWindow, scopes.modDataVisualization$GoogleMaps.specialTypes) + '\';'
 //	}
 //	if (infWnds.length > 0) {
 //		DOM.head.appendChild(<script>{infWnds}</script>)

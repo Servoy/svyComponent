@@ -1,5 +1,5 @@
-if (window.svyDataViz == undefined) {
-	var svyDataViz = {
+if (window.svyDataVis == undefined) {
+	var svyDataVis = {
 		dynConstructor: function (Constructor) {
 			//Helper function form dynamically calling a constructor function with arguments
 			//http://stackoverflow.com/questions/3362471/how-can-i-call-a-javascript-constructor-using-call-or-apply
@@ -36,7 +36,7 @@ if (window.svyDataViz == undefined) {
 					case 'call':
 						return object.apply(value.scope ? window[value.scope] : null, value.args)
 					case 'constructor':
-						return svyDataViz.dynConstructor.apply(this, [object].concat(value.args))()
+						return svyDataVis.dynConstructor.apply(this, [object].concat(value.args))()
 					case 'reference':
 						return object
 	//							case 'domReference':

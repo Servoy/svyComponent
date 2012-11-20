@@ -51,9 +51,9 @@ function storeState(jsonString) {
 	
 	//TODO: content of script tag ought to be wrapped in CDATA tags to prevent the XML impl. from escaping invalid XMl characters
 	//Testcase: GMap with InfoWindow containing HTML content
-	scripts[obj.id] = 'svyDataViz.' + getBrowserId() + '[\'' + obj.id + '\']=\'' +  jsonString + '\''
+	scripts[obj.id] = 'svyDataVis.' + getBrowserId() + '[\'' + obj.id + '\']=\'' +  jsonString + '\''
 	
-	dom.body.@onLoad = 'svyDataViz.' + getBrowserId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
+	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
 	var copy = dom.copy()
 	for (var script in scripts) {
 		copy.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
@@ -125,7 +125,7 @@ function onLoad(event) {
 	//TODO: maybe optimize the inclusion of json2, only when JSON isn't supported out of the box?
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
 		.addJavaScriptDependancy('media:///json2.js', this)
-	dom.body.@onLoad = 'svyDataViz.' + getBrowserId() + '.initialize();'
+	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize();'
 }
 
 /**
