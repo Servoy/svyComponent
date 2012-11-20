@@ -1,4 +1,4 @@
-encapsulation:62,
+encapsulation:60,
 items:[
 {
 anchors:15,

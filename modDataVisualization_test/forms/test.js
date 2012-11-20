@@ -1,5 +1,5 @@
 /**
- * @type {Array<scopes.modDataVisualization$JustGauge.JustGauge>}
+ * @type {Array<scopes.modDataVis$justGauge.JustGauge>}
  *
  * @properties={typeid:35,uuid:"8151F77F-6C93-49A3-81E8-03DBE7CA0FBB",variableType:-4}
  */
@@ -56,24 +56,24 @@ function update(force) {
  */
 function onLoad(event) {
 	//Instantiate Gauges
-	gauges.push(new scopes.modDataVisualization$JustGauge.JustGauge(elements.gauge1,{
+	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge1,{
 		value: 67, 
 	    min: 0,
 	    max: 100,
 	    title: "Visitors"
 	}))
 	
-	gauges.push(new scopes.modDataVisualization$JustGauge.JustGauge(elements.gauge2,{
+	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge2,{
 		title: 'Features',
 		value: (Math.random() * 100).toFixed(0)
 	}))
 	
-	gauges.push(new scopes.modDataVisualization$JustGauge.JustGauge(elements.gauge3,{
+	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge3,{
 		title: 'Tasks',
 		value: (Math.random() * 100).toFixed(0)
 	}))
 	
-	gauges.push(new scopes.modDataVisualization$JustGauge.JustGauge(elements.gauge4,{
+	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge4,{
 		title: 'Bugs',
 		value: (Math.random() * 100).toFixed(0)
 	}))
@@ -90,7 +90,7 @@ function onLoad(event) {
 	var options = {
 		 colorAxis: {colors: ['yellow','red']}
 	}
-	scopes.modDataVisualization$GoogleCharts.GeoChart(elements.geochart, data, options)
+	scopes.modDataVis$googleCharts.GeoChart(elements.geochart, data, options)
 	
 	//Instantiate GoogleMaps
 	var map = new scopes.modDataVisualization$GoogleMaps.Map(elements.maps, {
@@ -161,7 +161,7 @@ function onLoad(event) {
 	});
 	i2.open(map2);	
 	
-	var lineChart = new scopes.modDataVisualization$Flotr2.LineChart(elements.flotr2$line)
+	var lineChart = new scopes.modDataVis$flotr2.LineChart(elements.flotr2$line)
 	lineChart.draw({
 				data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
 				lines: {
@@ -206,7 +206,7 @@ function onLoad(event) {
 				}
 			})
 	
-	var barChart = new scopes.modDataVisualization$Flotr2.PieChart(elements.flotr2$pie)
+	var barChart = new scopes.modDataVis$flotr2.PieChart(elements.flotr2$pie)
 	var d1 = [[0, 4]],
     d2 = [[0, 3]],
     d3 = [[0, 1.03]],
@@ -370,7 +370,6 @@ function getLatLng(address) {
 function testCCCFail() {
 	jsunit.assertEquals(1,2)
 }
-
 /**
  * Creates a LatLngBound including all markers and calls fitBounds on the map, so it zooms to show all markers 
  *
