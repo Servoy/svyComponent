@@ -64,7 +64,6 @@ var init = function(){
 			initialize: function() {
 				if (window.google && google.visualization && google.visualization.GeoChart) {	
 					for (var i = 0; i < arguments.length; i++) {
-						console.log(this[arguments[i] ])
 						var node = JSON.parse(this[arguments[i] ], svyDataViz.reviver)
 						if (node.id) {
 							var chart = new google.visualization.GeoChart(document.getElementById(node.id))
