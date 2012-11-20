@@ -1,6 +1,12 @@
 [
 {
 mimeType:"text/javascript",
+name:"json2.js",
+typeid:37,
+uuid:"CCEE888C-8EC9-4281-9996-53503ABE646F"
+},
+{
+mimeType:"text/javascript",
 name:"svyDataVis.js",
 typeid:37,
 uuid:"7BD3C8FC-BAED-434D-9DAA-343EFCED2347"

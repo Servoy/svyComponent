@@ -45,7 +45,6 @@ function addDependancies(container) {
 	//plugins.WebClientUtils.addJsReference('https://raw.github.com/toorshia/justgage/master/justgage.1.0.1.js')
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///raphael.2.1.0.min.js', container)
 		.addJavaScriptDependancy('media:///justgage.1.0.1.min.js', container)
-		.addJavaScriptDependancy('media:///svyDataVis.js', container)
 		.addJavaScriptDependancy('media:///' + handlerName, container)
 }
 
@@ -110,12 +109,13 @@ function addDependancies(container) {
  * @properties={typeid:24,uuid:"26D1A70A-F906-4BC1-A950-744327B83E6E"}
  */
 function JustGauge(container, options) {
-	addDependancies(container)
 	
 	/**@type {RuntimeForm<JustGauge>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.JustGauge)
+	addDependancies(dv)
 	options.id = dv.getId()
 	dv = null;
+
 
 	var setup = {
 		id: options.id,

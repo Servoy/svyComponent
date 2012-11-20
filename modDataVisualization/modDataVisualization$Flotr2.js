@@ -119,7 +119,6 @@ function addDependancies(container) {
 	scopes.modDataVisualization.includeExCanvasForIE(container, 8)
 //	plugins.WebClientUtils.addJsReference('https://raw.github.com/HumbleSoftware/Flotr2/master/flotr2.min.js')
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///flotr2.min.js', container)
-		.addJavaScriptDependancy('media:///svyDataVis.js', container)
 		.addJavaScriptDependancy('media:///' + handlerName, container)	
 		.addJavaScriptDependancy('media:///' + callbackName, container)	
 }
@@ -132,9 +131,9 @@ function addDependancies(container) {
  * @properties={typeid:24,uuid:"0541D364-9DF2-473D-B72F-E8D6F9DE6857"}
  */
 function LineChart(container){
-	addDependancies(container)
 	/**@type {RuntimeForm<GoogleGeoChart>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
+	addDependancies(dv)
 
 	var setup = {
 		id: dv.getId(),
@@ -361,9 +360,9 @@ function LineChart(container){
  * @properties={typeid:24,uuid:"AA567D33-980B-440B-8452-9D2C100C40A6"}
  */
 function BarChart(container){
-	addDependancies(container)
 	/**@type {RuntimeForm<GoogleGeoChart>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
+	addDependancies(dv)
 
 	var setup = {
 		id: dv.getId(),
@@ -401,9 +400,9 @@ function BarChart(container){
  * @properties={typeid:24,uuid:"65F796B2-9CD4-490F-B5F1-CC768608D48C"}
  */
 function PieChart(container){
-	addDependancies(container)
 	/**@type {RuntimeForm<GoogleGeoChart>}*/
 	var dv = scopes.modDataVisualization.createVisualizationContainer(container, forms.Flotr2)
+	addDependancies(dv)
 
 	var setup = {
 		id: dv.getId(),
