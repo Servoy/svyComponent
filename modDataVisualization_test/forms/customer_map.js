@@ -1,5 +1,5 @@
 /**
- * @type {scopes.modDataVisualization$GoogleMaps.Map}
+ * @type {scopes.modDataVis$googleMaps.Map}
  * 
  * @properties={typeid:35,uuid:"FEF481B6-B73B-4F5D-AB49-4012E579683D",variableType:-4}
  */
@@ -22,10 +22,10 @@ var markers = {};
  */
 function onLoad(event) {
 	//Instantiate GoogleMaps
-	map = new scopes.modDataVisualization$GoogleMaps.Map(elements.map, {
+	map = new scopes.modDataVis$googleMaps.Map(elements.map, {
 		zoom: 8,
-		center: new scopes.modDataVisualization$GoogleMaps.LatLng(52.2,5.2),
-		mapTypeId: scopes.modDataVisualization$GoogleMaps.MapTypeIds.HYBRID
+		center: new scopes.modDataVis$googleMaps.LatLng(52.2,5.2),
+		mapTypeId: scopes.modDataVis$googleMaps.MapTypeIds.HYBRID
 	})
 }
 
@@ -46,8 +46,8 @@ function fitBounds() {
  * @properties={typeid:24,uuid:"F921C715-15AB-4926-B435-2C4533E29DEC"}
  */
 function addMarker(customerRec, pos) {
-	var marker = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(pos.lat, pos.lng),
+	var marker = new scopes.modDataVis$googleMaps.Marker({
+		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat, pos.lng),
 		draggable: false,
 		title: customerRec.companyname
 	});
@@ -97,7 +97,7 @@ function addInfoWindow(event, args) {
 		
 		
 		//Adding infoWindow
-		var infoWindow = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
+		var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
 			content: scopes.modDataVisualization.stripCDataTags(<div>
 				<b>{customerRec.companyname}</b>
 				<p>{customerRec.address}<br/>

@@ -6,7 +6,7 @@
 var gauges = []
 
 /**
- * @type {Array<scopes.modDataVisualization$GoogleMaps.Map>}
+ * @type {Array<scopes.modDataVis$googleMaps.Map>}
  *
  * @properties={typeid:35,uuid:"0236ED8A-A80D-4577-B3E3-7603CA724ABD",variableType:-4}
  */
@@ -93,17 +93,17 @@ function onLoad(event) {
 	scopes.modDataVis$googleCharts.GeoChart(elements.geochart, data, options)
 	
 	//Instantiate GoogleMaps
-	var map = new scopes.modDataVisualization$GoogleMaps.Map(elements.maps, {
+	var map = new scopes.modDataVis$googleMaps.Map(elements.maps, {
 		zoom: 8,
-		center: new scopes.modDataVisualization$GoogleMaps.LatLng(-34.397, 150.644),
-		mapTypeId: scopes.modDataVisualization$GoogleMaps.MapTypeIds.HYBRID
+		center: new scopes.modDataVis$googleMaps.LatLng(-34.397, 150.644),
+		mapTypeId: scopes.modDataVis$googleMaps.MapTypeIds.HYBRID
 	})
 	maps.push(map)
 	
-	var map2 = new scopes.modDataVisualization$GoogleMaps.Map(elements.map2, {
+	var map2 = new scopes.modDataVis$googleMaps.Map(elements.map2, {
 		zoom: 2,
-		center: new scopes.modDataVisualization$GoogleMaps.LatLng(30, 20),
-		mapTypeId: scopes.modDataVisualization$GoogleMaps.MapTypeIds.TERRAIN,
+		center: new scopes.modDataVis$googleMaps.LatLng(30, 20),
+		mapTypeId: scopes.modDataVis$googleMaps.MapTypeIds.TERRAIN,
 		overviewMapControl: true,
 		panControl: true,
 		rotateControl: true,
@@ -114,16 +114,16 @@ function onLoad(event) {
 	maps.push(map2)
 	
 	//Adding markers	
-	var m = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(10,20),
+	var m = new scopes.modDataVis$googleMaps.Marker({
+		position: new scopes.modDataVis$googleMaps.LatLng(10,20),
 		draggable: true,
 		title: 'Hello Paul'
 	});
 	m.setMap(map2)
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
-	m = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(48.16780746339156,59.84375),
+	m = new scopes.modDataVis$googleMaps.Marker({
+		position: new scopes.modDataVis$googleMaps.LatLng(48.16780746339156,59.84375),
 		draggable: true,
 		title: 'hoi',
 //		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
@@ -135,15 +135,15 @@ function onLoad(event) {
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
 	//Adding infoWindows
-	var i = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
+	var i = new scopes.modDataVis$googleMaps.InfoWindow({
 		content: 'Hello India'
 	});
 	i.open(map2, m);
 	
 	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
 	
-	var i2 = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(pos.lat,pos.lng),
+	var i2 = new scopes.modDataVis$googleMaps.InfoWindow({
+		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat,pos.lng),
 		content: scopes.modDataVisualization.stripCDataTags(<div>
 			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
 			<p>De Brand 65<br/>
@@ -283,14 +283,14 @@ function markerCallback(event, data) {
  * Perform the element default action.
  *
  * @param {JSEvent} [event] the event that triggered the action
- * @param {scopes.modDataVisualization$GoogleMaps.Map} map
+ * @param {scopes.modDataVis$googleMaps.Map} map
  *
  * @properties={typeid:24,uuid:"BC59C8F4-194C-44B9-996C-4DA40ABD1AC5"}
  */
 function addMarker(event, map) {
 	//Adding random marker
-	var marker = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180),
+	var marker = new scopes.modDataVis$googleMaps.Marker({
+		position: new scopes.modDataVis$googleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180),
 		draggable: true,
 		title: 'Random marker'
 	})
@@ -308,7 +308,7 @@ function addMarker(event, map) {
  */
 function addInfoWindow(event, args) {
 	if (args) {
-		/** @type {scopes.modDataVisualization$GoogleMaps.Marker} */
+		/** @type {scopes.modDataVis$googleMaps.Marker} */
 		var marker;
 		
 		var marker_id = args[1];
@@ -329,7 +329,7 @@ function addInfoWindow(event, args) {
 	}
 	
 	//Adding infoWindow
-	var infoWindow = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
+	var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
 		content: content
 	});
 //	infoWindow.addEventListener(infoWindow, infoWindow.EVENT_TYPES.CLOSECLICK);

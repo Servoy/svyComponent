@@ -1,11 +1,11 @@
 /**
- * @properties={typeid:35,uuid:"7172DDE1-FC96-4CEE-9EB1-A35109AD7AF6",variableType:-4}
+ * @properties={typeid:35,uuid:"C0E99679-46E1-4ABA-95B9-B5311337155F",variableType:-4}
  */
 var m, m2;
 
 /**
  *
- * @properties={typeid:35,uuid:"20C57850-3FDF-4EDA-8407-8E1A0AA82CB7",variableType:-4}
+ * @properties={typeid:35,uuid:"BBD8B165-0FDB-431D-8423-814A67E67477",variableType:-4}
  */
 var i, map2;
 
@@ -24,9 +24,9 @@ function update(force) {
 	if (!force && !autoUpdate) return
 	
 	for (i = 0; i < maps.length; i++) {
-//		var sw = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-//		var ne = new scopes.modDataVisualization$GoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-//		var bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(sw,ne)
+//		var sw = new scopes.modDataVis$googleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
+//		var ne = new scopes.modDataVis$googleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
+//		var bounds = new scopes.modDataVis$googleMaps.LatLngBounds(sw,ne)
 //		maps[i].setZoom(parseInt((Math.random() * 10).toFixed(0)))
 //		maps[i].panToBounds(bounds)
 		
@@ -46,10 +46,10 @@ function onLoad(event) {
 	
 //	//Instantiate GoogleMaps
 	
-	map2 = new scopes.modDataVisualization$GoogleMaps.Map(elements.map2, {
+	map2 = new scopes.modDataVis$googleMaps.Map(elements.map2, {
 		zoom: 2,
-		center: new scopes.modDataVisualization$GoogleMaps.LatLng(30, 20),
-		mapTypeId: scopes.modDataVisualization$GoogleMaps.MapTypeIds.TERRAIN,
+		center: new scopes.modDataVis$googleMaps.LatLng(30, 20),
+		mapTypeId: scopes.modDataVis$googleMaps.MapTypeIds.TERRAIN,
 		overviewMapControl: true,
 		panControl: true,
 		rotateControl: true,
@@ -60,16 +60,16 @@ function onLoad(event) {
 	maps.push(map2)
 	
 		
-//	m = new scopes.modDataVisualization$GoogleMaps.Marker({
-//		position: new scopes.modDataVisualization$GoogleMaps.LatLng(10,20),
+//	m = new scopes.modDataVis$googleMaps.Marker({
+//		position: new scopes.modDataVis$googleMaps.LatLng(10,20),
 //		draggable: false,
 //		title: 'Hello Paul',
 //		map: map2
 //	});
 //	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
-	m = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(42,5),
+	m = new scopes.modDataVis$googleMaps.Marker({
+		position: new scopes.modDataVis$googleMaps.LatLng(42,5),
 		draggable: true,
 		title: 'Hello Joas'
 	});
@@ -79,8 +79,8 @@ function onLoad(event) {
 	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
-	m2 = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(62,30),
+	m2 = new scopes.modDataVis$googleMaps.Marker({
+		position: new scopes.modDataVis$googleMaps.LatLng(62,30),
 		draggable: true,
 		title: 'Hello Joas'
 	});
@@ -88,19 +88,19 @@ function onLoad(event) {
 	
 //	m.addInfoWindow()
 	
-//	i = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
-//		position: new scopes.modDataVisualization$GoogleMaps.LatLng(5,52),
+//	i = new scopes.modDataVis$googleMaps.InfoWindow({
+//		position: new scopes.modDataVis$googleMaps.LatLng(5,52),
 //		content: 'Hello Joas'
 //	});
 	
-//	i = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
+//	i = new scopes.modDataVis$googleMaps.InfoWindow({
 //		content: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>'
 //	});
 //	i.addEventListener(infoWindowCallback, i.EVENT_TYPES.CLOSECLICK);
 //	i.open(map2, m);
 //	
-//	i = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
-//		position: new scopes.modDataVisualization$GoogleMaps.LatLng(25,80),
+//	i = new scopes.modDataVis$googleMaps.InfoWindow({
+//		position: new scopes.modDataVis$googleMaps.LatLng(25,80),
 //		content: 'Hello Joas'
 //	});
 //	i.addEventListener(infoWindowCallback, i.EVENT_TYPES.CLOSECLICK);
@@ -117,8 +117,8 @@ function onLoad(event) {
  */
 function markerCallback(event, data) {
 	application.output("MARKERCALLBACK: " + data);
-//	var i = new scopes.modDataVisualization$GoogleMaps.InfoWindow({
-//		position: new scopes.modDataVisualization$GoogleMaps.LatLng(5,52),
+//	var i = new scopes.modDataVis$googleMaps.InfoWindow({
+//		position: new scopes.modDataVis$googleMaps.LatLng(5,52),
 //		content: 'Hello Joas'
 //	});
 //	i.open(maps[0], m);
@@ -152,7 +152,7 @@ function openInfoWindow() {
  * @properties={typeid:24,uuid:"B05AF299-FA0F-48F8-81AB-B9C6C8A1F538"}
  */
 function panToBounds(event) {
-	var bounds = new scopes.modDataVisualization$GoogleMaps.LatLngBounds(m2.getPosition(),m.getPosition());
+	var bounds = new scopes.modDataVis$googleMaps.LatLngBounds(m2.getPosition(),m.getPosition());
 //	map2.fitBounds(bounds);
 	map2.panToBounds(bounds);
 }
