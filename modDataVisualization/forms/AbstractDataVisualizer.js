@@ -9,7 +9,7 @@
  */
 
 /**
- * Variable containing the strinified version of the DOM variable after the render cycle. 
+ * Variable containing the stringified version of the DOM variable after the render cycle. 
  * This variable is dataprovider for the non-editable HMTL area through which the markup gets inserted into the browser
  * @private
  * @type {String}
