@@ -365,12 +365,6 @@ function getLatLng(address) {
 }
 
 /**
- * @properties={typeid:24,uuid:"A275C2E0-4BA2-423E-80E9-49E02C03705F"}
- */
-function testCCCFail() {
-	jsunit.assertEquals(1,2)
-}
-/**
  * Creates a LatLngBound including all markers and calls fitBounds on the map, so it zooms to show all markers 
  *
  * @param {Object} event
