@@ -124,7 +124,7 @@ function isRendered() {
 function onLoad(event) {
 	//TODO: maybe optimize the inclusion of json2, only when JSON isn't supported out of the box?
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
-		.addJavaScriptDependancy('media:///json2.js', this)
+	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///json2.js', this)
 	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize();'
 }
 

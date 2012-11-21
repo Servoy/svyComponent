@@ -20,287 +20,16 @@
  * @properties={typeid:35,uuid:"C88DB00A-27F8-4CAB-A8FB-C1D2D50FC5C4",variableType:-4}
  */
 var init = function() {
-	var code = <script type='text/javascript'>
-	<![CDATA[
-		console.log('CHECK: Injecting MAPS api')
-
-		$("document").ready(function() {
-	   		var script = document.createElement("script");
-	    	script.type = "text/javascript";
-	    	script.src = 'http://maps.googleapis.com/maps/api/js?v=3.9&key=AIzaSyD6A559b-KBYGBBM6mmDPcYYNpAzv_Rv1Y&sensor=false&callback=svyDataVisGMapCallback';
-//	    	script.src = 'http://maps.googleapis.com/maps/api/js?key=' + apiKey + '&sensor=false&callback=svyDataVisGMapCallback';
-	    	document.head.appendChild(script);
-		});
-		
-		if (window.svyDataVis == undefined) var svyDataVis = {
-			dynConstructor: function (Constructor) {
-				//Helper function form dynamically calling a constructor function with arguments
-				//http://stackoverflow.com/questions/3362471/how-can-i-call-a-javascript-constructor-using-call-or-apply
-				var args = Array.prototype.slice.call(arguments, 1);
-				return function() {
-
-					var Temp = function() {}, // temporary constructor
-						inst, ret; // other vars
-
-					// Give the Temp constructor the Constructor's prototype
-					Temp.prototype = Constructor.prototype;
-
-					// Create a new instance
-					inst = new Temp;
-
-					// Call the original Constructor with the temp
-					// instance as its context (i.e. its 'this' value)
-					ret = Constructor.apply(inst, args);
-
-					// If an object has been returned then return it otherwise
-					// return the original instance.
-					// (consistent with behaviour of the new operator)
-					return Object(ret) === ret ? ret : inst;
-
-				}
-			},
-			reviver: function (key, value) {
-				//Helper function to deserialize JSON containing special objects that should map to clientside API
-	    		if (value.hasOwnProperty('svySpecial') && value.svySpecial == true) {
-	    			var object = value.scope||window
-					for (var i = 0; i < value.parts.length; i++) {
-						object = object[value.parts[i] ]
-					}
-					switch (value.type) {
-						case 'call':
-							return object.apply(value.scope ? window[value.scope] : null, value.args)
-						case 'constructor':
-							return svyDataVis.dynConstructor.apply(this, [object].concat(value.args))()
-						case 'reference':
-							return object
-//							case 'domReference':
-//								return document.getElementbyId(args[0])
-						default:
-							return
-					}
-	    		}
-	    		return value
-	    	}
-		}
-		svyDataVis.gmaps = {
-			objects: {},
-			todos: {},
-			
-			createMarker: function(node) {
-				var marker = new google.maps.Marker(node.options)
-				marker.set('svyId',node.id)
-				svyDataVis.gmaps.objects[node.id] = marker
-				
-				//Add event listeners
-				var events = ['click', 'dblclick', 'dragend', 'rightclick'];
-				for (var j = 0; j < events.length; j++) {
-					var handler = function(id, eventType){
-						return function(event) {
-							svyDataVis.gmaps.callbackIntermediate("marker", id, eventType, event)
-						}
-					}(node.id, events[j])
-					google.maps.event.addListener(marker, events[j], handler);
-				}
-				return marker;
-			},
-			
-			createInfoWindow: function(node) {
-				//The content was escaped because of possible html -> unescape
-				node.content = unescape(node.content);
-				
-				//Create infoWindow in the browser
-				var infoWindow = new google.maps.InfoWindow(node)
-				infoWindow.set('svyId',node.id)
-				svyDataVis.gmaps.objects[node.id] = infoWindow
-				
-				//Add event listeners
-				var events = ['closeclick'];
-				for (var j = 0; j < events.length; j++) {
-					var handler = function(id, eventType){
-						return function(event) {
-							svyDataVis.gmaps.callbackIntermediate("infoWindow", id, eventType, event)
-						}
-					}(node.id, events[j])
-					google.maps.event.addListener(infoWindow, events[j], handler);
-				}
-//				infoWindow.open(node.map, node.anchor);
-				return infoWindow;
-			},
-			removeMarker: function(id) {
-				svyDataVis.gmaps.objects[id].setMap(null);
-				svyDataVis.gmaps.objects[id] = null;
-			},
-			
-			initialize: function() {
-				console.log('CHECK: initialize called for GMAPS: ' + arguments.length + ' - '+ window.google)
-		    	
-				$.each(arguments, function(key, value){
-					svyDataVis.gmaps.todos[value] = true
-				})
-//				for (var i = 0; i <= arguments.length; i++) {
-//	    			this.todos[arguments[i] ] = true
-//	    		}
-			
-				if (!window.google || google == undefined || !google.maps) {
-		    		return
-		    	}
-				
-		    	$.each(this.todos, function(value){
-	    		//for (var i = 0; i < this.todos.length; i++) {
-	    			console.log(svyDataVis.gmaps[value])
-	    			var node = JSON.parse(svyDataVis.gmaps[value], svyDataVis.reviver)
-
-					if (node && node.type == "map") {
-						//Create new Map in the browser
-						var map = new google.maps.Map(document.getElementById(node.id), node.options)
-						map.set('svyId',node.id)
-						svyDataVis.gmaps.objects[node.id] = map
-						
-						//Add event listeners
-						var events = [
-							'idle',
-//							'bounds_changed', 
-//							'center_changed', 
-							'click', 
-							'dblclick', 
-							'heading_changed', 
-							'maptypeid_changed', 
-							'projection_changed',
-							'tilt_changed'
-//							'zoom_changed',
-						];
-						
-						for (var j = 0; j < events.length; j++) {
-							var handler = function(id, eventType){
-								return function(event) {
-									svyDataVis.gmaps.callbackIntermediate("map", id, eventType, event)
-								}
-							}(node.id, events[j])
-							google.maps.event.addListener(map, events[j], handler);
-						}
-						
-					} else if (node && node.type == "marker"){
-						//Create marker in the browser
-//						console.log(id);
-						svyDataVis.gmaps.createMarker(node);
-					} else if (node && node.type == "infoWindow") {
-						//Create infoWindow in the browser
-						svyDataVis.gmaps.createInfoWindow(node)
-					}
-				})
-		    },
-			
-			callbackIntermediate: function(objectType, id, eventType, event){
-				//Intermediate function to retrieve relevant data when events occur on a map/marker/infoWindow and then send them to the server
-				var data;
-//				console.log("CALLBACKINTERMEDIATE: " + objectType + ", " +  id + ", " +  eventType + ", " +  event);
-				var object = svyDataVis.gmaps.objects[id];
-				switch (objectType) {
-					case 'map': 
-						switch (eventType) {
-		//					case 'bounds_changed':
-		//						break;
-		//					case 'center_changed':
-		//						data = JSON.stringify({lat: map.getCenter().lat(), lng: map.getCenter().lng()})
-		//						break;
-		//					case 'click':
-		//						console.log('click');
-		//						break;
-		//					case 'position_changed':
-		//						console.log('click');
-		//						break;
-		//					case 'dblclick':
-		//						break;
-		//					case 'heading_changed':
-		//						data = map.getHeading() 
-		//						break;
-		//					case 'maptypeid_changed':
-		//						data = map.getMapTypeId()
-		//						break;
-		//					case 'projection_changed':
-		//						break;
-		//					case 'tilt_changed':
-		//						data = map.getTilt()
-		//						break;
-		//					case 'zoom_changed':
-		//						data = map.getZoom();
-		//						break;
-							case 'idle':
-										//Pass position and mapid to Servoy
-										bounds = object.getBounds()
-							
-								data = JSON.stringify({
-									bounds: {sw: {lat: bounds.getSouthWest().lat(), lng: bounds.getSouthWest().lng()}, ne: {lat: bounds.getNorthEast().lat(), lng: bounds.getNorthEast().lng()}},
-											center: {lat: object.getCenter().lat(), lng: object.getCenter().lng()},
-											heading: object.getHeading(),
-											mapTypeId: object.getMapTypeId(),
-											tilt: object.getTilt(),
-											zoom: object.getZoom()
-								})
-								break;
-							default:
-								break;
-						}
-						break; //break 'map' case
-					case 'marker':
-						switch (eventType) {
-		//					case 'click': 
-		//				       var infowindow = new google.maps.InfoWindow({
-		//				            content: "hoi blabla"
-		//				        });
-		//
-		//				        infowindow.open(marker.getMap(),marker);
-		//						break;
-							default:
-										//Pass position and mapid to Servoy
-								data = JSON.stringify({
-											position: {lat: object.getPosition().lat(), lng: object.getPosition().lng()},
-											mapid: object.map.svyId
-								})		
-								break;
-						}
-						break; //break 'marker' case
-					
-					case 'infoWindow':
-						//eventType is only 'closeclick' for now
-						break; //break 'infowindow' case
-				}
-				//Call the mapsEventHandler that will call the Servoy callback
-				this.mapsEventHandler(objectType, id, eventType,data)
-			}
-		}
-		
-		function svyDataVisGMapCallback() {
-			console.log('CHECK: gmap API loaded, callback invoked')
-			svyDataVis.gmaps.initialize()
-		}
-		
-	]]>
-	</script>
+	scopes.modUtils$WebClient.addJavaScriptDependancy("media:///svyDataVis.js")
+	scopes.modUtils$WebClient.addJavaScriptDependancy("media:///googleMapsHandler.js")
 	
-	
-	//TODO: find a better way to do this: adding the UUID will prevent browsers caching the .js file
-	var bytes = new Packages.java.lang.String(code).getBytes('UTF-8')
-	var uuid = application.getUUID();
-	solutionModel.newMedia('googleMapsHandler_'+uuid+'.js', bytes)
-	plugins.WebClientUtils.addJsReference('media:///googleMapsHandler_'+uuid+'.js')
-	//solutionModel.newMedia('googleMapsHandler.js', bytes)
-	//plugins.WebClientUtils.addJsReference('media:///googleMapsHandler.js')
-
 	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'id', 'eventType', 'data'], false);
 	var script = 'svyDataVis.gmaps.mapsEventHandler = function(objectType, id, eventType, data){' + callback + '}';
 	bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
 	uuid = application.getUUID();
 	solutionModel.newMedia('googleMapsHandlerCallback_'+uuid+'.js', bytes)
-	plugins.WebClientUtils.addJsReference('media:///googleMapsHandlerCallback_'+uuid+'.js')
-	
-	//Setup toObjectPresentation function through prototype on constructor functions that need to be serialized to client
-	scopes.modDataVisualization$GoogleMaps.LatLng.prototype["toObjectPresentation"] = function() {
-		return { svySpecial: true, type: 'constructor', parts: ['google', 'maps', 'LatLng'], args: [this.lat(), this.lng()] }
-	}
-	scopes.modDataVisualization$GoogleMaps.MapTypeId.prototype["toObjectPresentation"] = function() {
-		return { svySpecial: true, type: 'reference', parts: ['google', 'maps', 'MapTypeId', this.type] }
-	}
+	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///googleMapsHandlerCallback_'+uuid+'.js')
+
 }()
 
 /**
@@ -430,6 +159,10 @@ var allObjects = {}
  * @properties={typeid:24,uuid:"E92C5DA2-94C4-4A0C-8F62-FD28DC3424D5"}
  */
 function LatLng(lat, lng) {
+	this.toObjectPresentation = function() {
+		return { svySpecial: true, type: 'constructor', parts: ['google', 'maps', 'LatLng'], args: [this.lat(), this.lng()] }
+	}
+	
 	/**
 	 * @param {LatLng} other
 	 * @return {Boolean}
@@ -616,7 +349,11 @@ function LatLngBounds(sw, ne){
  * @properties={typeid:24,uuid:"CC65FD0C-26F6-4932-A711-9BF5FDD62B2D"}
  */
 function MapTypeId(type) {
+	this.toObjectPresentation = function() {
+		return { svySpecial: true, type: 'reference', parts: ['google', 'maps', 'MapTypeId', this.type] }
+	}
 	this.type = type
+	
 }
 
 /**
