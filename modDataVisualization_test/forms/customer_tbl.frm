@@ -2,7 +2,6 @@ dataSource:"db:/example_data/customers",
 items:[
 {
 dataProviderID:"city",
-editable:false,
 location:"280,54",
 name:"city",
 size:"103,20",
@@ -24,7 +23,6 @@ uuid:"41F29F21-F7F4-4314-AD26-9188663FFEA8"
 },
 {
 dataProviderID:"companyname",
-editable:false,
 location:"0,54",
 name:"companyname",
 size:"140,20",
@@ -46,7 +44,6 @@ uuid:"A3F8B990-0DEF-4C06-8460-E4A5E86AA5B1"
 },
 {
 dataProviderID:"address",
-editable:false,
 location:"140,54",
 name:"address",
 size:"140,20",

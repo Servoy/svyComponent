@@ -12,7 +12,7 @@
 function toggleMarker(oldValue, newValue, event) {
 	if (newValue == 1) {
 		//Create marker
-		var pos = forms.test.getLatLng(address + " " + postalcode + " " + city);
+		var pos = forms.test.getLatLng(address + ", " + city);
 		if (pos) {
 			forms.customer_map.addMarker(foundset.getSelectedRecord(), pos);
 			forms.customer_map.fitBounds();

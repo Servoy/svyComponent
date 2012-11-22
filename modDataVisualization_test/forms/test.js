@@ -122,25 +122,19 @@ function onLoad(event) {
 	m.setMap(map2)
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
-	m = new scopes.modDataVis$googleMaps.Marker({
-		position: new scopes.modDataVis$googleMaps.LatLng(48.16780746339156,59.84375),
+	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
+	m = new scopes.modDataVisualization$GoogleMaps.Marker({
+		position: new scopes.modDataVisualization$GoogleMaps.LatLng(pos.lat,pos.lng),
 		draggable: true,
-		title: 'hoi',
+		title: 'Servoy HQ',
 //		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
 		map: map2
 	});
-	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
+	m.addEventListener(addInfoWindow,m.EVENT_TYPES.CLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DBLCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
-	//Adding infoWindows
-	var i = new scopes.modDataVis$googleMaps.InfoWindow({
-		content: 'Hello India'
-	});
-	i.open(map2, m);
-	
-	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
 	
 	var i2 = new scopes.modDataVis$googleMaps.InfoWindow({
 		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat,pos.lng),
@@ -325,12 +319,23 @@ function addInfoWindow(event, args) {
 	//Get content from marker if available 
 	var content;
 	if (marker) {
-		content = "<b>" + marker.getTitle() + "</b><br>Position: (" + marker.getPosition().lat() + "," + marker.getPosition().lng() + ")";
 	}
-	
 	//Adding infoWindow
 	var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
-		content: content
+//		content: content
+		content: scopes.modDataVisualization.stripCDataTags(<div>
+			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
+			<p>De Brand 65<br/>
+			3823 LJ Amersfoort<br/>
+			The Netherlands<br/>
+			Voice: +31 33 455 9877<br/>
+			Fax: +31 84 883 2297<br/>
+			<br/>
+			<span style="display: block;width: 100%; height: 1px; border: 0px solid lightgray; border-bottom-width: 1px"/>
+			<br/>
+			<a href="javascript:void()">20 likes</a>
+			</p>
+		</div>)
 	});
 //	infoWindow.addEventListener(infoWindow, infoWindow.EVENT_TYPES.CLOSECLICK);
 	infoWindow.open(maps[mapid], marker);
