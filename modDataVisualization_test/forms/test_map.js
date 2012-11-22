@@ -1,15 +1,4 @@
 /**
- * @properties={typeid:35,uuid:"D63C5E5B-8100-4849-BE78-982EC797B464",variableType:-4}
- */
-var m, m2;
-
-/**
- *
- * @properties={typeid:35,uuid:"BC06F74F-8B3C-4FA2-ABC9-5CC2EF322B95",variableType:-4}
- */
-var i
-
-/**
  * @type {scopes.modDataVis$googleMaps.Map}
  *
  * @properties={typeid:35,uuid:"0950DF83-B81B-43F6-B159-1E0898DDFDD0",variableType:-4}
@@ -31,12 +20,6 @@ function update(force) {
 	if (!force && !autoUpdate) return
 	
 	for (var j = 0; j < maps.length; j++) {
-//		var sw = new scopes.modDataVis$googleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-//		var ne = new scopes.modDataVis$googleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
-//		var bounds = new scopes.modDataVis$googleMaps.LatLngBounds(sw,ne)
-//		maps[i].setZoom(parseInt((Math.random() * 10).toFixed(0)))
-//		maps[i].panToBounds(bounds)
-		
 		//Add random marker;
 		addMarker(null, maps[j]);
 	}
@@ -50,9 +33,7 @@ function update(force) {
  * @properties={typeid:24,uuid:"75FD526E-F7F5-4491-90BA-2235847E74F9"}
  */
 function onLoad(event) {
-	
-//	//Instantiate GoogleMaps
-	
+	//Instantiate GoogleMaps
 	map2 = new scopes.modDataVis$googleMaps.Map(elements.map2, {
 		zoom: 2,
 		center: new scopes.modDataVis$googleMaps.LatLng(30, 20),
@@ -66,16 +47,8 @@ function onLoad(event) {
 	})
 	maps.push(map2)
 	
-		
-//	m = new scopes.modDataVis$googleMaps.Marker({
-//		position: new scopes.modDataVis$googleMaps.LatLng(10,20),
-//		draggable: false,
-//		title: 'Hello Paul',
-//		map: map2
-//	});
-//	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
-	
-	m = new scopes.modDataVis$googleMaps.Marker({
+	//Create marker
+	var m = new scopes.modDataVis$googleMaps.Marker({
 		position: new scopes.modDataVis$googleMaps.LatLng(42,5),
 		draggable: true,
 		title: 'Hello Joas'
@@ -86,37 +59,12 @@ function onLoad(event) {
 	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
-	m2 = new scopes.modDataVis$googleMaps.Marker({
+	var m2 = new scopes.modDataVis$googleMaps.Marker({
 		position: new scopes.modDataVis$googleMaps.LatLng(62,30),
 		draggable: true,
 		title: 'Hello Joas'
 	});
 	m2.setMap(map2);
-	
-//	m.addInfoWindow()
-	
-//	i = new scopes.modDataVis$googleMaps.InfoWindow({
-//		position: new scopes.modDataVis$googleMaps.LatLng(5,52),
-//		content: 'Hello Joas'
-//	});
-	
-//	i = new scopes.modDataVis$googleMaps.InfoWindow({
-//		content: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>'
-//	});
-//	i.addEventListener(infoWindowCallback, i.EVENT_TYPES.CLOSECLICK);
-//	i.open(map2, m);
-//	
-//	i = new scopes.modDataVis$googleMaps.InfoWindow({
-//		position: new scopes.modDataVis$googleMaps.LatLng(25,80),
-//		content: 'Hello Joas'
-//	});
-//	i.addEventListener(infoWindowCallback, i.EVENT_TYPES.CLOSECLICK);
-////	i.open(maps[0]);
-//
-//	i.open(map2, m);	
-	
-	//Start automatic update
-//	plugins.scheduler.addJob('test',new Date(Date.now()+10000),update,10000)
 }
 
 /**
@@ -124,41 +72,4 @@ function onLoad(event) {
  */
 function markerCallback(event, data) {
 	application.output("MARKERCALLBACK: " + data);
-//	var i = new scopes.modDataVis$googleMaps.InfoWindow({
-//		position: new scopes.modDataVis$googleMaps.LatLng(5,52),
-//		content: 'Hello Joas'
-//	});
-//	i.open(maps[0], m);
-}
-
-/**
- * @param {Object} event
- * @param {Object} data
- * @param {{test:Array<{id:String, description:String}>}} ok
- *
- * @properties={typeid:24,uuid:"23B372AA-7272-403D-8CD8-3850F4BF78EA"}
- */
-function infoWindowCallback(event, data, ok) {
-	ok.test[0].description
-	application.output("INFOWINDOWCALLBACK: " + data);
-}
-
-
-///**
-// * @properties={typeid:24,uuid:"B5E8B0AA-CF7C-4CDF-B540-1DE9597EAEF3"}
-// */
-//function openInfoWindow() {
-//	i.open(map2, m);
-//}
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"B05AF299-FA0F-48F8-81AB-B9C6C8A1F538"}
- */
-function panToBounds(event) {
-	var bounds = new scopes.modDataVis$googleMaps.LatLngBounds(m2.getPosition(),m.getPosition());
-	map2.panToBounds(bounds);
 }
