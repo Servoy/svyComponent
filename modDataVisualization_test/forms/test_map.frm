@@ -15,16 +15,6 @@ typeid:16,
 uuid:"19A9ECB7-0F25-416B-8B9E-7FECB5FC04CB"
 },
 {
-location:"278,10",
-onActionMethodID:"B05AF299-FA0F-48F8-81AB-B9C6C8A1F538",
-onDoubleClickMethodID:"-1",
-onRightClickMethodID:"-1",
-size:"110,20",
-text:"panToBounds",
-typeid:7,
-uuid:"1CA808F3-8F59-437B-A17F-3F6F47D40FD4"
-},
-{
 extendsID:"BAF0DC1B-0402-4EC9-8D9D-837B3F5960D6",
 location:"979,10",
 size:"50,42",
