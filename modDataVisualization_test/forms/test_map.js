@@ -7,7 +7,14 @@ var m, m2;
  *
  * @properties={typeid:35,uuid:"BC06F74F-8B3C-4FA2-ABC9-5CC2EF322B95",variableType:-4}
  */
-var i, map2;
+var i
+
+/**
+ * @type {scopes.modDataVis$googleMaps.Map}
+ *
+ * @properties={typeid:35,uuid:"0950DF83-B81B-43F6-B159-1E0898DDFDD0",variableType:-4}
+ */
+var map2;
 
 /**
  * @properties={typeid:24,uuid:"74895BB9-A55A-4492-AC67-9D6A19E11F4E"}
@@ -23,7 +30,7 @@ function manualUpdate() {
 function update(force) {
 	if (!force && !autoUpdate) return
 	
-	for (i = 0; i < maps.length; i++) {
+	for (var j = 0; j < maps.length; j++) {
 //		var sw = new scopes.modDataVis$googleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
 //		var ne = new scopes.modDataVis$googleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180)
 //		var bounds = new scopes.modDataVis$googleMaps.LatLngBounds(sw,ne)
@@ -31,7 +38,7 @@ function update(force) {
 //		maps[i].panToBounds(bounds)
 		
 		//Add random marker;
-		addMarker(null, maps[i]);
+		addMarker(null, maps[j]);
 	}
 }
 
@@ -137,12 +144,12 @@ function infoWindowCallback(event, data, ok) {
 }
 
 
-/**
- * @properties={typeid:24,uuid:"B5E8B0AA-CF7C-4CDF-B540-1DE9597EAEF3"}
- */
-function openInfoWindow() {
-	i.open(map2, m);
-}
+///**
+// * @properties={typeid:24,uuid:"B5E8B0AA-CF7C-4CDF-B540-1DE9597EAEF3"}
+// */
+//function openInfoWindow() {
+//	i.open(map2, m);
+//}
 
 /**
  * Perform the element default action.
@@ -153,6 +160,5 @@ function openInfoWindow() {
  */
 function panToBounds(event) {
 	var bounds = new scopes.modDataVis$googleMaps.LatLngBounds(m2.getPosition(),m.getPosition());
-//	map2.fitBounds(bounds);
 	map2.panToBounds(bounds);
 }

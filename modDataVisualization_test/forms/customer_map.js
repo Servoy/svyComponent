@@ -72,49 +72,47 @@ function removeMarker(customerRec) {
 
 
 /**
- * @param event
- * @param args
+ * @param {String} objectType
+ * @param {String} id
+ * @param {String} eventType
+ * @param {String} data
  *
  * @properties={typeid:24,uuid:"EEF54B74-6DA2-4FE6-9244-1B2DC321388B"}
  */
-function addInfoWindow(event, args) {
-	if (args) {
-		//Get marker and customer_id
-		var marker_id = args[1];
-		var marker, customer_id;
-		for (var i in markers) {
-			if (markers[i].getId() == marker_id) {
-				marker = markers[i];
-				customer_id = i;
-				break;
-			}
+function addInfoWindow(objectType, id, eventType, data) {
+	//Get customer_id
+	var marker, customer_id;
+	for (var i in markers) {
+		if (markers[i].getId() == id) {
+			marker = markers[i];
+			customer_id = i;
+			break;
 		}
-		
-		//Get customer record
-		/** @type {JSFoundSet<db:/example_data/customers>} */
-		var customerFS = databaseManager.getFoundSet("db:/example_data/customers")
-		customerFS.addFoundSetFilterParam("customerid", "=", customer_id);
-		customerFS.loadAllRecords();
-		var customerRec = customerFS.getRecord(1);
-		
-		
-		//Adding infoWindow
-		var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
-			content: scopes.modDataVisualization.stripCDataTags(<div>
-				<b>{customerRec.companyname}</b><br/>(<a href="http://www.servoy.com" target="new">more information</a>)<br/>
-				<br/>
-				{customerRec.address}<br/>
-				{customerRec.postalcode} {customerRec.city}<br/>
-				{customerRec.country.toUpperCase()}<br/>
-				Voice: {customerRec.phone}<br/>
-				Fax: {customerRec.fax}<br/>
-				<br/>
-				<span style="display: block;width: 100%; height: 30px; border: 0px solid lightgray; border-bottom-width: 1px"/>
-				<br/>
-				<a href="javascript:void()">20 likes</a>
-			</div>)
-		});
-		infoWindow.open(map, marker);
 	}
 	
+	//Get customer record
+	/** @type {JSFoundSet<db:/example_data/customers>} */
+	var customerFS = databaseManager.getFoundSet("db:/example_data/customers")
+	customerFS.addFoundSetFilterParam("customerid", "=", customer_id);
+	customerFS.loadAllRecords();
+	var customerRec = customerFS.getRecord(1);
+	
+	
+	//Adding infoWindow
+	var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
+		content: scopes.modDataVisualization.stripCDataTags(<div>
+			<b>{customerRec.companyname}</b><br/>(<a href="http://www.servoy.com" target="new">more information</a>)<br/>
+			<p>
+			{customerRec.address}<br/>
+			{customerRec.postalcode} {customerRec.city}<br/>
+			{customerRec.country.toUpperCase()}<br/>
+			Voice: {customerRec.phone}<br/>
+			Fax: {customerRec.fax}<br/>
+			<br/>
+			<span style="display: block;width: 100%; height: 1px; border: 0px solid lightgray; border-bottom-width: 1px"/>
+			<a href="javascript:void()">20 likes</a>
+			</p>
+		</div>)
+	});
+	infoWindow.open(map, marker);
 }

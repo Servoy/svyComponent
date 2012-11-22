@@ -123,8 +123,8 @@ function onLoad(event) {
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
 	
 	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
-	m = new scopes.modDataVisualization$GoogleMaps.Marker({
-		position: new scopes.modDataVisualization$GoogleMaps.LatLng(pos.lat,pos.lng),
+	m = new scopes.modDataVis$googleMaps.Marker({
+		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat,pos.lng),
 		draggable: true,
 		title: 'Servoy HQ',
 //		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
@@ -295,20 +295,22 @@ function addMarker(event, map) {
 }
 
 /**
- * @param {Object} event
- * @param {Object} args
+ * @param {String} objectType
+ * @param {String} id
+ * @param {String} eventType
+ * @param {String} data
  *
  * @properties={typeid:24,uuid:"884AC979-A6FC-4E1B-AD24-C8BF439AA98E"}
  */
-function addInfoWindow(event, args) {
-	if (args) {
+function addInfoWindow(objectType, id, eventType, data) {
+	if (data) {
 		/** @type {scopes.modDataVis$googleMaps.Marker} */
 		var marker;
 		
-		var marker_id = args[1];
+		var marker_id = id;
 		
 		/** @type {{mapid: UUID}} */
-		var params = JSON.parse(args[3]);
+		var params = JSON.parse(data);
 		
 		var mapid = params.mapid;
 		if (mapid && forms[mapid]) {
@@ -317,7 +319,7 @@ function addInfoWindow(event, args) {
 	}
 	
 	//Get content from marker if available 
-	var content;
+//	var content;
 	if (marker) {
 	}
 	//Adding infoWindow
@@ -332,13 +334,14 @@ function addInfoWindow(event, args) {
 			Fax: +31 84 883 2297<br/>
 			<br/>
 			<span style="display: block;width: 100%; height: 1px; border: 0px solid lightgray; border-bottom-width: 1px"/>
-			<br/>
 			<a href="javascript:void()">20 likes</a>
 			</p>
 		</div>)
 	});
 //	infoWindow.addEventListener(infoWindow, infoWindow.EVENT_TYPES.CLOSECLICK);
-	infoWindow.open(maps[mapid], marker);
+	/** @type {scopes.modDataVis$googleMaps.Map} */
+	var m = maps[mapid]
+	infoWindow.open(m, marker);
 }
 
 /**
