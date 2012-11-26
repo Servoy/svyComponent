@@ -13,7 +13,7 @@
  * This variable is dataprovider for the non-editable HMTL area through which the markup gets inserted into the browser
  * @private
  * @type {String}
- *
+ * @SuppressWarnings(unused)
  * @properties={typeid:35,uuid:"97DEF22B-2844-41D3-9EF4-CADA14063C14"}
  */
 var html;
