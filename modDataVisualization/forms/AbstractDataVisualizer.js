@@ -59,7 +59,7 @@ function storeState(jsonString) {
 		copy.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
 	}
 	render(copy)
-	html = scopes.modDataVisualization.stripCDataTags(copy);
+	html = scopes.modUtils$WebClient.XHTML2Text(copy);
 	
 	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
 	plugins.WebClientUtils.setRendered(elements.visualizationContainer); 

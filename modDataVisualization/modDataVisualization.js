@@ -9,30 +9,6 @@
  */
 
 /**
- * Converts an XML object to a String and removes CData tags ( &lt;![CDATA[ .... ]]> ).
- * @param {XML} html
- *
- * @returns {String}
- *
- * @properties={typeid:24,uuid:"5A050F6A-79CF-4C5B-8EEA-24F0E646FA85"}
- */
-function stripCDataTags(html) {
-	return html.toXMLString().replace(/]]>/g, '').replace(/\<\!\[CDATA\[/g, '');
-}
-
-/**
- * Wraps arbitrary content in CDATA tags
- * @param {String} content
- * 
- * @return {XML}
- * 
- * @properties={typeid:24,uuid:"D30E6A46-C3C7-4760-95F0-2ECD43F06127"}
- */
-function CDataWrapper(content) {
-	return new XML('<![CDATA[' + content + ']]>')
-}
-
-/**
  * Internal API: DO NOT CALL
  * @param {Object} o
  * @param {Array} [specialTypes]
