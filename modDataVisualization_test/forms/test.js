@@ -155,14 +155,14 @@ function onLoad(event) {
 	});
 	i2.open(map2);	
 	
-	var lineChart = new scopes.modDataVis$flotr2.LineChart(elements.flotr2$line)
-	lineChart.draw({
+	var lineChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$line)
+	lineChart.draw([{
 				data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
 				lines: {
 					lineWidth: 0.5, show: true, fill: true, fillColor: ['#fcefe3', '#efbc93'], fillOpacity: 0.34
 				}, 
 				points: { show: true, fill: true, fillColor: '#e79a70', hitRadius: 7 }
-	}, {
+	}], {
 				colors: ['#e79a70'],
 				shadowSize: 0,
 				fontColor: '#e1e1e1',
@@ -200,7 +200,7 @@ function onLoad(event) {
 				}
 			})
 	
-	var barChart = new scopes.modDataVis$flotr2.PieChart(elements.flotr2$pie)
+	var barChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$pie, scopes.modDataVis$flotr2.CHART_TYPES.PIES)
 	var d1 = [[0, 4]],
     d2 = [[0, 3]],
     d3 = [[0, 1.03]],
