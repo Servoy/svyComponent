@@ -46,9 +46,15 @@ var scripts = {};
  * @properties={typeid:24,uuid:"0FB00B1F-C956-484C-9C50-595675A57E54"}
  */
 function storeState(jsonString) {
+	/** @type {{id: String}} */
+	var obj = JSON.parse(jsonString);
+	
 	//TODO: content of script tag ought to be wrapped in CDATA tags to prevent the XML impl. from escaping invalid XMl characters
 	//Testcase: GMap with InfoWindow containing HTML content
-	scripts[getId()] = 'svyDataVis.' + getBrowserId() + '[\'' + getId() + '\']=\'' +  jsonString + '\''
+	scripts[obj.id] = 'svyDataVis.' + getBrowserId() + '[\'' + obj.id + '\']=\'' +  jsonString + '\''
+	
+	//Optimized code, but fails because storestate is also called with subTypes like Markers r InfoWinows
+	//scripts[getId()] = 'svyDataVis.' + getBrowserId() + '[\'' + getId() + '\']=\'' +  jsonString + '\''
 	
 	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
 	var copy = dom.copy()
