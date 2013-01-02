@@ -1,5 +1,5 @@
 /**
- * @type {Array<scopes.modDataVis$justGauge.JustGauge>}
+ * @type {Array<scopes.modDataVis$justGage.JustGauge>}
  *
  * @properties={typeid:35,uuid:"8151F77F-6C93-49A3-81E8-03DBE7CA0FBB",variableType:-4}
  */
@@ -208,11 +208,7 @@ function onLoad(event) {
 	barChart.draw([
     { data : d1, label : 'Comedy' },
     { data : d2, label : 'Action' },
-    { data : d3, label : 'Romance',
-      pie : {
-        explode : 50
-      }
-    },
+    { data : d3, label : 'Romance', pie : { explode : 50}},
     { data : d4, label : 'Drama' }
   ], {
 	    HtmlText : false,
@@ -366,7 +362,7 @@ function getLatLng(address) {
 		/** @type {{results: Array<{}>, status: String}}*/
 		var result = JSON.parse(response.getResponseBody())
 		if (result.status == 'OK') {
-			return {lat: result.results[0].geometry.location.lat, lng: result.results[0].geometry.location.lng}
+			return {lat: result.results[0]['geometry'].location.lat, lng: result.results[0].geometry.location.lng}
 		}
 	}
 	return null
