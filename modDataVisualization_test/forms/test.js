@@ -121,11 +121,12 @@ function onLoad(event) {
 	});
 	m.setMap(map2)
 	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
+	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
 	
 	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
 	m = new scopes.modDataVis$googleMaps.Marker({
 		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat,pos.lng),
-		draggable: true,
+		draggable: false,
 		title: 'Servoy HQ',
 //		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
 		map: map2
@@ -133,8 +134,6 @@ function onLoad(event) {
 	m.addEventListener(addInfoWindow,m.EVENT_TYPES.CLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.DBLCLICK);
 	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
-	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
-	
 	
 	var i2 = new scopes.modDataVis$googleMaps.InfoWindow({
 		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat,pos.lng),
