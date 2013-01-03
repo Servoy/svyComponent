@@ -361,7 +361,7 @@ function getLatLng(address) {
 		/** @type {{results: Array<{}>, status: String}}*/
 		var result = JSON.parse(response.getResponseBody())
 		if (result.status == 'OK') {
-			return {lat: result.results[0]['geometry'].location.lat, lng: result.results[0].geometry.location.lng}
+			return {lat: result.results[0]['geometry'].location.lat, lng: result.results[0]['geometry'].location.lng}
 		}
 	}
 	return null
