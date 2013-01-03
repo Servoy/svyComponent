@@ -3,7 +3,7 @@
  */
 function testAbstractMethodImpl4AbstractDataVisualization() {
 	//All instances of AbstractDataVisualization should implement getBrowserId(), but not getId()
-	var instances = scopes.svyUI.getJSFormInstances(solutionModel.getForm('AbstractDataVisualizer'))
+	var instances = scopes.modUtils$UI.getJSFormInstances(solutionModel.getForm('AbstractDataVisualizer'))
 	
 	instances.forEach(function(element, index, array){
 		/** @type {JSForm} */
