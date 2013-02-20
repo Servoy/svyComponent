@@ -65,17 +65,17 @@ function onLoad(event) {
 	
 	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge2,{
 		title: 'Features',
-		value: (Math.random() * 100).toFixed(0)
+		value: parseInt((Math.random() * 100).toFixed(0))
 	}))
 	
 	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge3,{
 		title: 'Tasks',
-		value: (Math.random() * 100).toFixed(0)
+		value: parseInt((Math.random() * 100).toFixed(0))
 	}))
 	
 	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge4,{
 		title: 'Bugs',
-		value: (Math.random() * 100).toFixed(0)
+		value: parseInt((Math.random() * 100).toFixed(0))
 	}))
 	
 	//Instantiate Google GeoChart
@@ -154,7 +154,7 @@ function onLoad(event) {
 	});
 	i2.open(map2);	
 	
-	var lineChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$line)
+	var lineChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$line, scopes.modDataVis$flotr2.CHART_TYPES.LINES)
 	lineChart.draw([{
 				data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
 				lines: {
