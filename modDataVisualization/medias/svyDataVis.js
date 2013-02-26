@@ -46,6 +46,15 @@ if (window.svyDataVis == undefined) {
 				}
 			}
 			return value
+		},
+		JSON2Object: function (json) {
+			return JSON.parse(json,this.reviver)
+		},
+		debug: true,
+		log: function(text) {
+			if (this.debug && window.console && window.console.log) {
+				console.log(text)
+			}
 		}
 	}
 }
