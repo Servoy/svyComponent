@@ -40,22 +40,72 @@ var dom = <html>
 var scripts = {};
 
 /**
- * 
- * @param {String} jsonString
- *
- * @properties={typeid:24,uuid:"0FB00B1F-C956-484C-9C50-595675A57E54"}
+ * Internal API: DO NOT CALL
+ * @param {Object} o
+ * @param {Array} [specialTypes]
+ * @return {String}
+ * @properties={typeid:24,uuid:"B8DED9AD-3C2C-49BE-A3A0-2EDE44A1ACD1"}
  */
-function storeState(jsonString) {
-	/** @type {{id: String}} */
-	var obj = JSON.parse(jsonString);
-	
-	//TODO: content of script tag ought to be wrapped in CDATA tags to prevent the XML impl. from escaping invalid XMl characters
-	//Testcase: GMap with InfoWindow containing HTML content
-	scripts[obj.id] = 'svyDataVis.' + getBrowserId() + '[\'' + obj.id + '\']=\'' +  jsonString + '\''
-	
-	//Optimized code, but fails because storestate is also called with subTypes like Markers r InfoWinows
-	//scripts[getId()] = 'svyDataVis.' + getBrowserId() + '[\'' + getId() + '\']=\'' +  jsonString + '\''
-	
+function serializeObject(o, specialTypes) {
+	if (o['toObjectPresentation'] instanceof Function) {
+		var oo = o['toObjectPresentation']()
+		return serializeObject(oo, specialTypes);
+	}
+	var str = JSON.stringify(o, function(key, value) {
+			if (specialTypes && specialTypes.some(function(element, index, array) {
+					return value instanceof element
+				})) {
+					return value.toObjectPresentation();
+				}
+			return value
+		})
+		
+	return str;
+}
+
+///**
+// * @deprecated
+// * @param {String} jsonString
+// *
+// * @properties={typeid:24,uuid:"0FB00B1F-C956-484C-9C50-595675A57E54"}
+// */
+//function storeState(jsonString) {
+//	application.output('StoreState: ' + jsonString)
+//	/** @type {{id: String, type: String}} */
+//	var obj = JSON.parse(jsonString);
+//	
+//	var script = 'svyDataVis.' + getBrowserId() + '[\'' + obj.id + '\']=\'' +  jsonString + '\''
+//	
+//	if (obj.type != 'map' && !scripts[obj.id]) {
+//		//Is a Map subtype that wasn't send to the browser before
+//		plugins.WebClientUtils.executeClientSideJS(script)
+//		plugins.WebClientUtils.executeClientSideJS('; svyDataVis.' + getBrowserId() + '.initialize(\'' + obj.id +'\');')
+//	}
+//	
+//	//TODO: content of script tag ought to be wrapped in CDATA tags to prevent the XML impl. from escaping invalid XMl characters
+//	//Testcase: GMap with InfoWindow containing HTML content
+//	scripts[obj.id] = script
+//
+//	//Optimized code, but fails because storestate is also called with subTypes like Markers r InfoWinows
+//	//scripts[getId()] = 'svyDataVis.' + getBrowserId() + '[\'' + getId() + '\']=\'' +  jsonString + '\''
+//	
+//	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
+//	var copy = dom.copy()
+//	for (script in scripts) {
+//		copy.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
+//	}
+//	render(copy)
+//	html = scopes.modUtils$WebClient.XHTML2Text(copy);
+//	
+//	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
+//	plugins.WebClientUtils.setRendered(elements.visualizationContainer); 
+//}
+
+/**
+ * @private 
+ * @properties={typeid:24,uuid:"AB230B38-0AFA-4F94-B007-77C7F934EDAB"}
+ */
+function setState(){
 	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
 	var copy = dom.copy()
 	for (var script in scripts) {
@@ -66,6 +116,37 @@ function storeState(jsonString) {
 	
 	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
 	plugins.WebClientUtils.setRendered(elements.visualizationContainer); 
+}
+
+/**
+ * @param {{id: String, type: String}} object
+ *
+ * @properties={typeid:24,uuid:"7BA8B0CC-3122-43B0-B8A0-0D68ADCC9004"}
+ */
+function persistObject(object) {
+	application.output('persistObject: ' + JSON.stringify(object))
+	var script = 'svyDataVis.' + getBrowserId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\''
+	
+	if (object.type != 'map' && !scripts[object.id]) {
+		//Is a Map subtype that wasn't send to the browser before
+		plugins.WebClientUtils.executeClientSideJS(script)
+		plugins.WebClientUtils.executeClientSideJS('; svyDataVis.' + getBrowserId() + '.initialize(\'' + object.id +'\');')
+	}
+	
+	//TODO: content of script tag ought to be wrapped in CDATA tags to prevent the XML impl. from escaping invalid XMl characters
+	//Testcase: GMap with InfoWindow containing HTML content
+	scripts[object.id] = script
+	setState()
+}
+
+/**
+ * @param {String} id
+ *
+ * @properties={typeid:24,uuid:"07941164-8AE7-45BD-A993-22AC9D72F254"}
+ */
+function desistObject(id) {
+	delete scripts[id]
+	setState()
 }
 
 /**
@@ -125,10 +206,10 @@ function isRendered() {
  * @properties={typeid:24,uuid:"3BB316B5-1CFF-41F7-B96A-4626898897F1"}
  */
 function onLoad(event) {
-	//TODO: maybe optimize the inclusion of json2, only when JSON isn't supported out of the box?
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
+	//TODO: maybe optimize the inclusion of json2, only when JSON isn't supported out of the box?
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///json2.js', this)
-	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize();'
+	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize();' //TODO: this line can most likely be dropped
 }
 
 /**
@@ -157,7 +238,10 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"22CD8598-93D9-4261-952C-5129AE22778F"}
  */
 function onHide(event) {
-	//TODO: browserSide cleanup?
+	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid.
+	//TODO: solve the scenario where this forms onhide is called, but hte overall onHide action is canceled, because another form that is being hidden prevented the hide.
+	//This current code would remove all references, thus leaving stuff in undetermined state
+	plugins.WebClientUtils.executeClientSideJS('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.gmaps.objects[value]})')
 	rendered = false
 	return true
 }

@@ -10,6 +10,7 @@
 
 /**
  * Internal API: DO NOT CALL
+ * @deprecated
  * @param {Object} o
  * @param {Array} [specialTypes]
  * @return {String}
