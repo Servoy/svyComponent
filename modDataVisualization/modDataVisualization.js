@@ -10,31 +10,6 @@
 
 /**
  * Internal API: DO NOT CALL
- * @deprecated
- * @param {Object} o
- * @param {Array} [specialTypes]
- * @return {String}
- * @properties={typeid:24,uuid:"0D72ACC8-71D9-46BB-983E-A14AB191F73B"}
- */
-function serializeObject(o, specialTypes) {
-	if (o['toObjectPresentation'] instanceof Function) {
-		var oo = o['toObjectPresentation']()
-		return serializeObject(oo, specialTypes);
-	}
-	var str = JSON.stringify(o, function(key, value) {
-			if (specialTypes && specialTypes.some(function(element, index, array) {
-					return value instanceof element
-				})) {
-					return value.toObjectPresentation();
-				}
-			return value
-		})
-		
-	return str;
-}
-
-/**
- * Internal API: DO NOT CALL
  * 
  * @param {RuntimeTabPanel} panel the panel to which the visualization gets added
  * @param {RuntimeForm<AbstractDataVisualizer>} form

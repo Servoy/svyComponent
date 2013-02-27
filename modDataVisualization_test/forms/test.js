@@ -34,7 +34,7 @@ function update(force) {
 	if (!force && !autoUpdate) return
 	
 	for (var i = 0; i < gauges.length; i++) {
-		gauges[i].refresh((Math.random() * 100).toFixed(0))
+		gauges[i].refresh(parseInt((Math.random() * 100).toFixed(0)))
 	}
 	
 	for (i = 0; i < maps.length; i++) {
@@ -93,17 +93,18 @@ function onLoad(event) {
 	scopes.modDataVis$googleCharts.GeoChart(elements.geochart, data, options)
 	
 	//Instantiate GoogleMaps
-	var map = new scopes.modDataVis$googleMaps.Map(elements.maps, {
+	var gmaps = scopes.modDataVis$googleMaps;
+	var map = new gmaps.Map(elements.maps, {
 		zoom: 8,
-		center: new scopes.modDataVis$googleMaps.LatLng(-34.397, 150.644),
-		mapTypeId: scopes.modDataVis$googleMaps.MapTypeIds.HYBRID
+		center: new gmaps.LatLng(-34.397, 150.644),
+		mapTypeId: gmaps.MapTypeIds.HYBRID
 	})
 	maps.push(map)
 	
-	var map2 = new scopes.modDataVis$googleMaps.Map(elements.map2, {
+	var map2 = new gmaps.Map(elements.map2, {
 		zoom: 2,
-		center: new scopes.modDataVis$googleMaps.LatLng(30, 20),
-		mapTypeId: scopes.modDataVis$googleMaps.MapTypeIds.TERRAIN,
+		center: new gmaps.LatLng(30, 20),
+		mapTypeId: gmaps.MapTypeIds.TERRAIN,
 		overviewMapControl: true,
 		panControl: true,
 		rotateControl: true,
@@ -114,29 +115,29 @@ function onLoad(event) {
 	maps.push(map2)
 	
 	//Adding markers	
-	var m = new scopes.modDataVis$googleMaps.Marker({
-		position: new scopes.modDataVis$googleMaps.LatLng(10,20),
+	var m = new gmaps.Marker({
+		position: new gmaps.LatLng(10,20),
 		draggable: true,
 		title: 'Hello Paul'
 	});
 	m.setMap(map2)
-	m.addEventListener(markerCallback,m.EVENT_TYPES.CLICK);
-	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
+	m.addClickListener(markerCallback)
+	m.addDoubleClickListener(markerCallback)
+	m.addRightClickListener(markerCallback)
+	m.addDragEndListener(markerCallback)
 	
 	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
-	m = new scopes.modDataVis$googleMaps.Marker({
-		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat,pos.lng),
+	m = new gmaps.Marker({
+		position: new gmaps.LatLng(pos.lat,pos.lng),
 		draggable: false,
 		title: 'Servoy HQ',
-//		title: '<span style=\'color: red\'>Hello Joas</span><br/>Check <a href="http://www.servoy.com" target="new">this site</a>',
 		map: map2
 	});
-	m.addEventListener(addInfoWindow,m.EVENT_TYPES.CLICK);
-	m.addEventListener(markerCallback,m.EVENT_TYPES.DBLCLICK);
-	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
-	
-	var i2 = new scopes.modDataVis$googleMaps.InfoWindow({
-		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat,pos.lng),
+	m.addClickListener(addInfoWindow)
+	m.addDoubleClickListener(markerCallback)
+	m.addRightClickListener(markerCallback)
+
+	var i2 = new gmaps.InfoWindow({
 		content: scopes.modUtils$WebClient.XHTML2Text(<div>
 			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
 			<p>De Brand 65<br/>
@@ -152,7 +153,7 @@ function onLoad(event) {
 		</div>)
 	
 	});
-	i2.open(map2);	
+	i2.open(map2, m);	
 	
 	var lineChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$line, scopes.modDataVis$flotr2.CHART_TYPES.LINES)
 	lineChart.draw([{
@@ -264,8 +265,8 @@ function onLoad(event) {
 /**
  * @properties={typeid:24,uuid:"90F7FE19-B6F1-4DB4-8437-6F56E5C4C035"}
  */
-function markerCallback(event, data) {
-	application.output("MARKERCALLBACK: " + data);
+function markerCallback(marker, eventType, data) {
+	application.output("MARKERCALLBACK: " + eventType);
 }
 
 /**
@@ -286,40 +287,20 @@ function addMarker(event, map) {
 	marker.setMap(map);
 	
 	//Add infowindow on the click event
-	marker.addEventListener(addInfoWindow, marker.EVENT_TYPES.CLICK);
+	marker.addClickListener(addInfoWindow)
 }
 
 /**
- * @param {String} objectType
- * @param {String} id
+ * @param {scopes.modDataVis$googleMaps.Marker} marker
  * @param {String} eventType
  * @param {String} data
  *
  * @properties={typeid:24,uuid:"884AC979-A6FC-4E1B-AD24-C8BF439AA98E"}
  */
-function addInfoWindow(objectType, id, eventType, data) {
-	if (data) {
-		/** @type {scopes.modDataVis$googleMaps.Marker} */
-		var marker;
-		
-		var marker_id = id;
-		
-		/** @type {{mapid: UUID}} */
-		var params = JSON.parse(data);
-		
-		var mapid = params.mapid;
-		if (mapid && forms[mapid]) {
-			marker = forms[mapid].markers[marker_id];
-		}
-	}
-	
-	//Get content from marker if available 
-//	var content;
-	if (marker) {
-	}
+function addInfoWindow(marker, eventType, data) {
 	//Adding infoWindow
 	var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
-//		content: content
+		position: new scopes.modDataVis$googleMaps.LatLng(20,20),
 		content: scopes.modUtils$WebClient.XHTML2Text(<div>
 			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
 			<p>De Brand 65<br/>
@@ -334,9 +315,7 @@ function addInfoWindow(objectType, id, eventType, data) {
 		</div>)
 	});
 //	infoWindow.addEventListener(infoWindow, infoWindow.EVENT_TYPES.CLOSECLICK);
-	/** @type {scopes.modDataVis$googleMaps.Map} */
-	var m = maps[mapid]
-	infoWindow.open(m, marker);
+	infoWindow.open(marker.getMap(), marker);
 }
 
 /**

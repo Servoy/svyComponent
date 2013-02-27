@@ -54,11 +54,11 @@ function onLoad(event) {
 		title: 'Hello Joas'
 	});
 	m.setMap(map2);
-	m.addEventListener(addInfoWindow,m.EVENT_TYPES.CLICK);
-	m.addEventListener(markerCallback,m.EVENT_TYPES.DBLCLICK);
-	m.addEventListener(markerCallback,m.EVENT_TYPES.RIGHTCLICK);
-	m.addEventListener(markerCallback,m.EVENT_TYPES.DRAGEND);
-	
+	m.addClickListener(addInfoWindow);
+	m.addDoubleClickListener(markerCallback);
+	m.addRightClickListener(markerCallback);
+	m.addDragEndListener(markerCallback);
+		
 	var m2 = new scopes.modDataVis$googleMaps.Marker({
 		position: new scopes.modDataVis$googleMaps.LatLng(62,30),
 		draggable: true,

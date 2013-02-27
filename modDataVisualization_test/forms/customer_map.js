@@ -55,7 +55,7 @@ function addMarker(customerRec, pos) {
 	markers[customerRec.customerid] = marker;
 	
 	//Add infowindow on the click event
-	marker.addEventListener(addInfoWindow, marker.EVENT_TYPES.CLICK);
+	marker.addClickListener(addInfoWindow)
 }
 
 /**

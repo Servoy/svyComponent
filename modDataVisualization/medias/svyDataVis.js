@@ -27,6 +27,9 @@ if (window.svyDataVis == undefined) {
 		},
 		reviver: function (key, value) {
 			//Helper function to deserialize JSON containing special objects that should map to clientside API
+			if (typeof value === 'string') {
+				return unescape(value)
+			}
 			if (value.hasOwnProperty('svySpecial') && value.svySpecial == true) {
 				var object = value.scope||window
 				for (var i = 0; i < value.parts.length; i++) {
