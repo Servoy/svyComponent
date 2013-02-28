@@ -119,7 +119,7 @@ function onLoad(event) {
 	m.addClickListener(markerCallback)
 	m.addDoubleClickListener(markerCallback)
 	m.addRightClickListener(markerCallback)
-	m.addDragEndListener(markerCallback)
+	m.addPositionChangedListener(markerCallback)
 	
 	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
 	var m2 = new gmaps.Marker({
@@ -261,9 +261,10 @@ function onLoad(event) {
 
 /**
  * @properties={typeid:24,uuid:"90F7FE19-B6F1-4DB4-8437-6F56E5C4C035"}
+ * @param {scopes.modDataVis$googleMaps.Event} event
  */
-function markerCallback(marker, eventType, data) {
-	application.output("MARKERCALLBACK: " + eventType);
+function markerCallback(event) {
+	application.output("MARKERCALLBACK: " + event)
 }
 
 /**
@@ -296,13 +297,13 @@ function addMarker(event, map) {
 var infoWindow
 
 /**
- * @param {scopes.modDataVis$googleMaps.Marker} marker
- * @param {String} eventType
- * @param {String} data
+ * @param {scopes.modDataVis$googleMaps.Event} event
  *
  * @properties={typeid:24,uuid:"884AC979-A6FC-4E1B-AD24-C8BF439AA98E"}
  */
-function addInfoWindow(marker, eventType, data) {
+function addInfoWindow(event) {
+	/** @type {scopes.modDataVis$googleMaps.Marker} */
+	var marker = event.getSource()
 	//Adding infoWindow
 	infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
 		position: new scopes.modDataVis$googleMaps.LatLng(20,20),

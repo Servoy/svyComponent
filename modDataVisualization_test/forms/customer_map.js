@@ -73,17 +73,15 @@ function removeMarker(customerRec) {
 }
 
 /**
- * @param {scopes.modDataVis$googleMaps.Marker} marker
- * @param {String} eventType
- * @param {String} data
+ * @param {scopes.modDataVis$googleMaps.Event} event
  *
  * @properties={typeid:24,uuid:"EEF54B74-6DA2-4FE6-9244-1B2DC321388B"}
  */
-function addInfoWindow(marker, eventType, data) {
+function addInfoWindow(event) {
 	//Get customer_id
 	var customer_id;
 	for  (var i in markers) {
-		if (markers[i] == marker) {
+		if (markers[i] == event.getSource()) {
 			customer_id = i;
 			break;
 		}
@@ -113,5 +111,8 @@ function addInfoWindow(marker, eventType, data) {
 			</p>
 		</div>)
 	});
+	
+	/** @type {scopes.modDataVis$googleMaps.Marker} */
+	var marker = event.getSource()
 	infoWindow.open(map, marker);
 }
