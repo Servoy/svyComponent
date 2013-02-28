@@ -19,20 +19,6 @@
 var html;
 
 /**
- * Basic HTML in XMl format for easy manipulation. Used by {@link #render()} which copies this template, adds scripts and stringifies the XMl and puts it in the HTML variable
- * @private 
- * @type {XML}
- * @properties={typeid:35,uuid:"E2EA30EC-9DF9-4FE4-A5B7-E102DB54CC0E",variableType:-4}
- */
-var dom = <html>
-	<head>
-	</head>
-	<body>
-		<div id={getId()} style="width: 100%; height: 100%; overflow: hidden"><![CDATA[&nbsp;]]></div>
-	</body>
-</html>
-
-/**
  * @private
  * @type {Object<String>}
  * @properties={typeid:35,uuid:"EB18FD74-CBBD-4CF9-BAC3-6ACE7C79DBA9",variableType:-4}
@@ -67,30 +53,35 @@ function serializeObject(o, specialTypes) {
  * @properties={typeid:24,uuid:"AB230B38-0AFA-4F94-B007-77C7F934EDAB"}
  */
 function setState(){
+	var dom = <html>
+		<head>
+		</head>
+		<body>
+			<div id={getId()} style="width: 100%; height: 100%; overflow: hidden"><![CDATA[&nbsp;]]></div>
+		</body>
+	</html>
 	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
-	var copy = dom.copy()
 	for (var script in scripts) {
-		copy.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
+		dom.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
 	}
-	render(copy)
-	html = scopes.modUtils$WebClient.XHTML2Text(copy);
+	render(dom)
+	html = scopes.modUtils$WebClient.XHTML2Text(dom);
 	
 	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
 	plugins.WebClientUtils.setRendered(elements.visualizationContainer); 
 }
 
 /**
- * @param {{id: String, type: String}} object
+ * @param {{id: String}} object
+ * @param {Boolean} [isSubType] To indicate a subType is being persisted. If the main DataVisualization is already rendered and a new subType is added, setting this flag to true will push the new type straight to the browser. Default: false
  *
  * @properties={typeid:24,uuid:"7BA8B0CC-3122-43B0-B8A0-0D68ADCC9004"}
  */
-function persistObject(object) {
-	application.output('persistObject: ' + JSON.stringify(object))
+function persistObject(object, isSubType) {
 	var script = 'svyDataVis.' + getBrowserId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\''
 	
-	//FIXME: this gmap specific stuff doesn't belong here
-	if (isRendered() && object.type != 'map' && !scripts[object.id]) {
-		//Is a Map subtype that wasn't send to the browser before
+	//If rendered and a new subType is added, send to browser straight away
+	if (isRendered() && isSubType && !scripts[object.id]) {
 		plugins.WebClientUtils.executeClientSideJS(script)
 		plugins.WebClientUtils.executeClientSideJS(';svyDataVis.' + getBrowserId() + '.initialize(\'' + object.id +'\');')
 	}
@@ -169,7 +160,6 @@ function onLoad(event) {
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
 	//TODO: maybe optimize the inclusion of json2, only when JSON isn't supported out of the box?
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///json2.js', this)
-	//dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize();' //TODO: this line can most likely be dropped
 }
 
 /**

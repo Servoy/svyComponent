@@ -35,15 +35,34 @@ if (window.svyDataVis == undefined) {
 				for (var i = 0; i < value.parts.length; i++) {
 					object = object[value.parts[i] ]
 				}
+				if (object == null) {
+					throw 'SvyDataVisReferenceException'
+				}
+				if (value.type == 'reference') {
+					return object
+				}
+				
 				switch (value.type) {
 					case 'call':
-						return object.apply(value.scope ? window[value.scope] : null, value.args)
+						var scope = value.scope
+						if (!scope) {
+							scope = window
+							for (var i = 0; i < value.parts.length-1; i++) {
+								scope = scope[value.parts[i] ]
+							}
+						}
+						try {
+							return object.apply(scope, value.args)
+						} catch (e) {
+							console.trace()
+							console.log(e.stack)
+						}
 					case 'constructor':
 						return svyDataVis.dynConstructor.apply(this, [object].concat(value.args))()
 					case 'reference':
 						return object
-	//							case 'domReference':
-	//								return document.getElementbyId(args[0])
+//					case 'domReference':
+//						return document.getElementbyId(args[0])
 					default:
 						return
 				}
@@ -51,9 +70,18 @@ if (window.svyDataVis == undefined) {
 			return value
 		},
 		JSON2Object: function (json) {
-			return JSON.parse(json,this.reviver)
+			var obj = null
+			try {
+				obj = JSON.parse(json, this.reviver)
+			} catch(e) {
+				this.log('Failed to convert JSON to Object: ' + json)
+				if (e != 'SvyDataVisReferenceException') {
+					throw e
+				}
+			}
+			return obj
 		},
-		debug: true,
+		debug: false,
 		log: function(text) {
 			if (this.debug && window.console && window.console.log) {
 				console.log(text)

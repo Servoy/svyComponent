@@ -1,7 +1,7 @@
 items:[
 {
 location:"170,10",
-onActionMethodID:"BDFE1CC7-EBF4-4DDE-9261-59EB31E39150",
+onActionMethodID:"47735676-7D85-4E08-9FAD-4B788B9B47D8",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"90,20",

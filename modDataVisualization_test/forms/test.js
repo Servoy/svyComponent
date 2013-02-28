@@ -6,7 +6,7 @@
 var gauges = []
 
 /**
- * @type {Array<scopes.modDataVis$googleMaps.Map>}
+ * @type {Array<{map: scopes.modDataVis$googleMaps.Map, markers: Array<scopes.modDataVis$googleMaps.Marker>}>}
  *
  * @properties={typeid:35,uuid:"0236ED8A-A80D-4577-B3E3-7603CA724ABD",variableType:-4}
  */
@@ -39,11 +39,7 @@ function update(force) {
 	
 	for (i = 0; i < maps.length; i++) {
 		addMarker(null, maps[i]);
-		
-		var bounds = maps[i].getMarkerBounds()
-		if (bounds) {
-			maps[i].fitBounds(bounds);
-		}
+		fitBounds()
 	}
 }
 
@@ -99,7 +95,7 @@ function onLoad(event) {
 		center: new gmaps.LatLng(-34.397, 150.644),
 		mapTypeId: gmaps.MapTypeIds.HYBRID
 	})
-	maps.push(map)
+	maps.push({map: map, markers: []})
 	
 	var map2 = new gmaps.Map(elements.map2, {
 		zoom: 2,
@@ -112,7 +108,6 @@ function onLoad(event) {
 		zoomControl: true,
 		mapMaker: false
 	})
-	maps.push(map2)
 	
 	//Adding markers	
 	var m = new gmaps.Marker({
@@ -127,15 +122,17 @@ function onLoad(event) {
 	m.addDragEndListener(markerCallback)
 	
 	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
-	m = new gmaps.Marker({
+	var m2 = new gmaps.Marker({
 		position: new gmaps.LatLng(pos.lat,pos.lng),
 		draggable: false,
 		title: 'Servoy HQ',
 		map: map2
 	});
-	m.addClickListener(addInfoWindow)
-	m.addDoubleClickListener(markerCallback)
-	m.addRightClickListener(markerCallback)
+	m2.addClickListener(addInfoWindow)
+	m2.addDoubleClickListener(markerCallback)
+	m2.addRightClickListener(markerCallback)
+
+	maps.push({map: map2, markers: [m, m2]})
 
 	var i2 = new gmaps.InfoWindow({
 		content: scopes.modUtils$WebClient.XHTML2Text(<div>
@@ -153,7 +150,7 @@ function onLoad(event) {
 		</div>)
 	
 	});
-	i2.open(map2, m);	
+	i2.open(map2, m2);	
 	
 	var lineChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$line, scopes.modDataVis$flotr2.CHART_TYPES.LINES)
 	lineChart.draw([{
@@ -273,7 +270,7 @@ function markerCallback(marker, eventType, data) {
  * Perform the element default action.
  *
  * @param {JSEvent} [event] the event that triggered the action
- * @param {scopes.modDataVis$googleMaps.Map} map
+ * @param {{map: scopes.modDataVis$googleMaps.Map, markers: Array<scopes.modDataVis$googleMaps.Marker>}} map
  *
  * @properties={typeid:24,uuid:"BC59C8F4-194C-44B9-996C-4DA40ABD1AC5"}
  */
@@ -284,11 +281,19 @@ function addMarker(event, map) {
 		draggable: true,
 		title: 'Random marker'
 	})
-	marker.setMap(map);
+	marker.setMap(map.map);
 	
+	map.markers.push(marker)
 	//Add infowindow on the click event
 	marker.addClickListener(addInfoWindow)
 }
+
+/**
+ * @type {scopes.modDataVis$googleMaps.InfoWindow}
+ *
+ * @properties={typeid:35,uuid:"D96A0A49-CE6F-4D58-AE1C-34FEE29E1289",variableType:-4}
+ */
+var infoWindow
 
 /**
  * @param {scopes.modDataVis$googleMaps.Marker} marker
@@ -299,7 +304,7 @@ function addMarker(event, map) {
  */
 function addInfoWindow(marker, eventType, data) {
 	//Adding infoWindow
-	var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
+	infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
 		position: new scopes.modDataVis$googleMaps.LatLng(20,20),
 		content: scopes.modUtils$WebClient.XHTML2Text(<div>
 			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
@@ -316,6 +321,9 @@ function addInfoWindow(marker, eventType, data) {
 	});
 //	infoWindow.addEventListener(infoWindow, infoWindow.EVENT_TYPES.CLOSECLICK);
 	infoWindow.open(marker.getMap(), marker);
+	
+	scopes.modUtils$WebClient.updateUI()
+	infoWindow.setPosition(new scopes.modDataVis$googleMaps.LatLng(50,50))
 }
 
 /**
@@ -347,17 +355,17 @@ function getLatLng(address) {
 }
 
 /**
- * Creates a LatLngBound including all markers and calls fitBounds on the map, so it zooms to show all markers 
- *
- * @param {Object} event
- *
- * @properties={typeid:24,uuid:"BDFE1CC7-EBF4-4DDE-9261-59EB31E39150"}
+ * @properties={typeid:24,uuid:"47735676-7D85-4E08-9FAD-4B788B9B47D8"}
  */
-function fitBounds(event) {
+function fitBounds() {
 	for (var i = 0; i < maps.length; i++) {
-		var bounds = maps[i].getMarkerBounds()
-		if (bounds) {
-			maps[i].fitBounds(bounds);
+		var markers = maps[i].markers
+		if (markers.length) {
+			var bounds = new scopes.modDataVis$googleMaps.LatLngBounds(markers[0].getPosition(), markers[0].getPosition())
+			for (var z = 1; z < markers.length; z++) {
+				bounds.extend(markers[z].getPosition())
+			}
+			maps[i].map.fitBounds(bounds);
 		}
 	}
 }

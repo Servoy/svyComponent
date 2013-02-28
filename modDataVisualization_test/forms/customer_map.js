@@ -5,9 +5,8 @@
  */
 var map;
 
-
 /**
- * @type {Object}
+ * @type {Object<scopes.modDataVis$googleMaps.Marker>}
  *
  * @properties={typeid:35,uuid:"C06F4E47-69B7-44A3-A7BC-D874082461BC",variableType:-4}
  */
@@ -33,10 +32,15 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"8AEEAAAE-5FE4-468E-9855-696DBAC0BD7D"}
  */
 function fitBounds() {
-	var bounds = map.getMarkerBounds()
-	if (bounds) {
-		map.fitBounds(bounds);
+	var bounds 
+	for each (var mkr in markers) {
+		if (bounds) {
+			bounds.extend(mkr.getPosition())
+		} else {
+			bounds = new scopes.modDataVis$googleMaps.LatLngBounds(mkr.getPosition(), mkr.getPosition())
+		}
 	}
+	map.fitBounds(bounds)
 }
 
 /**
@@ -59,32 +63,27 @@ function addMarker(customerRec, pos) {
 }
 
 /**
- * // TODO generated, please specify type and doc for the params
  * @param customerRec
  *
  * @properties={typeid:24,uuid:"AF709C15-2501-42C1-8C4A-DBC1EE57D9F8"}
  */
 function removeMarker(customerRec) {
-	forms.customer_map.map.removeMarker(markers[customerRec.customerid].getId());
+	markers[customerRec.customerid].setMap(null)
 	delete markers[customerRec.customerid];
 }
 
-
-
 /**
- * @param {String} objectType
- * @param {String} id
+ * @param {scopes.modDataVis$googleMaps.Marker} marker
  * @param {String} eventType
  * @param {String} data
  *
  * @properties={typeid:24,uuid:"EEF54B74-6DA2-4FE6-9244-1B2DC321388B"}
  */
-function addInfoWindow(objectType, id, eventType, data) {
+function addInfoWindow(marker, eventType, data) {
 	//Get customer_id
-	var marker, customer_id;
-	for (var i in markers) {
-		if (markers[i].getId() == id) {
-			marker = markers[i];
+	var customer_id;
+	for  (var i in markers) {
+		if (markers[i] == marker) {
 			customer_id = i;
 			break;
 		}
