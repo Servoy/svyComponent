@@ -54,8 +54,8 @@ if (window.svyDataVis == undefined) {
 						try {
 							return object.apply(scope, value.args)
 						} catch (e) {
-							console.trace()
-							console.log(e.stack)
+							if (window.console && console.trace) console.trace()
+							if (e.stack) this.log(e.stack)
 						}
 					case 'constructor':
 						return svyDataVis.dynConstructor.apply(this, [object].concat(value.args))()
