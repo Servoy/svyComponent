@@ -54,3 +54,22 @@ function includeExCanvasForIE(container, maxVersion) {
 		scopes.modUtils$WebClient.addJavaScriptDependancy('media:///excanvas.compiled.js', container)
 	}	
 }
+
+//TODO: implement option to enable/disable debug mode
+///**
+// * @private
+// * @type {Boolean}
+// *
+// * @properties={typeid:35,uuid:"8EFA0BAF-BF91-4FDE-A232-EAAE1F2DC740",variableType:-4}
+// */
+//var debugMode = false
+//
+///**
+// * Enables or disables clientSide debug logging
+// * @param {Boolean} debugMode Enables or disables debug mode
+// *
+// * @properties={typeid:24,uuid:"A62A58A7-EE9E-4CB8-A20D-7BB047275E9C"}
+// */
+//function setDebugMode(state) {
+//	this.debugMode = state
+//}

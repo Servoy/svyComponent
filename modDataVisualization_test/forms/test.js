@@ -13,6 +13,12 @@ var gauges = []
 var maps = []
 
 /**
+ * @type {scopes.modDataVis$googleCharts.GeoChart}
+ *
+ * @properties={typeid:35,uuid:"93E9F4E9-B041-4B2B-9C8D-AA9CEFB23F36",variableType:-4}
+ */
+var geoChart
+/**
  * @type {Boolean}
  *
  * @properties={typeid:35,uuid:"742136BD-C97B-4989-8739-D4E86830A46D",variableType:-4}
@@ -66,15 +72,18 @@ function onLoad(event) {
 	
 	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge3,{
 		title: 'Tasks',
-		value: parseInt((Math.random() * 100).toFixed(0))
+		value: parseInt((Math.random() * 100).toFixed(0)),
+		donut: true
 	}))
 	
 	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge4,{
 		title: 'Bugs',
-		value: parseInt((Math.random() * 100).toFixed(0))
+		value: parseInt((Math.random() * 100).toFixed(0)),
+		donut: true
 	}))
 	
 	//Instantiate Google GeoChart
+	geoChart = new scopes.modDataVis$googleCharts.GeoChart(elements.geochart)
 	var data = [
 		['Country', 'weight'],
 		['NL', 1000],
@@ -86,7 +95,10 @@ function onLoad(event) {
 	var options = {
 		 colorAxis: {colors: ['yellow','red']}
 	}
-	scopes.modDataVis$googleCharts.GeoChart(elements.geochart, data, options)
+	geoChart.draw(data,options)
+	geoChart.addRegionClickListener(markerCallback)
+	geoChart.addSelectListener(markerCallback)
+	
 	
 	//Instantiate GoogleMaps
 	var gmaps = scopes.modDataVis$googleMaps;
@@ -196,6 +208,9 @@ function onLoad(event) {
 					sensibility: 20
 				}
 			})
+			
+	lineChart.addClickListener(markerCallback)
+	lineChart.addSelectListener(markerCallback)
 	
 	var barChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$pie, scopes.modDataVis$flotr2.CHART_TYPES.PIES)
 	var d1 = [[0, 4]],
@@ -226,34 +241,6 @@ function onLoad(event) {
 	      backgroundColor : '#D2E8FF'
 	    }
 	  })
-	
-//This bit is clientside code for Flotr to allow zooming... how to integrate this?
-//	// Draw graph with default options, overwriting with passed options
-//	function drawGraph(opts) {
-//		// Clone the options, so the 'options' variable always keeps intact.
-//		o = Flotr._.extend(Flotr._.clone(options), opts || { });
-//
-//		// Return a new graph.
-//		return Flotr.draw(container,
-//			[d2],
-//			o
-//		);
-//	}
-//
-//	graph = drawGraph();
-//
-//	Flotr.EventAdapter.observe(container, 'flotr:select', function(area) {
-//			// Draw selected area
-//			graph = drawGraph({
-//				xaxis: { min: area.x1, max: area.x2, tickFormatter: monthValue},
-//				yaxis: { min: area.y1, max: area.y2, margin: false}
-//			});
-//		});
-//
-//	// When graph is clicked, draw the graph with default area.
-//	Flotr.EventAdapter.observe(container, 'flotr:click', function() {
-//			graph = drawGraph();
-//		});
 	
 	//Start automatic update
 	plugins.scheduler.addJob('test',new Date(Date.now()+10000),update,10000)
@@ -369,4 +356,49 @@ function fitBounds() {
 			maps[i].map.fitBounds(bounds);
 		}
 	}
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @private
+ *
+ * @properties={typeid:24,uuid:"54802030-AC4C-41B8-AD3C-03AF6DEB98CD"}
+ */
+function changeGeoChartContent(event) {
+//	var data = [
+//	    ['Country', 'Popularity'],
+//	    ['Germany', 200],
+//	    ['United States', 300],
+//	    ['Brazil', 400],
+//	    ['Canada', 500],
+//	    ['France', 600],
+//	    ['RU', 700]
+//	  ]
+//	  
+//	var options = {}
+//	
+    var data = [
+	    ['City',   'Population', 'Area'],
+	    ['Rome',      2761477,    1285.31],
+	    ['Milan',     1324110,    181.76],
+	    ['Naples',    959574,     117.27],
+	    ['Turin',     907563,     130.17],
+	    ['Palermo',   655875,     158.9],
+	    ['Genoa',     607906,     243.60],
+	    ['Bologna',   380181,     140.7],
+	    ['Florence',  371282,     102.41],
+	    ['Fiumicino', 67370,      213.44],
+	    ['Anzio',     52192,      43.43],
+	    ['Ciampino',  38262,      11]
+	  ]
+	
+	  var options = {
+	    region: 'IT',
+	    displayMode: 'markers',
+	    colorAxis: {colors: ['green', 'blue']}
+	  };
+	geoChart.draw(data,options)
 }

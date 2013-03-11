@@ -96,6 +96,7 @@ function persistObject(object, isSubType) {
  * @properties={typeid:24,uuid:"07941164-8AE7-45BD-A993-22AC9D72F254"}
  */
 function desistObject(id) {
+	delete allObjectCallbackHandlers[id]
 	delete scripts[id]
 	setState()
 }
@@ -109,6 +110,15 @@ function desistObject(id) {
  */
 function render(DOM) {
 }
+
+/**
+ * Map holding references to the callbackEvent handlers of the main DataVisualization and all it's subtypes.<br>
+ * Used by the browserCallback function to lookup the correct object to delegate the callback to,<br>
+ * in order to persists browserside updates to the map, without causing another render cycle towards the browser
+ * @type {Object<Function>}
+ * @properties={typeid:35,uuid:"CFF2C67B-D83E-4577-AD0D-270C3F8CE897",variableType:-4}
+ */
+var allObjectCallbackHandlers = {}
 
 /**
  * Returns the UUID by which to rever to this DataVisualization 
@@ -158,8 +168,12 @@ function isRendered() {
  */
 function onLoad(event) {
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
-	//TODO: maybe optimize the inclusion of json2, only when JSON isn't supported out of the box?
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///json2.js', this)
+//	TODO: Using the code below to conditionally inject json2 break the order in which dependancies are added, which breaks the GeoChart implementation. No idea why yet
+//	TODO: also, the code below adds the script for each datavisualization
+//	var id = 'jsonPolyfill'
+//	var script = 'if (!window.JSON) {script = document.createElement("script");script.type = "text/javascript";script.src = "' + scopes.modUtils$WebClient.getExternalUrlForMedia("media:///json2.js") + '";document.head.appendChild(script);}'
+//	scopes.modUtils$WebClient.addDynamicJavaScript(script, id, null)
 }
 
 /**

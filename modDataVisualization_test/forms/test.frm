@@ -22,7 +22,7 @@ uuid:"025B29F1-A347-478A-8BEC-473147E126D3"
 },
 {
 anchors:12,
-location:"30,440",
+location:"30,460",
 name:"flotr2$pie",
 printable:false,
 size:"345,388",
@@ -54,7 +54,7 @@ uuid:"376F3C78-4B51-4B0F-A884-0CDA7A22DC05"
 },
 {
 anchors:6,
-location:"632,440",
+location:"632,460",
 name:"geochart",
 printable:false,
 size:"444,388",
@@ -68,6 +68,16 @@ height:864,
 partType:5,
 typeid:19,
 uuid:"8111887E-2AC9-41C0-9B68-F221E7DF39B7"
+},
+{
+anchors:6,
+location:"632,435",
+onActionMethodID:"54802030-AC4C-41B8-AD3C-03AF6DEB98CD",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+text:"Change ",
+typeid:7,
+uuid:"82120EF1-DA9B-421E-8963-D2D9E6B1F39D"
 },
 {
 anchors:13,
@@ -113,7 +123,7 @@ uuid:"B51E6F36-287D-4AC1-9CCA-47F5C2448861"
 },
 {
 anchors:14,
-location:"390,440",
+location:"390,460",
 name:"flotr2$line",
 printable:false,
 size:"227,388",
