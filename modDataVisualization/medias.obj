@@ -16,5 +16,11 @@ mimeType:"text/javascript",
 name:"svyDataVis.js",
 typeid:37,
 uuid:"7BD3C8FC-BAED-434D-9DAA-343EFCED2347"
+},
+{
+mimeType:"text/javascript",
+name:"svyDataVisCallback.js",
+typeid:37,
+uuid:"05F8E057-54EC-4E80-8EC0-C159344360F0"
 }
 ]

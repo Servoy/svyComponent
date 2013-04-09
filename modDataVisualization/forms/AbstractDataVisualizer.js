@@ -68,7 +68,7 @@ function setState(){
 	html = scopes.modUtils$WebClient.XHTML2Text(dom);
 	
 	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
-	plugins.WebClientUtils.setRendered(elements.visualizationContainer); 
+	scopes.modUtils$WebClient.setRendered(elements.visualizationContainer); 
 }
 
 /**
@@ -82,8 +82,8 @@ function persistObject(object, isSubType) {
 	
 	//If rendered and a new subType is added, send to browser straight away
 	if (isRendered() && isSubType && !scripts[object.id]) {
-		plugins.WebClientUtils.executeClientSideJS(script)
-		plugins.WebClientUtils.executeClientSideJS(';svyDataVis.' + getBrowserId() + '.initialize(\'' + object.id +'\');')
+		scopes.modUtils$WebClient.executeClientsideScript(script)
+		scopes.modUtils$WebClient.executeClientsideScript('svyDataVis.' + getBrowserId() + '.initialize(\'' + object.id +'\');')
 	}
 	
 	scripts[object.id] = script
@@ -168,6 +168,7 @@ function isRendered() {
  */
 function onLoad(event) {
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
+	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVisCallback.js', this)
 	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///json2.js', this)
 //	TODO: Using the code below to conditionally inject json2 break the order in which dependancies are added, which breaks the GeoChart implementation. No idea why yet
 //	TODO: also, the code below adds the script for each datavisualization
@@ -205,7 +206,7 @@ function onHide(event) {
 	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid.
 	//TODO: solve the scenario where this forms onhide is called, but hte overall onHide action is canceled, because another form that is being hidden prevented the hide.
 	//This current code would remove all references, thus leaving stuff in undetermined state
-	plugins.WebClientUtils.executeClientSideJS('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.gmaps.objects[value]});')
+	scopes.modUtils$WebClient.executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.gmaps.objects[value]});')
 	rendered = false
 	return true
 }

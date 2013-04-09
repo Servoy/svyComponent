@@ -6,7 +6,45 @@
  *   The container object should not be the form directly, but an object with convenient methods to get done what needs to be done
  *
  * - Conversion of Servoy's dataTypes (JSFoundSet/JSDataSet,JSrecord to proper formats)
+ * 
+ * TODO's
+ * - Refactor core logic of svyDataVis to svyBrowserServerBridge
+ * - Use 1 global object store, instead of one per impl.
+ * - Use constants for identifiers, like com.servoy.datavisualization.google.maps
+ * - Create "factory" functions for generating the JSON to send back and forth
+ * - Create helper method to call methods on objects with arguments in the browser, from the server
+ * - get rid of plugins.WebClientUtils.generateCallbackScript(...)
  */
+
+/**
+ * Variable with self executing function as value to run some initialization code when the scope gets instantiated on solution start.
+ * - Dynamically created an .js entry in the Media Lib and includes it in the Web CLient 
+ * - Sets up several .toObjectPresentation prototypes on constructors, needed for serialization of objects to browser side
+ * @private
+ * @SuppressWarnings(unused)
+ * @properties={typeid:35,uuid:"C88DB00A-27F8-4CAB-A8FB-C1D2D50FC5C4",variableType:-4}
+ */
+ var init = function() {
+ 	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'objectId', 'mapId', 'eventType', 'data'], false);
+ 	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, mapId, eventType, data){' + callback + '}';
+	solutionModel.getMedia('svyDataVisCallback.js').bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
+ }()
+ 
+/**
+ * Generic callbackHandler for events send from the browser to the server
+ * @private 
+ * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
+ */
+function browserCallback(objectType, objectId, mapId, eventType, data) {
+	if (!mapId in forms) {
+		application.output('Callback for unknown DataVisualization:  id=' + mapId)
+	}
+	if (forms[mapId].allObjectCallbackHandlers[objectId]) {
+		forms[mapId].allObjectCallbackHandlers[objectId](eventType, JSON.parse(data))
+	} else {
+		application.output('Callback for unknown object: type=' + objectType + ', id=' + objectId + ', eventType=' + eventType)
+	}
+}
 
 /**
  * Internal API: DO NOT CALL
