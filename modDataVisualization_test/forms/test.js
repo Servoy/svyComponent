@@ -26,9 +26,11 @@ var geoChart
 var autoUpdate = false
 
 /**
+ * @param {JSEvent} event
  * @properties={typeid:24,uuid:"4E2FEE74-8C57-42B5-9750-B8C5BA1098DF"}
  */
-function manualUpdate() {
+function manualUpdate(event) {
+	application.output(event)
 	update(true)
 }
 
@@ -96,8 +98,8 @@ function onLoad(event) {
 		 colorAxis: {colors: ['yellow','red']}
 	}
 	geoChart.draw(data,options)
-	geoChart.addRegionClickListener(markerCallback)
-	geoChart.addSelectListener(markerCallback)
+	geoChart.addRegionClickListener(callbackLogger)
+	geoChart.addSelectListener(callbackLogger)
 	
 	
 	//Instantiate GoogleMaps
@@ -128,10 +130,10 @@ function onLoad(event) {
 		title: 'Hello Paul'
 	});
 	m.setMap(map2)
-	m.addClickListener(markerCallback)
-	m.addDoubleClickListener(markerCallback)
-	m.addRightClickListener(markerCallback)
-	m.addPositionChangedListener(markerCallback)
+	m.addClickListener(callbackLogger)
+	m.addDoubleClickListener(callbackLogger)
+	m.addRightClickListener(callbackLogger)
+	m.addPositionChangedListener(callbackLogger)
 	
 	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
 	var m2 = new gmaps.Marker({
@@ -141,8 +143,8 @@ function onLoad(event) {
 		map: map2
 	});
 	m2.addClickListener(addInfoWindow)
-	m2.addDoubleClickListener(markerCallback)
-	m2.addRightClickListener(markerCallback)
+	m2.addDoubleClickListener(callbackLogger)
+	m2.addRightClickListener(callbackLogger)
 
 	maps.push({map: map2, markers: [m, m2]})
 
@@ -209,19 +211,16 @@ function onLoad(event) {
 				}
 			})
 			
-	lineChart.addClickListener(markerCallback)
-	lineChart.addSelectListener(markerCallback)
+	lineChart.addClickListener(callbackLogger)
+	lineChart.addSelectListener(callbackLogger)
 	
-	var barChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$pie, scopes.modDataVis$flotr2.CHART_TYPES.PIES)
-	var d1 = [[0, 4]],
-    d2 = [[0, 3]],
-    d3 = [[0, 1.03]],
-    d4 = [[0, 3.5]]
-	barChart.draw([
-    { data : d1, label : 'Comedy' },
-    { data : d2, label : 'Action' },
-    { data : d3, label : 'Romance', pie : { explode : 50}},
-    { data : d4, label : 'Drama' }
+	var pieChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$pie, scopes.modDataVis$flotr2.CHART_TYPES.PIES)
+	//TODO: at least the pie bit in the options part causes a warning, but removing that still leaves a builder marker
+	pieChart.draw([
+    { data : [[0, 4]], label : 'Comedy' },
+    { data : [[0, 3]], label : 'Action' },
+    { data : [[0, 1.03]], label : 'Romance', pie : { explode : 50}},
+    { data : [[0, 3.5]], label : 'Drama' }
   ], {
 	    HtmlText : false,
 	    grid : {
@@ -250,8 +249,8 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"90F7FE19-B6F1-4DB4-8437-6F56E5C4C035"}
  * @param {scopes.modDataVis$googleMaps.Event} event
  */
-function markerCallback(event) {
-	application.output("MARKERCALLBACK: " + event)
+function callbackLogger(event) {
+	application.output("CALLBACK: " + event)
 }
 
 /**
