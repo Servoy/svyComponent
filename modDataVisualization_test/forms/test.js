@@ -215,7 +215,6 @@ function onLoad(event) {
 	lineChart.addSelectListener(callbackLogger)
 	
 	var pieChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$pie, scopes.modDataVis$flotr2.CHART_TYPES.PIES)
-	//TODO: at least the pie bit in the options part causes a warning, but removing that still leaves a builder marker
 	pieChart.draw([
     { data : [[0, 4]], label : 'Comedy' },
     { data : [[0, 3]], label : 'Action' },
@@ -315,8 +314,6 @@ function addInfoWindow(event) {
 
 /**
  * Warning: this function utilizes Google Maps API. See https://developers.google.com/maps/terms#section_10_12 for the Terms of Service
- * 
- * TODO: properly handle exceptions, like other status codes than OK, figure out what to return or to throw exceptions 
  * 
  * @see https://developers.google.com/maps/documentation/geocoding/
  * 
