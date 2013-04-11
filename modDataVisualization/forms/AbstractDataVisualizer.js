@@ -199,10 +199,8 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"22CD8598-93D9-4261-952C-5129AE22778F"}
  */
 function onHide(event) {
-	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid.
-	//TODO: solve the scenario where this forms onhide is called, but the overall onHide action is canceled, because another form that is being hidden prevented the hide.
-	//This current code would remove all references, thus leaving stuff in undetermined state
-	scopes.modUtils$WebClient.executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.gmaps.objects[value]});')
+	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid, so we also delete the keys from the object store.
+	scopes.modUtils$WebClient.executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.objects[value]});')
 	rendered = false
 	return true
 }
@@ -217,6 +215,4 @@ function onHide(event) {
  * @properties={typeid:24,uuid:"0A8FE3BA-A64C-4298-AA00-AA0731573ABB"}
  */
 function onUnload(event) {
-	//TODO Implement whatever is needed to perform cleanup of references
-	//cleanup is currently done in onHide, but that has it's issues
 }
