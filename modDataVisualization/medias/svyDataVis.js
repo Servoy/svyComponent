@@ -84,6 +84,7 @@ if (window.svyDataVis == undefined) {
 			}
 			return obj
 		},
+		objects: {},
 		debug: false,
 		log: function(text) {
 			if (this.debug && window.console && window.console.log) {
