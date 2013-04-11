@@ -2,10 +2,6 @@
  * Base class for Datavisualization impl.
  * 
  * Implemenations that extend this base class must implement the methods marked as abstract
- * 
- * TODO: cleaning up of objects browserside when form gets unloaded
- * TODO: Figure out how to best allow hiding and showing the DV again, without too much overhead
- * - Guess that wicket isn't inserting the script tags again if they have been inserted previously
  */
 
 /**
@@ -204,7 +200,7 @@ function onShow(firstShow, event) {
  */
 function onHide(event) {
 	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid.
-	//TODO: solve the scenario where this forms onhide is called, but hte overall onHide action is canceled, because another form that is being hidden prevented the hide.
+	//TODO: solve the scenario where this forms onhide is called, but the overall onHide action is canceled, because another form that is being hidden prevented the hide.
 	//This current code would remove all references, thus leaving stuff in undetermined state
 	scopes.modUtils$WebClient.executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.gmaps.objects[value]});')
 	rendered = false
@@ -222,4 +218,5 @@ function onHide(event) {
  */
 function onUnload(event) {
 	//TODO Implement whatever is needed to perform cleanup of references
+	//cleanup is currently done in onHide, but that has it's issues
 }
