@@ -122,6 +122,16 @@ typeid:16,
 uuid:"B51E6F36-287D-4AC1-9CCA-47F5C2448861"
 },
 {
+location:"265,11",
+onActionMethodID:"69DF2D0D-2ACB-4142-9023-FB549FFAB975",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"172,20",
+text:"Map in Dialog",
+typeid:7,
+uuid:"BA10126F-94DE-471F-A237-F8D3C4B37982"
+},
+{
 anchors:14,
 location:"390,460",
 name:"flotr2$line",

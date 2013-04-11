@@ -398,3 +398,17 @@ function changeGeoChartContent(event) {
 	  };
 	geoChart.draw(data,options)
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @private
+ *
+ * @properties={typeid:24,uuid:"69DF2D0D-2ACB-4142-9023-FB549FFAB975"}
+ */
+function showMapIndialog(event) {
+	var win = application.createWindow('mapdialog', JSWindow.DIALOG)
+	win.show(forms.debugMarkersAndInfoWindows)
+}
