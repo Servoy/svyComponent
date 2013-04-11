@@ -46,7 +46,6 @@ function browserCallback(objectType, objectId, mapId, eventType, data) {
 	}
 }
 
-//TODO: add this as a 'static' method to AbstractDataVisualizer
 /**
  * Internal API: DO NOT CALL
  * 
