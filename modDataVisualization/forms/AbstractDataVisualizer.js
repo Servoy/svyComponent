@@ -83,7 +83,24 @@ function persistObject(object, isSubType) {
 	}
 	
 	scripts[object.id] = script
-	setState()
+	//TODO: instead of calling setState for every persist, maybe attach an org.apache.wicket.behavior.AbstractBehavior and use it's beforeRender method to call setState?
+	//Taken even further, it would also be possible to just store the passed object and only generate the script when onRender is performed
+	//If storing the object, the object doesn't have to be updated with every change, as an object is just a reference, so it stays in sync automatically
+	//	var impl = {
+	//		afterRender: function(component) {
+	//			application.output('After Rendering: ' + component)
+	//		},
+	//		onRendered: function(component) {
+	//			application.output('onRendered: ' + component)
+	//		},	
+	//		beforeRender: function(component) {
+	//			application.output('Before Rendering: ' + component)
+	//		}
+	//	}
+	//	
+	//	var behavior  = new JavaAdapter(Packages.org.apache.wicket.behavior.AbstractBehavior, impl)
+	//	scopes.modUtils$WebClient.unwrapElement(elements.visualizationContainer).add(behavior)
+	setState() 
 }
 
 /**
