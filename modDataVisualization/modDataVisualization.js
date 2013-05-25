@@ -13,7 +13,7 @@
  * - Use constants for identifiers, like com.servoy.datavisualization.google.maps
  * - Create "factory" functions for generating the JSON to send back and forth
  * - Create helper method to call methods on objects with arguments in the browser, from the server
- * - get rid of plugins.WebClientUtils.generateCallbackScript(...)
+ * FIXME get rid of plugins.WebClientUtils.generateCallbackScript(...)
  */
 
 /**
