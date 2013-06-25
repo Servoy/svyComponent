@@ -87,9 +87,9 @@ function includeExCanvasForIE(container, maxVersion) {
 		maxIEVersion = maxVersion
 	}
 	//Add excanvas to conditionally only in IE to compensate for the lack of canvas support in IE up to and including IE8
-	var clientProperties = scopes.modUtils$WebClient.getBrowserInfo().getProperties()
+	var clientProperties = scopes.modUtils$webClient.getBrowserInfo().getProperties()
 	if (clientProperties.isBrowserInternetExplorer() && clientProperties.getBrowserVersionMajor() <= maxIEVersion) {
-		scopes.modUtils$WebClient.addJavaScriptDependancy('media:///excanvas.compiled.js', container)
+		scopes.modUtils$webClient.addJavaScriptDependancy('media:///excanvas.compiled.js', container)
 	}	
 }
 

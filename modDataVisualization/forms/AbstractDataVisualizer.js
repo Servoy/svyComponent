@@ -61,10 +61,10 @@ function setState(){
 		dom.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
 	}
 	render(dom)
-	html = scopes.modUtils$WebClient.XHTML2Text(dom);
+	html = scopes.modUtils$webClient.XHTML2Text(dom);
 	
 	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
-	scopes.modUtils$WebClient.setRendered(elements.visualizationContainer); 
+	scopes.modUtils$webClient.setRendered(elements.visualizationContainer); 
 }
 
 /**
@@ -78,8 +78,8 @@ function persistObject(object, isSubType) {
 	
 	//If rendered and a new subType is added, send to browser straight away
 	if (isRendered() && isSubType && !scripts[object.id]) {
-		scopes.modUtils$WebClient.executeClientsideScript(script)
-		scopes.modUtils$WebClient.executeClientsideScript('svyDataVis.' + getBrowserId() + '.initialize(\'' + object.id +'\');')
+		scopes.modUtils$webClient.executeClientsideScript(script)
+		scopes.modUtils$webClient.executeClientsideScript('svyDataVis.' + getBrowserId() + '.initialize(\'' + object.id +'\');')
 	}
 	
 	scripts[object.id] = script
@@ -99,7 +99,7 @@ function persistObject(object, isSubType) {
 	//	}
 	//	
 	//	var behavior  = new JavaAdapter(Packages.org.apache.wicket.behavior.AbstractBehavior, impl)
-	//	scopes.modUtils$WebClient.unwrapElement(elements.visualizationContainer).add(behavior)
+	//	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).add(behavior)
 	setState() 
 }
 
@@ -180,14 +180,14 @@ function isRendered() {
  * @properties={typeid:24,uuid:"3BB316B5-1CFF-41F7-B96A-4626898897F1"}
  */
 function onLoad(event) {
-	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
-	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///svyDataVisCallback.js', this)
-	scopes.modUtils$WebClient.addJavaScriptDependancy('media:///json2.js', this)
+	scopes.modUtils$webClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
+	scopes.modUtils$webClient.addJavaScriptDependancy('media:///svyDataVisCallback.js', this)
+	scopes.modUtils$webClient.addJavaScriptDependancy('media:///json2.js', this)
 //	TODO: Using the code below to conditionally inject json2 break the order in which dependancies are added, which breaks the GeoChart implementation. No idea why yet
 //	TODO: also, the code below adds the script for each datavisualization
 //	var id = 'jsonPolyfill'
-//	var script = 'if (!window.JSON) {script = document.createElement("script");script.type = "text/javascript";script.src = "' + scopes.modUtils$WebClient.getExternalUrlForMedia("media:///json2.js") + '";document.head.appendChild(script);}'
-//	scopes.modUtils$WebClient.addDynamicJavaScript(script, id, null)
+//	var script = 'if (!window.JSON) {script = document.createElement("script");script.type = "text/javascript";script.src = "' + scopes.modUtils$webClient.getExternalUrlForMedia("media:///json2.js") + '";document.head.appendChild(script);}'
+//	scopes.modUtils$webClient.addDynamicJavaScript(script, id, null)
 }
 
 /**
@@ -217,7 +217,7 @@ function onShow(firstShow, event) {
  */
 function onHide(event) {
 	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid, so we also delete the keys from the object store.
-	scopes.modUtils$WebClient.executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.objects[value]});')
+	scopes.modUtils$webClient.executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.objects[value]});')
 	rendered = false
 	return true
 }
