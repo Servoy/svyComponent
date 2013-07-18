@@ -31,7 +31,12 @@ if (window.svyDataVis == undefined) {
 				return value
 			}
 			if (typeof value === 'string') {
-				return unescape(value)
+				var val = unescape(value)
+				var a = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(val);
+			    if (a) {
+			       return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]));
+			    }
+				return val;
 			}
 			if (value.hasOwnProperty('svySpecial') && value.svySpecial == true) {
 				var object = value.scope||window
