@@ -30,6 +30,36 @@
 	solutionModel.getMedia('svyDataVisCallback.js').bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
  }()
  
+ 
+ /**
+ * TODO: test if browsers use Date.toJSON with JSON.stringify
+ * TODO: test if the JSON polyfill uses Date.toJSON to stringify dates
+ * CHECKME: looking at http://bestiejs.github.io/json3/ it seems we're best of upgrading to JSON3 and always including it
+ * CHECKME: do we need to take into account timezone differences between the client and server here?
+ * Used in browserCallback when parsing incoming JSON data to revive dates stored as ISO Strings to JavaScript date objects
+ * @private 
+ * 
+ * @param {String} key
+ * @param {Object} value
+ * @return {Object}
+ * 
+ * @see http://msdn.microsoft.com/en-us/library/ie/cc836466(v=vs.94).aspx
+ *
+ * @properties={typeid:24,uuid:"FDEB9112-ACFF-4CCE-B242-02FAB66D9D91"}
+ */
+function reviver(key, value) {
+    if (typeof value === 'string') {
+     /** @type {Array<Number>} */
+     var a = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
+        if (a) {
+            return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]));
+        }
+    }
+    return value;
+};
+ 
+ 
+ 
 /**
  * Generic callbackHandler for events send from the browser to the server
  * @private 
@@ -40,7 +70,7 @@ function browserCallback(objectType, objectId, mapId, eventType, data) {
 		application.output('Callback for unknown DataVisualization:  id=' + mapId)
 	}
 	if (forms[mapId].allObjectCallbackHandlers[objectId]) {
-		forms[mapId].allObjectCallbackHandlers[objectId](eventType, JSON.parse(data))
+		forms[mapId].allObjectCallbackHandlers[objectId](eventType, JSON.parse(data, reviver))
 	} else {
 		application.output('Callback for unknown object: type=' + objectType + ', id=' + objectId + ', eventType=' + eventType)
 	}
