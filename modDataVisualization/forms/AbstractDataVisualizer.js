@@ -182,7 +182,7 @@ function isRendered() {
 function onLoad(event) {
 	scopes.modUtils$webClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
 	scopes.modUtils$webClient.addJavaScriptDependancy('media:///svyDataVisCallback.js', this)
-	scopes.modUtils$webClient.addJavaScriptDependancy('media:///json2.js', this)
+	scopes.modUtils$webClient.addJavaScriptDependancy('media:///json3.js', this)
 //	TODO: Using the code below to conditionally inject json2 break the order in which dependancies are added, which breaks the GeoChart implementation. No idea why yet
 //	TODO: also, the code below adds the script for each datavisualization
 //	var id = 'jsonPolyfill'

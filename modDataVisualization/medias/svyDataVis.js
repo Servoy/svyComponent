@@ -1,4 +1,7 @@
 //Polyfill for ES5 Date.prototype.toISOString/toJSON, needed to properly stringify dates when using JSON.stringify, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+//TODO not needed with JSON3
+/*
+ 
 if (!Date.prototype.toISOString) {
 
 	(function() {
@@ -20,7 +23,7 @@ if (!Date.prototype.toISOString) {
 		}
 	}());
 }
-
+*/
 if (window.svyDataVis == undefined) {
 	var svyDataVis = {
 		dynConstructor: function (Constructor) {
