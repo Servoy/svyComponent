@@ -72,9 +72,6 @@ if (window.svyDataVis == undefined) {
 				if (object == null) {
 					throw 'SvyDataVisReferenceException'
 				}
-				if (value.type == 'reference') {
-					return object
-				}
 				
 				switch (value.type) {
 					case 'call':
