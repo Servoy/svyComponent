@@ -1,0 +1,17 @@
+encapsulation:60,
+extendsID:"9319ACDE-FA2C-45CB-BB1D-DAEB5953186A",
+items:[
+{
+extendsID:"9421DF0D-BB8F-4650-80CF-8C92EACDF6DF",
+height:10,
+typeid:19,
+uuid:"74DB82D3-E01E-4527-9263-FEA56961695B"
+}
+],
+name:"DataVisualizerBase",
+navigatorID:"-1",
+showInMenu:true,
+size:"10,10",
+transparent:true,
+typeid:3,
+uuid:"24AF8285-98EB-412B-AEE6-86E2AB653B43"

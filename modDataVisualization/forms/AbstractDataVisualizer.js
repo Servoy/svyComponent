@@ -1,140 +1,127 @@
 /*
- * Base class for Datavisualization impl.
+ * This file is part of the Servoy Business Application Platform, Copyright (C) 2012-2013 Servoy BV 
  * 
- * Implemenations that extend this base class must implement the methods marked as abstract
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Variable containing the stringified version of the DOM variable after the render cycle. 
- * This variable is dataprovider for the non-editable HMTL area through which the markup gets inserted into the browser
- * @private
- * @type {String}
- * @SuppressWarnings(unused)
- * @properties={typeid:35,uuid:"97DEF22B-2844-41D3-9EF4-CADA14063C14"}
+/*
+ * Base definition for the different AbstractDataVisualizer$.... impl. 
  */
-var html;
+
+/*
+ * Component lifecycle events
+ */
+/**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @protected
+ *
+ * @properties={typeid:24,uuid:"5D664A6D-50CC-4FA6-A705-010EC67B7968"}
+ */
+function onLoad(event) {}
 
 /**
- * @private
- * @type {Object<String>}
- * @properties={typeid:35,uuid:"EB18FD74-CBBD-4CF9-BAC3-6ACE7C79DBA9",variableType:-4}
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @protected
+ *
+ * @properties={typeid:24,uuid:"1E8A55E2-33F6-46F8-B992-AC2DB8137BB5"}
  */
-var scripts = {};
+function onShow(firstShow, event) {}
 
 /**
- * Internal API: DO NOT CALL
- * @param {Object} o
- * @param {Array} [specialTypes]
- * @return {String}
- * @properties={typeid:24,uuid:"B8DED9AD-3C2C-49BE-A3A0-2EDE44A1ACD1"}
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @protected
+ *
+ * @properties={typeid:24,uuid:"16848B6D-636F-4CD0-A374-32F8B80DA8E7"}
  */
-function serializeObject(o, specialTypes) {
-	if (o['toObjectPresentation'] instanceof Function) {
-		var oo = o['toObjectPresentation']()
-		return serializeObject(oo, specialTypes);
-	}
-	var str = JSON.stringify(o, function(key, value) {
-		if (typeof value === 'string') {
-			return escape(value)
-		} else if (specialTypes && specialTypes.some(function(element, index, array) {return value instanceof element})) {
-			return value.toObjectPresentation();
-		}
-		return value
-	})
-	return str;
+function onHide(event) {
+	return true
 }
 
 /**
- * @private 
- * @properties={typeid:24,uuid:"AB230B38-0AFA-4F94-B007-77C7F934EDAB"}
+ * Callback method when form is destroyed.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @protected
+ *
+ * @properties={typeid:24,uuid:"58E0CB8B-3692-4F6A-B9D4-41BBF2833A71"}
  */
-function setState(){
-	var dom = <html>
-		<head>
-		</head>
-		<body>
-			<div id={getId()} style="width: 100%; height: 100%; overflow: hidden"><![CDATA[&nbsp;]]></div>
-		</body>
-	</html>
-	dom.body.@onLoad = 'svyDataVis.' + getBrowserId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
-	for (var script in scripts) {
-		dom.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
-	}
-	render(dom)
-	html = scopes.modUtils$webClient.XHTML2Text(dom);
-	
-	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
-	scopes.modUtils$webClient.setRendered(elements.visualizationContainer); 
+function onUnload(event) {
 }
 
 /**
+ * Callback method when form is resized.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @protected
+ *
+ * @properties={typeid:24,uuid:"606F5952-548E-46D5-BEB2-1C16E81C9B86"}
+ */
+function onResize(event) {
+}
+
+/*
+ * Component persistance API
+ */
+/**
+ * @abstract
  * @param {{id: String}} object
+ * @param {String} [incrementalUpdateCode]
  * @param {Boolean} [isSubType] To indicate a subType is being persisted. If the main DataVisualization is already rendered and a new subType is added, setting this flag to true will push the new type straight to the browser. Default: false
  *
- * @properties={typeid:24,uuid:"7BA8B0CC-3122-43B0-B8A0-0D68ADCC9004"}
+ * @properties={typeid:24,uuid:"639FBDF8-D88F-4D9F-A04B-3CAB322AA350"}
  */
-function persistObject(object, isSubType) {
-	var script = 'svyDataVis.' + getBrowserId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\''
-	
-	//If rendered and a new subType is added, send to browser straight away
-	if (isRendered() && isSubType && !scripts[object.id]) {
-		scopes.modUtils$webClient.executeClientsideScript(script)
-		scopes.modUtils$webClient.executeClientsideScript('svyDataVis.' + getBrowserId() + '.initialize(\'' + object.id +'\');')
-	}
-	
-	scripts[object.id] = script
-	//TODO: instead of calling setState for every persist, maybe attach an org.apache.wicket.behavior.AbstractBehavior and use it's beforeRender method to call setState?
-	//Taken even further, it would also be possible to just store the passed object and only generate the script when onRender is performed
-	//If storing the object, the object doesn't have to be updated with every change, as an object is just a reference, so it stays in sync automatically
-	//	var impl = {
-	//		afterRender: function(component) {
-	//			application.output('After Rendering: ' + component)
-	//		},
-	//		onRendered: function(component) {
-	//			application.output('onRendered: ' + component)
-	//		},	
-	//		beforeRender: function(component) {
-	//			application.output('Before Rendering: ' + component)
-	//		}
-	//	}
-	//	
-	//	var behavior  = new JavaAdapter(Packages.org.apache.wicket.behavior.AbstractBehavior, impl)
-	//	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).add(behavior)
-	setState() 
+function persistObject(object, incrementalUpdateCode, isSubType) {
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method persistObject() must be implemented on instances of AbstractDataVisualizer');
 }
 
 /**
+ * @abstract
  * @param {String} id
  *
- * @properties={typeid:24,uuid:"07941164-8AE7-45BD-A993-22AC9D72F254"}
+ * @properties={typeid:24,uuid:"D855B7DA-E66B-46D6-8FE7-404FC27C2911"}
  */
 function desistObject(id) {
-	delete allObjectCallbackHandlers[id]
-	delete scripts[id]
-	setState()
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method desistObject() must be implemented on instances of AbstractDataVisualizer');
 }
 
 /**
- * Extension point for impl. to override in order to extend and modify the generated HTML content that gets injected to the browsers markup
- * The render cycle does not remember state between invocations
- * @param {XML} DOM
- * @protected
- * @properties={typeid:24,uuid:"8E72F496-5DAE-4A2E-A763-F5EA640012A5"}
+ * To check whether or not to execute the incremental update code
+ * @abstract
+ * @return {Boolean}
+ *
+ * @properties={typeid:24,uuid:"42E6B78D-98A1-4FFF-A0A2-CC974CD46BCD"}
  */
-function render(DOM) {
+function isRendered() {
+	return false;
 }
 
 /**
- * Map holding references to the callbackEvent handlers of the main DataVisualization and all it's subtypes.<br>
- * Used by the browserCallback function to lookup the correct object to delegate the callback to,<br>
- * in order to persists browserside updates to the map, without causing another render cycle towards the browser
- * @type {Object<Function>}
- * @properties={typeid:35,uuid:"CFF2C67B-D83E-4577-AD0D-270C3F8CE897",variableType:-4}
- */
-var allObjectCallbackHandlers = {}
-
-/**
- * Returns the UUID by which to rever to this DataVisualization 
+ * Returns the UUID by which to refer to this DataVisualization 
  * @final
  * @return {String}
  * 
@@ -149,87 +136,51 @@ function getId() {
  * @abstract
  * @protected 
  * TODO: write UnitTest to check for this implementation
- * @properties={typeid:24,uuid:"67A9483F-B661-47CC-8E7A-5FB737C94A4A"}
+ * @properties={typeid:24,uuid:"9D9DA2C9-A017-47B8-A4A4-B7C9BF425550"}
  */
-function getBrowserId(){}
-
-/**
- * Flag to be used by implementations to check whether or not to execute the incremental update code
- * @private 
- * @type {Boolean}
- *
- * @properties={typeid:35,uuid:"132449CC-9E6E-4AC2-8AEE-DD4163C6034C",variableType:-4}
- */
-var rendered = false
-
-/**
- * To check whether or not to execute the incremental update code
- * @return {Boolean}
- *
- * @properties={typeid:24,uuid:"6439DFAC-70E6-46C5-93EE-F82030C04FCF"}
- */
-function isRendered() {
-	return rendered
+function getDataVisualizationId(){
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method getDataVisualizationId() must be implemented on instances of AbstractDataVisualizer');
 }
 
 /**
- * @param {JSEvent} event the event that triggered the action
- *
- * @protected 
- *
- * @properties={typeid:24,uuid:"3BB316B5-1CFF-41F7-B96A-4626898897F1"}
+ * Internal API: DO NOT CALL
+ * @abstract
+ * @param {Object} o
+ * @param {Array} [specialTypes]
+ * @return {String}
+ * @properties={typeid:24,uuid:"416C6366-18A1-4691-8812-AA824E5F4B59"}
  */
-function onLoad(event) {
-	scopes.modUtils$webClient.addJavaScriptDependancy('media:///svyDataVis.js', this)
-	scopes.modUtils$webClient.addJavaScriptDependancy('media:///svyDataVisCallback.js', this)
-	scopes.modUtils$webClient.addJavaScriptDependancy('media:///json3.js', this)
-//	TODO: Using the code below to conditionally inject json2 break the order in which dependancies are added, which breaks the GeoChart implementation. No idea why yet
-//	TODO: also, the code below adds the script for each datavisualization
-//	var id = 'jsonPolyfill'
-//	var script = 'if (!window.JSON) {script = document.createElement("script");script.type = "text/javascript";script.src = "' + scopes.modUtils$webClient.getExternalUrlForMedia("media:///json2.js") + '";document.head.appendChild(script);}'
-//	scopes.modUtils$webClient.addDynamicJavaScript(script, id, null)
+function serializeObject(o, specialTypes) {
+	return null
+}
+
+/*
+ * Component interaction API
+ */
+/**
+ * @abstract
+ * @properties={typeid:24,uuid:"3DA12669-19E2-4015-B9F1-0D593797C1E8"}
+ */
+function executeClientsideScript(script) {
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method executeClientsideScript() must be implemented on instances of AbstractDataVisualizer');
 }
 
 /**
- * Callback method for when form is shown.
+ * @abstract
+ * @param {String} url
  *
- * @param {Boolean} firstShow form is shown first time after load
- * @param {JSEvent} event the event that triggered the action
- *
- * @protected
- *
- * @properties={typeid:24,uuid:"4C7A2CF9-E700-412C-BB7E-91E0A1002385"}
+ * @properties={typeid:24,uuid:"1FBEAB33-6C34-4FF6-BE2F-38A7597CC7E0"}
  */
-function onShow(firstShow, event) {
-	rendered = true
+function addJavaScriptDependancy(url) {	
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method addJavaScriptDependancy() must be implemented on instances of AbstractDataVisualizer');
 }
 
 /**
- * Handle hide of DataVisualization
+ * @abstract
+ * @param {String} url
  *
- * @protected
- * @param {JSEvent} event the event that triggered the action
- *
- * @returns {Boolean}
- *
- *
- * @properties={typeid:24,uuid:"22CD8598-93D9-4261-952C-5129AE22778F"}
+ * @properties={typeid:24,uuid:"CBCAF7EB-7AF2-46F0-A9C2-7E0D4C8688B9"}
  */
-function onHide(event) {
-	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid, so we also delete the keys from the object store.
-	scopes.modUtils$webClient.executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.objects[value]});')
-	rendered = false
-	return true
-}
-
-/**
- * Callback method when form is destroyed.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @protected
- *
- * @properties={typeid:24,uuid:"0A8FE3BA-A64C-4298-AA00-AA0731573ABB"}
- */
-function onUnload(event) {
+function addCSSDependancy(url) {	
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method addCSSDependancy() must be implemented on instances of AbstractDataVisualizer');
 }

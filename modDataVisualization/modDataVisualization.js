@@ -16,6 +16,21 @@
  * FIXME get rid of plugins.WebClientUtils.generateCallbackScript(...)
  */
 
+/*
+ * TODO: refactor to modComponent
+ */
+
+ /**
+  * @protected 
+  * @properties={typeid:35,uuid:"1ECADEE7-69C4-4CE8-B2D2-1CDD8C6428BD",variableType:-4}
+  */
+ var log = (function() {
+ 		var logger = scopes.modUtils$log.getLogger('com.servoy.bap.components')
+
+ 		logger.setLevel(scopes.modUtils$log.Level.DEBUG)
+ 		return logger
+ 	}())
+
 /**
  * Variable with self executing function as value to run some initialization code when the scope gets instantiated on solution start.
  * - Dynamically created an .js entry in the Media Lib and includes it in the Web CLient 
@@ -24,14 +39,23 @@
  * @SuppressWarnings(unused)
  * @properties={typeid:35,uuid:"C88DB00A-27F8-4CAB-A8FB-C1D2D50FC5C4",variableType:-4}
  */
- var init = function() {
- 	var callback = plugins.WebClientUtils.generateCallbackScript(browserCallback,['objectType', 'objectId', 'mapId', 'eventType', 'data'], false);
- 	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, mapId, eventType, data){' + callback + '}';
-	solutionModel.getMedia('svyDataVisCallback.js').bytes = new Packages.java.lang.String(script).getBytes('UTF-8')
- }()
+var init = function() {
+	//Modify the parent of DataVisualizerBase to be the client specific AbstractDataVisualizer impl.
+	var clientSpecificAbstractDataVisualizerName = 'AbstractDataVisualizer' + (scopes.modUtils$system.isWebClient() ? '$webClient' : '$smartClient');
+	solutionModel.getForm('DataVisualizerBase').extendsForm = solutionModel.getForm(clientSpecificAbstractDataVisualizerName)
+	
+	//FIXME: refactor to not use plugins.WebClientUtils
+	var callback
+	if (scopes.utils.system.isSwingClient()) {
+		callback = "servoy.executeMethod('scopes.modDataVisualization.browserCallback', [objectType, objectId, mapId, eventType, data])"
+	} else {
+		callback = plugins.WebClientUtils.generateCallbackScript(browserCallback, ['objectType', 'objectId', 'mapId', 'eventType', 'data'], false);
+	}
+	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, mapId, eventType, data){' + callback + '}';
+	solutionModel.getMedia('svyDataVisCallback.js').bytes = scopes.modUtils$data.StringToByteArray(script)
+}()
  
- 
- /**
+/**
  * TODO: test if browsers use Date.toJSON with JSON.stringify
  * TODO: test if the JSON polyfill uses Date.toJSON to stringify dates
  * CHECKME: looking at http://bestiejs.github.io/json3/ it seems we're best of upgrading to JSON3 and always including it
@@ -49,17 +73,15 @@
  */
 function reviver(key, value) {
     if (typeof value === 'string') {
-     /** @type {Array<Number>} */
-     var a = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
+	    /** @type {Array<Number>} */
+	    var a = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
         if (a) {
             return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]));
         }
     }
     return value;
 };
- 
- 
- 
+
 /**
  * Generic callbackHandler for events send from the browser to the server
  * @private 
@@ -67,29 +89,29 @@ function reviver(key, value) {
  */
 function browserCallback(objectType, objectId, mapId, eventType, data) {
 	if (!mapId in forms) {
-		application.output('Callback for unknown DataVisualization:  id=' + mapId)
+		log.warn('Callback for unknown DataVisualization:  id=' + mapId)
 	}
 	if (forms[mapId].allObjectCallbackHandlers[objectId]) {
 		forms[mapId].allObjectCallbackHandlers[objectId](eventType, JSON.parse(data, reviver))
 	} else {
-		application.output('Callback for unknown object: type=' + objectType + ', id=' + objectId + ', eventType=' + eventType)
+		log.warn('Callback for unknown object: type=' + objectType + ', id=' + objectId + ', eventType=' + eventType)
 	}
 }
 
 /**
  * Internal API: DO NOT CALL
- * 
+ * TODO: convert into a generic util function with just a thin wrapper for returning the right type, as also needed for other components 
  * @param {RuntimeTabPanel} panel the panel to which the visualization gets added
- * @param {RuntimeForm<AbstractDataVisualizer>} form
+ * @param {String} dataVisualizerFormName Name of the subclass of RuntimeForm<DataVisualizerBase> for the specific dataVisualization
  * 
- * @return {RuntimeForm<AbstractDataVisualizer>}
+ * @return {RuntimeForm<DataVisualizerBase>}
  * @properties={typeid:24,uuid:"23E83A2C-6B8E-4CF9-A031-A29F02B3DF3E"}
  */
-function createVisualizationContainer(panel, form) {
+function createVisualizationContainer(panel, dataVisualizerFormName) {
 	var formName = application.getUUID().toString()
-	application.createNewFormInstance(form.getId(), formName)
+	application.createNewFormInstance(dataVisualizerFormName, formName)
 	
-	/**@type {RuntimeForm<AbstractDataVisualizer>}*/
+	/**@type {RuntimeForm<DataVisualizerBase>}*/
 	var dataVisualizerInstance = forms[formName]
 	
 	panel.removeAllTabs()
@@ -108,18 +130,23 @@ var maxIEVersion = 8
 
 /**
  * Utility method to conditionally include excanvas.js when running IE <= 8, to add canvas support in those IE version
- * @param {RuntimeComponent} container
+ * @param {RuntimeForm<DataVisualizerBase>} container
  * @param {Number} maxVersion the max version of IE for which excanvas ought to be included. (default is IE8)
  * @properties={typeid:24,uuid:"FB38F277-182A-4971-8534-401EEC07EBFF"}
  */
 function includeExCanvasForIE(container, maxVersion) {
+	if (scopes.utils.system.isSwingClient()) {
+		return;
+	}
+	
 	if (maxVersion > maxIEVersion) {
 		maxIEVersion = maxVersion
 	}
+	
 	//Add excanvas to conditionally only in IE to compensate for the lack of canvas support in IE up to and including IE8
 	var clientProperties = scopes.modUtils$webClient.getBrowserInfo().getProperties()
 	if (clientProperties.isBrowserInternetExplorer() && clientProperties.getBrowserVersionMajor() <= maxIEVersion) {
-		scopes.modUtils$webClient.addJavaScriptDependancy('media:///excanvas.compiled.js', container)
+		container.addJavaScriptDependancy('media:///excanvas.compiled.js')
 	}	
 }
 
