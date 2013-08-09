@@ -39,7 +39,9 @@ function manualUpdate(event) {
  * @properties={typeid:24,uuid:"6339D4F4-0D29-445C-A833-68D97EAA7C2E"}
  */
 function update(force) {
-	if (!force && !autoUpdate) return
+	if (!force && !autoUpdate) {
+		return
+	}
 	
 	for (var i = 0; i < gauges.length; i++) {
 		gauges[i].refresh(parseInt((Math.random() * 100).toFixed(0)))
@@ -60,188 +62,192 @@ function update(force) {
  */
 function onLoad(event) {
 	//Instantiate Gauges
-	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge1,{
-		value: 67, 
-	    min: 0,
-	    max: 100,
-	    title: "Visitors"
-	}))
+	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge1, {
+			value: 67,
+			min: 0,
+			max: 100,
+			title: "Visitors"
+		}))
+
 	
-	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge2,{
-		title: 'Features',
-		value: parseInt((Math.random() * 100).toFixed(0))
-	}))
-	
-	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge3,{
-		title: 'Tasks',
-		value: parseInt((Math.random() * 100).toFixed(0)),
-		donut: true
-	}))
-	
-	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge4,{
-		title: 'Bugs',
-		value: parseInt((Math.random() * 100).toFixed(0)),
-		donut: true
-	}))
-	
+	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge2, {
+			title: 'Features',
+			value: parseInt( (Math.random() * 100).toFixed(0))
+		}))
+
+	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge3, {
+			title: 'Tasks',
+			value: parseInt( (Math.random() * 100).toFixed(0)),
+			donut: true
+		}))
+
+	gauges.push(new scopes.modDataVis$justGage.JustGauge(elements.gauge4, {
+			title: 'Bugs',
+			value: parseInt( (Math.random() * 100).toFixed(0)),
+			donut: true
+		}))
+
 	//Instantiate Google GeoChart
 	geoChart = new scopes.modDataVis$googleCharts.GeoChart(elements.geochart)
-	var data = [
-		['Country', 'weight'],
+	var data = [['Country', 'weight'],
 		['NL', 1000],
 		['GB', 500],
 		['RO', 50],
-		['US', 750]
-	]
-	
+		['US', 750]]
+
 	var options = {
-		 colorAxis: {colors: ['yellow','red']}
+		colorAxis: { colors: ['yellow', 'red'] }
 	}
-	geoChart.draw(data,options)
+	geoChart.draw(data, options)
 	geoChart.addRegionClickListener(callbackLogger)
 	geoChart.addSelectListener(callbackLogger)
-	
-	
+
 	//Instantiate GoogleMaps
 	var gmaps = scopes.modDataVis$googleMaps;
 	var map = new gmaps.Map(elements.maps, {
-		zoom: 8,
-		center: new gmaps.LatLng(-34.397, 150.644),
-		mapTypeId: gmaps.MapTypeIds.HYBRID
-	})
-	maps.push({map: map, markers: []})
-	
+				zoom: 8,
+				center: new gmaps.LatLng(-34.397, 150.644),
+				mapTypeId: gmaps.MapTypeIds.HYBRID
+			})
+	maps.push({ map: map, markers: [] })
+
 	var map2 = new gmaps.Map(elements.map2, {
-		zoom: 2,
-		center: new gmaps.LatLng(30, 20),
-		mapTypeId: gmaps.MapTypeIds.TERRAIN,
-		overviewMapControl: true,
-		panControl: true,
-		rotateControl: true,
-		scaleControl: true,
-		zoomControl: true,
-		mapMaker: false
-	})
-	
-	//Adding markers	
+				zoom: 2,
+				center: new gmaps.LatLng(30, 20),
+				mapTypeId: gmaps.MapTypeIds.TERRAIN,
+				overviewMapControl: true,
+				panControl: true,
+				rotateControl: true,
+				scaleControl: true,
+				zoomControl: true,
+				mapMaker: false
+			})
+
+	//Adding markers
 	var m = new gmaps.Marker({
-		position: new gmaps.LatLng(10,20),
-		draggable: true,
-		title: 'Hello Paul'
-	});
+			position: new gmaps.LatLng(10, 20),
+			draggable: true,
+			title: 'Hello Paul'
+		});
 	m.setMap(map2)
 	m.addClickListener(callbackLogger)
 	m.addDoubleClickListener(callbackLogger)
 	m.addRightClickListener(callbackLogger)
 	m.addPositionChangedListener(callbackLogger)
-	
+
 	var pos = getLatLng('De Brand 65 3823 LJ Amersfoort')
-	var m2 = new gmaps.Marker({
-		position: new gmaps.LatLng(pos.lat,pos.lng),
-		draggable: false,
-		title: 'Servoy HQ',
-		map: map2
-	});
-	m2.addClickListener(addInfoWindow)
-	m2.addDoubleClickListener(callbackLogger)
-	m2.addRightClickListener(callbackLogger)
+	if (!pos) {
+		maps.push({ map: map2, markers: [m] })
+	} else {
+		var m2 = new gmaps.Marker({
+				position: new gmaps.LatLng(pos.lat, pos.lng),
+				draggable: false,
+				title: 'Servoy HQ',
+				map: map2
+			});
+		m2.addClickListener(addInfoWindow)
+		m2.addDoubleClickListener(callbackLogger)
+		m2.addRightClickListener(callbackLogger)
 
-	maps.push({map: map2, markers: [m, m2]})
+		maps.push({ map: map2, markers: [m, m2] })
 
-	var i2 = new gmaps.InfoWindow({
-		content: scopes.modUtils$webClient.XHTML2Text(<div>
-			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
-			<p>De Brand 65<br/>
-			3823 LJ Amersfoort<br/>
-			The Netherlands<br/>
-			Voice: +31 33 455 9877<br/>
-			Fax: +31 84 883 2297<br/>
-			<br/>
-			<span style="display: block;width: 100%; height: 1px; border: 0px solid lightgray; border-bottom-width: 1px"/>
-			<br/>
-			<a href="javascript:void()">20 likes</a>
-			</p>
-		</div>)
+		var i2 = new gmaps.InfoWindow({
+				content: scopes.modUtils$webClient.XHTML2Text(<div>
+				<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
+				<p>De Brand 65<br/>
+				3823 LJ Amersfoort<br/>
+				The Netherlands<br/>
+				Voice: +31 33 455 9877<br/>
+				Fax: +31 84 883 2297<br/>
+				<br/>
+				<span style="display: block;width: 100%; height: 1px; border: 0px solid lightgray; border-bottom-width: 1px"/>
+				<br/>
+				<a href="javascript:void()">20 likes</a>
+				</p>
+			</div>)
+
+			});
+		i2.open(map2, m2);
+	}
 	
-	});
-	i2.open(map2, m2);	
+	//scopes.modUtils$webClient.addJavaScriptDependancy('media:///ClientSideCode.js')
 	
 	var lineChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$line, scopes.modDataVis$flotr2.CHART_TYPES.LINES)
 	lineChart.draw([{
-				data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837] ],
-				lines: {
-					lineWidth: 0.5, show: true, fill: true, fillColor: ['#fcefe3', '#efbc93'], fillOpacity: 0.34
-				}, 
-				points: { show: true, fill: true, fillColor: '#e79a70', hitRadius: 7 }
-	}], {
-				colors: ['#e79a70'],
-				shadowSize: 0,
-				fontColor: '#e1e1e1',
-				fontSize: 20,
-				xaxis: {
-					noTicks: 9,
-					min: 1.5,
-					max: 10.5
-				},
-				yaxis: {
-					showLabels: true,
-					min: 0,
-					max: 25100,
-					margin: false
-				},
-				grid: {
-					outline: 's',
-					verticalLines: false,
-					hoverable: true,
-					clickable: true,
-					color: '#a7a7a7'
-	
-				},
-				selection: {
-					mode: 'x'
-				},
-				mouse: {
-					track: true,
-					relative: true,
-					position: 'n',
-					
-					lineColor: '#e79a70',
-					fillOpacity: 0,
-					sensibility: 20
-				}
-			})
-			
+			data: [[1, 7000], [2, 13000], [3, 11000], [4, 15500], [5, 17000], [6, 21500], [7, 15136], [8, 8764], [9, 7345], [10, 11874], [11, 9837]],
+			lines: {
+				lineWidth: 0.5, show: true, fill: true, fillColor: ['#fcefe3', '#efbc93'], fillOpacity: 0.34
+			},
+			points: { show: true, fill: true, fillColor: '#e79a70', hitRadius: 7 }
+		}], {
+			colors: ['#e79a70'],
+			shadowSize: 0,
+			fontColor: '#e1e1e1',
+			fontSize: 20,
+			xaxis: {
+				noTicks: 9,
+				min: 1.5,
+				max: 10.5
+			},
+			yaxis: {
+				showLabels: true,
+				min: 0,
+				max: 25100,
+				margin: false
+			},
+			grid: {
+				outline: 's',
+				verticalLines: false,
+				hoverable: true,
+				clickable: true,
+				color: '#a7a7a7'
+
+			},
+			selection: {
+				mode: 'x'
+			},
+			mouse: {
+				track: true,
+				relative: true,
+				position: 'n',
+
+				lineColor: '#e79a70',
+				fillOpacity: 0,
+				sensibility: 20
+			}
+		})
+
 	lineChart.addClickListener(callbackLogger)
 	lineChart.addSelectListener(callbackLogger)
-	
+
 	var pieChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$pie, scopes.modDataVis$flotr2.CHART_TYPES.PIES)
 	pieChart.draw([
-    { data : [[0, 4]], label : 'Comedy' },
-    { data : [[0, 3]], label : 'Action' },
-    { data : [[0, 1.03]], label : 'Romance', pie : { explode : 50}},
-    { data : [[0, 3.5]], label : 'Drama' }
-  ], {
-	    HtmlText : false,
-	    grid : {
-	      outline: '',
-	      verticalLines : false,
-	      horizontalLines : false
-	    },
-	    xaxis : { showLabels : false },
-	    yaxis : { showLabels : false },
-	    pie : {
-	      show : true, 
-	      explode : 6
-	    },
-	    mouse : { track : true },
-	    legend : {
-	      position : 'se',
-	      backgroundColor : '#D2E8FF'
-	    }
-	  })
-	
+	    { data : [[0, 4]], label : 'Comedy' },
+	    { data : [[0, 3]], label : 'Action' },
+	    { data : [[0, 1.03]], label : 'Romance', pie : { explode : 50}},
+	    { data : [[0, 3.5]], label : 'Drama' }
+	  ], {
+	  		HtmlText: false,
+			grid: {
+				outline: '',
+				verticalLines: false,
+				horizontalLines: false
+			},
+			xaxis: { showLabels: false },
+			yaxis: { showLabels: false },
+			pie: {
+				show: true,
+				explode: 6
+			},
+			mouse: { track: true },
+			legend: {
+				position: 'se',
+				backgroundColor: '#D2E8FF'
+			}
+		})
+
 	//Start automatic update
-	plugins.scheduler.addJob('test',new Date(Date.now()+10000),update,10000)
+	plugins.scheduler.addJob('test', new Date(Date.now() + 10000), update, 10000)
 }
 
 /**
@@ -328,7 +334,7 @@ function getLatLng(address) {
 	var client = plugins.http.createNewHttpClient()
 	var request = client.createGetRequest(url)
 	var response = request.executeRequest()
-	if (response.getStatusCode() == plugins.http.HTTP_STATUS.SC_OK) {
+	if (response && response.getStatusCode() == plugins.http.HTTP_STATUS.SC_OK) {
 		/** @type {{results: Array<{}>, status: String}}*/
 		var result = JSON.parse(response.getResponseBody())
 		if (result.status == 'OK') {

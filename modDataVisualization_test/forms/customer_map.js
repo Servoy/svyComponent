@@ -32,7 +32,7 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"8AEEAAAE-5FE4-468E-9855-696DBAC0BD7D"}
  */
 function fitBounds() {
-	var bounds 
+	var bounds
 	for each (var mkr in markers) {
 		if (bounds) {
 			bounds.extend(mkr.getPosition())
@@ -79,10 +79,10 @@ function removeMarker(customerRec) {
  */
 function addInfoWindow(event) {
 	//Get customer_id
-	var customer_id;
+	var customerId;
 	for  (var i in markers) {
-		if (markers[i] == event.getSource()) {
-			customer_id = i;
+		if (markers[i] === event.getSource()) {
+			customerId = i;
 			break;
 		}
 	}

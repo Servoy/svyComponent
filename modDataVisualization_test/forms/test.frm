@@ -11,6 +11,7 @@ uuid:"007C24E2-FBBB-48A5-A958-BFEBB169E603"
 },
 {
 anchors:3,
+borderType:"RoundedBorder,0.0,0.0,0.0,0.0,#000000,#000000,#000000,#000000,0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0,solid;solid;solid;solid",
 location:"866,251",
 name:"gauge4",
 printable:false,
@@ -22,6 +23,7 @@ uuid:"025B29F1-A347-478A-8BEC-473147E126D3"
 },
 {
 anchors:12,
+borderType:"EmptyBorder,0,0,0,0",
 location:"30,460",
 name:"flotr2$pie",
 printable:false,
@@ -43,6 +45,7 @@ uuid:"30242E1A-904A-4E72-B8FB-54175EFBDA3D"
 },
 {
 anchors:15,
+borderType:"EmptyBorder,0,0,0,0",
 location:"390,61",
 name:"map2",
 printable:false,
@@ -54,6 +57,7 @@ uuid:"376F3C78-4B51-4B0F-A884-0CDA7A22DC05"
 },
 {
 anchors:6,
+borderType:"EmptyBorder,0,0,0,0",
 location:"632,460",
 name:"geochart",
 printable:false,
@@ -81,6 +85,7 @@ uuid:"82120EF1-DA9B-421E-8963-D2D9E6B1F39D"
 },
 {
 anchors:13,
+borderType:"EmptyBorder,0,0,0,0",
 location:"30,61",
 name:"maps",
 printable:false,
@@ -101,6 +106,7 @@ uuid:"A8876536-E0CF-49EC-9888-46A595ED5FF4"
 },
 {
 anchors:3,
+borderType:"EmptyBorder,0,0,0,0",
 location:"632,61",
 name:"gauge1",
 printable:false,
@@ -112,6 +118,7 @@ uuid:"AF00FEC9-0B9C-4602-BCE4-1A4367B82835"
 },
 {
 anchors:3,
+borderType:"RoundedBorder,0.0,0.0,0.0,0.0,#000000,#000000,#000000,#000000,0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0,solid;solid;solid;solid",
 location:"866,61",
 name:"gauge2",
 printable:false,
@@ -133,6 +140,7 @@ uuid:"BA10126F-94DE-471F-A237-F8D3C4B37982"
 },
 {
 anchors:14,
+borderType:"EmptyBorder,0,0,0,0",
 location:"390,460",
 name:"flotr2$line",
 printable:false,
@@ -144,6 +152,7 @@ uuid:"BAF0DC1B-0402-4EC9-8D9D-837B3F5960D6"
 },
 {
 anchors:3,
+borderType:"RoundedBorder,0.0,0.0,0.0,0.0,#000000,#000000,#000000,#000000,0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0,solid;solid;solid;solid",
 location:"632,251",
 name:"gauge3",
 printable:false,

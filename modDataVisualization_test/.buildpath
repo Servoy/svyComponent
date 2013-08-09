@@ -5,6 +5,7 @@
 	<buildpathentry exported="true" kind="prj" path="/modDataVis$googleCharts"/>
 	<buildpathentry exported="true" kind="prj" path="/modDataVis$googleMaps"/>
 	<buildpathentry exported="true" kind="prj" path="/modDataVis$justGage"/>
+	<buildpathentry exported="true" kind="prj" path="/modDataVis$slickGrid"/>
 	<buildpathentry exported="true" kind="prj" path="/modUtils"/>
 	<buildpathentry exported="true" kind="prj" path="/mod_dialog"/>
 </buildpath>

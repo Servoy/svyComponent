@@ -69,11 +69,12 @@ function addMarker(event) {
  * @properties={typeid:24,uuid:"8594E527-21D6-4779-B3C9-DA24BC9F7813"}
  */
 function addMarker2(event) {
-	 var marker2 = new scopes.modDataVis$googleMaps.Marker({
-		position: new scopes.modDataVis$googleMaps.LatLng(10, 40)
-	})
+	var marker2 = new scopes.modDataVis$googleMaps.Marker({
+			position: new scopes.modDataVis$googleMaps.LatLng(10, 40)
+		})
 	marker2.setMap(map)
 }
+
 
 /**
  * Perform the element default action.

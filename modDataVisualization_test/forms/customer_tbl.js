@@ -10,7 +10,7 @@
  * @properties={typeid:24,uuid:"ED2247A3-2AD7-4AD4-9EF9-E7F943368E83"}
  */
 function toggleMarker(oldValue, newValue, event) {
-	if (newValue == 1) {
+	if (newValue === 1) {
 		//Create marker
 		var pos = forms.test.getLatLng(address + ", " + city);
 		if (pos) {
