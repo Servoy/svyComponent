@@ -217,7 +217,7 @@ function onShow(firstShow, event) {
 		for (var i = 0; i < jsDependancies.length; i++) {
 			dom += '<script type="text/javascript" src="' + jsDependancies[i] + '"></script>\n';
 		}
-		for (var i = 0; i < cssDependancies.length; i++) {
+		for (i = 0; i < cssDependancies.length; i++) {
 			dom += '<link type="text/css" rel="stylesheet" href="' + cssDependancies[i] + '"></link>\n';
 		}
 		
