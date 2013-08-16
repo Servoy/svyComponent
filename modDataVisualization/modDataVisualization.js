@@ -19,6 +19,7 @@
 /*
  * TODO: refactor to modComponent
  * TODO: put custom logger initialization into AbstractDataVisualizer
+ * TODO: remove toObjectPresentation and use standard toJSON mechanism
  */
 
  /**
