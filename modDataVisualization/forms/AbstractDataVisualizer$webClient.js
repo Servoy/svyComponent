@@ -25,7 +25,7 @@
  * @private
  * @type {String}
  * @SuppressWarnings(unused)
- * @properties={typeid:35,uuid:"8D0E30F3-D755-4903-B959-5944C018AE09"}
+ * @properties={typeid:35,uuid:"5817A1A8-F9EE-4B24-A1DB-210B1913EA3E"}
  */
 var html = '';
 
@@ -35,29 +35,6 @@ var html = '';
  * @properties={typeid:35,uuid:"95AF050B-A5A2-43F1-971F-AA01FAB9FC25",variableType:-4}
  */
 var scripts = {};
-
-/**
- * Internal API: DO NOT CALL
- * @param {Object} o
- * @param {Array} [specialTypes]
- * @return {String}
- * @properties={typeid:24,uuid:"B3A82C36-4772-4C5D-B974-9F677923D9E9"}
- */
-function serializeObject(o, specialTypes) {
-	if (o['toObjectPresentation'] instanceof Function) {
-		var oo = o['toObjectPresentation']()
-		return serializeObject(oo, specialTypes);
-	}
-	var str = JSON.stringify(o, function(key, value) {
-		if (typeof value === 'string') {
-			return escape(value)
-		} else if (specialTypes && specialTypes.some(function(element, index, array) {return value instanceof element})) {
-			return value.toObjectPresentation();
-		}
-		return value
-	})
-	return str;
-}
 
 /**
  * @private 
@@ -198,8 +175,10 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"35FAD910-F9D1-4AF0-B172-69D75CE1A228"}
  */
 function executeClientsideScript(script) {
-	application.output('WindowName: ' + controller.getWindow().getName())
-	scopes.modUtils$webClient.executeClientsideScript(script, controller.getWindow().getName())
+	//FIXME: should be throttled if isRendered() == false, as otherwise the Window is unknown
+	//Currently hardcoded 'null' as window
+	var windowName = controller.getWindow() ? controller.getWindow().getName() : 'null'
+	scopes.modUtils$webClient.executeClientsideScript(script, windowName)
 }
 
 /**

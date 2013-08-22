@@ -144,14 +144,17 @@ function getDataVisualizationId(){
 
 /**
  * Internal API: DO NOT CALL
- * @abstract
  * @param {Object} o
- * @param {Array} [specialTypes]
  * @return {String}
  * @properties={typeid:24,uuid:"416C6366-18A1-4691-8812-AA824E5F4B59"}
  */
-function serializeObject(o, specialTypes) {
-	return null
+function serializeObject(o) {
+	return JSON.stringify(o, function(key, value) {
+		if (typeof value === 'string') {
+			return escape(value)
+		}
+		return value
+	})
 }
 
 /*

@@ -54,29 +54,6 @@ var jsDependancies = []
 var cssDependancies = []
 
 /**
- * Internal API: DO NOT CALL
- * @param {Object} o
- * @param {Array} [specialTypes]
- * @return {String}
- * @properties={typeid:24,uuid:"65B465FD-6178-4C84-9BDB-CD9224743691"}
- */
-function serializeObject(o, specialTypes) {
-	if (o['toObjectPresentation'] instanceof Function) {
-		var oo = o['toObjectPresentation']()
-		return serializeObject(oo, specialTypes);
-	}
-	var str = JSON.stringify(o, function(key, value) {
-		if (typeof value === 'string') {
-			return escape(value)
-		} else if (specialTypes && specialTypes.some(function(element, index, array) {return value instanceof element})) {
-			return value.toObjectPresentation();
-		}
-		return value
-	})
-	return str;
-}
-
-/**
  * @param {{id: String}} object
  * @param {String} [incrementalUpdateCode]
  * @param {Boolean} [isSubType] To indicate a subType is being persisted. If the main DataVisualization is already rendered and a new subType is added, setting this flag to true will push the new type straight to the browser. Default: false

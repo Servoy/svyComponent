@@ -19,7 +19,6 @@
 /*
  * TODO: refactor to modComponent
  * TODO: put custom logger initialization into AbstractDataVisualizer
- * TODO: remove toObjectPresentation and use standard toJSON mechanism
  */
 
  /**
@@ -36,7 +35,6 @@
 /**
  * Variable with self executing function as value to run some initialization code when the scope gets instantiated on solution start.
  * - Dynamically created an .js entry in the Media Lib and includes it in the Web CLient 
- * - Sets up several .toObjectPresentation prototypes on constructors, needed for serialization of objects to browser side
  * @private
  * @SuppressWarnings(unused)
  * @properties={typeid:35,uuid:"C88DB00A-27F8-4CAB-A8FB-C1D2D50FC5C4",variableType:-4}
