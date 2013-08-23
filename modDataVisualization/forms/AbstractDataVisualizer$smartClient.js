@@ -28,7 +28,7 @@ var log = (function() {
 	}())
 
 /**
- * @type {scopes.modWebView.JFXWebViewWebPanel}
+ * @type {scopes.modJFXWebView.JFXWebViewWebPanel}
  *
  * @properties={typeid:35,uuid:"26A94FFF-640C-4233-A71E-BE0F77CB1038",variableType:-4}
  */
@@ -132,7 +132,7 @@ function isRendered() {
  */
 function onLoad(event) {
 	_super.onLoad(event);
-	webPane = new scopes.modWebView.JFXWebViewWebPanel(elements.container)
+	webPane = new scopes.modJFXWebView.WebViewPanel(elements.container)
 }
 
 /**
