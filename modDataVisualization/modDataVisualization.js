@@ -52,13 +52,10 @@ var init = function() {
 		callback = plugins.WebClientUtils.generateCallbackScript(browserCallback, ['objectType', 'objectId', 'mapId', 'eventType', 'data'], false);
 	}
 	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, mapId, eventType, data){' + callback + '}';
-	solutionModel.getMedia('svyDataVisCallback.js').bytes = scopes.modUtils$data.StringToByteArray(script)
+	solutionModel.getMedia('modComponent/svyDataVisCallback.js').bytes = scopes.modUtils$data.StringToByteArray(script)
 }()
  
 /**
- * TODO: test if browsers use Date.toJSON with JSON.stringify
- * TODO: test if the JSON polyfill uses Date.toJSON to stringify dates
- * CHECKME: looking at http://bestiejs.github.io/json3/ it seems we're best of upgrading to JSON3 and always including it
  * CHECKME: do we need to take into account timezone differences between the client and server here?
  * Used in browserCallback when parsing incoming JSON data to revive dates stored as ISO Strings to JavaScript date objects
  * @private 

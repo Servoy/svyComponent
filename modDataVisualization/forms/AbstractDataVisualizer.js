@@ -31,7 +31,10 @@
  *
  * @properties={typeid:24,uuid:"5D664A6D-50CC-4FA6-A705-010EC67B7968"}
  */
-function onLoad(event) {}
+function onLoad(event) {
+	addJavaScriptDependancy('media:///modComponent/svyDataVis.js')
+	addJavaScriptDependancy('media:///modComponent/svyDataVisCallback.js')
+}
 
 /**
  * Callback method for when form is shown.

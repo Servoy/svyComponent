@@ -25,7 +25,7 @@
  * @private
  * @type {String}
  * @SuppressWarnings(unused)
- * @properties={typeid:35,uuid:"5817A1A8-F9EE-4B24-A1DB-210B1913EA3E"}
+ * @properties={typeid:35,uuid:"C4DD7C53-5CAB-4A11-AD72-83ECE6DB8038"}
  */
 var html = '';
 
@@ -161,14 +161,7 @@ function isRendered() {
  */
 function onLoad(event) {
 	_super.onLoad(event);
-	addJavaScriptDependancy('media:///svyDataVis.js')
-	addJavaScriptDependancy('media:///svyDataVisCallback.js')
-	addJavaScriptDependancy('media:///json3.js')
-//	TODO: Using the code below to conditionally inject json2 break the order in which dependancies are added, which breaks the GeoChart implementation. No idea why yet
-//	TODO: also, the code below adds the script for each datavisualization
-//	var id = 'jsonPolyfill'
-//	var script = 'if (!window.JSON) {script = document.createElement("script");script.type = "text/javascript";script.src = "' + scopes.modUtils$webClient.getExternalUrlForMedia("media:///json2.js") + '";document.head.appendChild(script);}'
-//	scopes.modUtils$webClient.addDynamicJavaScript(script, id, null)
+	addJavaScriptDependancy('media:///modComponent/json3.js') //Always including json3.js to solve browser incompatibility issues with date serialization
 }
 
 /**

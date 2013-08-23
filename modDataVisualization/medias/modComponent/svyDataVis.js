@@ -114,7 +114,7 @@ svyDataVis.objects = {}
 /**
  * Flag to toggle debugging on/off
  */
-svyDataVis.debug = false
+svyDataVis.debug = true
 
 /**
  * Wrapper around window.console to prevent fails on IE<9 and to take into account the svyDataVis.debug flag
