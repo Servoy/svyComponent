@@ -28,7 +28,7 @@ var log = (function() {
 	}())
 
 /**
- * @type {scopes.modJFXWebView.JFXWebViewWebPanel}
+ * @type {scopes.modJFXWebView.WebViewPanel}
  *
  * @properties={typeid:35,uuid:"26A94FFF-640C-4233-A71E-BE0F77CB1038",variableType:-4}
  */
@@ -141,7 +141,7 @@ function onLoad(event) {
  */
 function executeClientsideScript(script) {
 	//FIXME: this should probably be throttled if isRendered() == false. See InfoWindow.open() method for usecase
-	webPane.executeScript(script)
+	webPane.executeScriptLater(script)
 }
 
 /**
@@ -154,7 +154,7 @@ function addJavaScriptDependancy(url) {
 		jsDependancies.push(url)
 	}
 	if (isRendered()) {
-		webPane.executeScript('$("head").append(\'<script type="text/javascript" src="' + url + '"></script>\')')
+		webPane.executeScriptLater('$("head").append(\'<script type="text/javascript" src="' + url + '"></script>\')')
 	}
 }
 
@@ -169,7 +169,7 @@ function addCSSDependancy(url) {
 		cssDependancies.push(url)
 	}
 	if (isRendered()) {
-		webPane.executeScript('$("head").append(\'<link type="text/css" rel="stylesheet" href="' + url + '">\')')
+		webPane.executeScriptLater('$("head").append(\'<link type="text/css" rel="stylesheet" href="' + url + '">\')')
 	}
 }
 
