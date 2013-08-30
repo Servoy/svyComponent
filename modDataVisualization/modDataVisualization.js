@@ -49,7 +49,8 @@ var init = function() {
 	if (scopes.utils.system.isSwingClient()) {
 		callback = "servoy.executeMethod('scopes.modDataVisualization.browserCallback', [objectType, objectId, mapId, eventType, data])"
 	} else {
-		callback = plugins.WebClientUtils.generateCallbackScript(browserCallback, ['objectType', 'objectId', 'mapId', 'eventType', 'data'], false);
+		callback = scopes.modUtils$webClient.getCallbackScript(browserCallback, ['objectType', 'objectId', 'mapId', 'eventType', 'data'], {showLoading: false})
+		//callback = plugins.WebClientUtils.generateCallbackScript(browserCallback, ['objectType', 'objectId', 'mapId', 'eventType', 'data'], false);
 	}
 	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, mapId, eventType, data){' + callback + '}';
 	solutionModel.getMedia('modComponent/svyDataVisCallback.js').bytes = scopes.modUtils$data.StringToByteArray(script)
@@ -87,8 +88,9 @@ function reviver(key, value) {
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
 function browserCallback(objectType, objectId, mapId, eventType, data) {
-	if (!mapId in forms) {
+	if (!(mapId in forms)) {
 		log.warn('Callback for unknown DataVisualization:  id=' + mapId)
+		return;
 	}
 	if (forms[mapId].allObjectCallbackHandlers[objectId]) {
 		forms[mapId].allObjectCallbackHandlers[objectId](eventType, JSON.parse(data, reviver))
@@ -150,6 +152,7 @@ function includeExCanvasForIE(container, maxVersion) {
 }
 
 //TODO: implement option to enable/disable debug mode
+//See renderHead in AbstractDefaultAjaxBehavior how Wicket does this. Using a behavior would help us as well
 ///**
 // * @private
 // * @type {Boolean}
