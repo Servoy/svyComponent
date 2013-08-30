@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
 	<buildpathentry excluding=".stp/|medias/" kind="src" path=""/>
+	<buildpathentry exported="true" kind="prj" path="/modJFXWebView"/>
 	<buildpathentry exported="true" kind="prj" path="/modUtils"/>
 	<buildpathentry exported="true" kind="prj" path="/modUtils$webClient"/>
-	<buildpathentry exported="true" kind="prj" path="/modWebView"/>
 </buildpath>
