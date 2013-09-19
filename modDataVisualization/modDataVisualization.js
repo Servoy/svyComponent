@@ -9,7 +9,6 @@
  * 
  * TODO's
  * - Refactor core logic of svyDataVis to svyBrowserServerBridge
- * - Use 1 global object store, instead of one per impl.
  * - Use constants for identifiers, like com.servoy.datavisualization.google.maps
  * - Create "factory" functions for generating the JSON to send back and forth
  * - Create helper method to call methods on objects with arguments in the browser, from the server
