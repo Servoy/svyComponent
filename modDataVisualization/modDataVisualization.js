@@ -1,35 +1,42 @@
 /*
- * This scope should handle the parts of data visualization that are generic:
- *
- * - the creation of a container object for the DataVisualization.
- *   In Web Client create an HTML Area, in SC create a BrowserBean instance (phase 2)
- *   The container object should not be the form directly, but an object with convenient methods to get done what needs to be done
- *
- * - Conversion of Servoy's dataTypes (JSFoundSet/JSDataSet,JSrecord to proper formats)
+ * This file is part of the Servoy Business Application Platform, Copyright (C) 2012-2013 Servoy BV 
  * 
- * TODO's
- * - Refactor core logic of svyDataVis to svyBrowserServerBridge
- * - Use constants for identifiers, like com.servoy.datavisualization.google.maps
- * - Create "factory" functions for generating the JSON to send back and forth
- * - Create helper method to call methods on objects with arguments in the browser, from the server
- * FIXME get rid of plugins.WebClientUtils.generateCallbackScript(...)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
- * TODO: refactor to modComponent
- * TODO: put custom logger initialization into AbstractDataVisualizer
+ * This scope should handle the parts of data visualization that are generic:
+ * - the creation of a container object for the DataVisualization
+ * - switching the super form for DataVisualizerBase at runtime to a client specific implementation
+ * - @runtime setup the callback mechanism from the client to the scripting layer
+ * - Generic reviver to restore date strings to dates when parsing JSON 
+ * 
+ * TODO Extract the intelligent loop for processing initializations in the right order from the GoogleMaps/FullCalendarHandler initialize method and put it in code
+ * TODO refactor to modComponent
+ * TODO put custom logger initialization into AbstractDataVisualizer
+ * TODO get rid of UUID's everywhere and have a global Id generator for dataVisualizations
+ * TODO Refactor core logic of svyDataVis to modComponent
+ * TODO Use constants for identifiers, like com.servoy.datavisualization.google.maps
+ * TODO Create "factory" functions for generating the JSON to send back and forth
+ * TODO Create helper method to call methods on objects with arguments in the browser, from the server
  */
 
  /**
-  * @protected 
+  * @private 
   * @properties={typeid:35,uuid:"1ECADEE7-69C4-4CE8-B2D2-1CDD8C6428BD",variableType:-4}
   */
- var log = (function() {
- 		var logger = scopes.modUtils$log.getLogger('com.servoy.bap.components')
-
- 		logger.setLevel(scopes.modUtils$log.Level.DEBUG)
- 		return logger
- 	}())
+ var log = scopes.modUtils$log.getLogger('com.servoy.bap.components')
 
 /**
  * Variable with self executing function as value to run some initialization code when the scope gets instantiated on solution start.
@@ -43,15 +50,21 @@ var init = function() {
 	var clientSpecificAbstractDataVisualizerName = 'AbstractDataVisualizer' + (scopes.modUtils$system.isWebClient() ? '$webClient' : '$smartClient');
 	solutionModel.getForm('DataVisualizerBase').extendsForm = solutionModel.getForm(clientSpecificAbstractDataVisualizerName)
 	
-	//FIXME: refactor to not use plugins.WebClientUtils
+	//TODO: these changes don't work yet: probably need to separate callback methods: one that fires and forgets and one with callback
 	var callback
 	if (scopes.utils.system.isSwingClient()) {
-		callback = "servoy.executeMethod('scopes.modDataVisualization.browserCallback', [objectType, objectId, mapId, eventType, data])"
+		callback = "var retval = servoy.executeMethod('scopes.modDataVisualization.clientCallback', [objectType, objectId, componentId, eventType, data, callback]);"
+		callback += "if (typeof callback == 'function') {callback.call(this, retval)};"
 	} else {
-		callback = scopes.modUtils$webClient.getCallbackScript(browserCallback, ['objectType', 'objectId', 'mapId', 'eventType', 'data'], {showLoading: false})
+		var url = scopes.modUtils$webClient.getCallbackUrl(clientCallback)
+		url += "&p=' + encodeURIComponent(" + ['objectType', 'objectId', 'componentId', 'eventType', 'data'].join(") + '&p=' + encodeURIComponent(") + ")"
+		callback = "if (typeof callback == 'function') {$.ajax({url: '" + url + "}).done(function(data) {callback.call(this, data)});} else {"
 		//callback = plugins.WebClientUtils.generateCallbackScript(browserCallback, ['objectType', 'objectId', 'mapId', 'eventType', 'data'], false);
+		callback += scopes.modUtils$webClient.getCallbackScript(clientCallback, ['objectType', 'objectId', 'componentId', 'eventType', 'data'], {showLoading: false})
+		callback += '}'
 	}
-	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, mapId, eventType, data){' + callback + '}';
+	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, componentId, eventType, data, callback){' + callback + '}';
+	
 	solutionModel.getMedia('modComponent/svyDataVisCallback.js').bytes = scopes.modUtils$data.StringToByteArray(script)
 }()
  
@@ -82,19 +95,35 @@ function reviver(key, value) {
 };
 
 /**
- * Generic callbackHandler for events send from the browser to the server
+ * Generic callbackHandler for events send from the client to the scripting layer
  * @private 
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
-function browserCallback(objectType, objectId, mapId, eventType, data) {
-	if (!(mapId in forms)) {
-		log.warn('Callback for unknown DataVisualization:  id=' + mapId)
+function clientCallback(args) {
+	var objectType, objectId, instanceId, eventType, data	
+	//Normalize how the arguments are send in between SC and WC and in the WC between calls with and without callback
+	if (arguments.length > 1) { 
+		objectType = arguments[0]
+		objectId = arguments[1]
+		instanceId = arguments[2]
+		eventType = arguments[3]
+		data = arguments[4]
+	} else {
+		objectType = args.p[0]
+		objectId = args.p[1]
+		instanceId = args.p[2]
+		eventType = args.p[3]
+		data = args.p[4]	
+	}
+	
+	if (!(instanceId in forms)) {
+		log.warn('Callback for unknown component instance:  id=' + instanceId + '(' + Array.prototype.slice.call(arguments) + ')')
 		return;
 	}
-	if (forms[mapId].allObjectCallbackHandlers[objectId]) {
-		forms[mapId].allObjectCallbackHandlers[objectId](eventType, JSON.parse(data, reviver))
+	if (forms[instanceId].allObjectCallbackHandlers[objectId]) {
+		forms[instanceId].allObjectCallbackHandlers[objectId](eventType, JSON.parse(data, reviver))
 	} else {
-		log.warn('Callback for unknown object: type=' + objectType + ', id=' + objectId + ', eventType=' + eventType)
+		log.warn('Callback for unknown object: type=' + objectType + ', id=' + objectId + ', eventType=' + eventType + ', instanceId=' + instanceId)
 	}
 }
 
