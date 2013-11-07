@@ -71,8 +71,8 @@ function persistObject(object, incrementalUpdateCode, isSubType) {
 	
 	//If rendered and a new subType is added, send to browser straight away
 	if (isRendered() && isSubType && !scripts[object.id]) {
-		scopes.modUtils$webClient.executeClientsideScript(script)
-		scopes.modUtils$webClient.executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + object.id +'\');')
+		executeClientsideScript(script)
+		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + object.id +'\');')
 	}
 	
 	if (isRendered() && incrementalUpdateCode) {
@@ -99,6 +99,9 @@ function persistObject(object, incrementalUpdateCode, isSubType) {
 	//	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).add(behavior)
 	//
 	//Another option would be not to use XML in the html form variable, but assign each script as a Wicket behavior on the svyDataVis instance
+	//Third option is possible the use of Wicket (Dynamic) Models:
+	// - http://jeff-schwartz.blogspot.nl/2011/03/put-your-wicket-applications-on-diet.html
+	// - https://cwiki.apache.org/confluence/display/WICKET/Working+with+Wicket+models#WorkingwithWicketmodels-DynamicModels
 	setState() 
 }
 
@@ -108,7 +111,7 @@ function persistObject(object, incrementalUpdateCode, isSubType) {
  * @properties={typeid:24,uuid:"868147AB-BE89-4A84-B992-F5FAA1961DA1"}
  */
 function desistObject(id) {
-	//TODO: shouldn't this also immediatly perform some clientSide cleanups?
+	//TODO: shouldn't this also immediately perform some clientSide cleanups?
 	delete allObjectCallbackHandlers[id]
 	delete scripts[id]
 	setState()
