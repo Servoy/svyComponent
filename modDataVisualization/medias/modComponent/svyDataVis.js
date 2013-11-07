@@ -56,6 +56,7 @@ svyDataVis.reviver = function(key, value) {
 		for (var i = 0; i < value.parts.length; i++) {
 			object = object[value.parts[i]]
 			if (object == null) {
+				svyDataVis.error('Can\'t resolve "' + value.parts.join('.') + '"')
 				throw 'SvyDataVisReferenceException'
 			}
 		}
@@ -98,7 +99,7 @@ svyDataVis.JSON2Object = function(json) {
 	try {
 		obj = JSON.parse(json, this.reviver)
 	} catch (e) {
-		this.log('Failed to convert JSON to Object: ' + json)
+		this.error('Failed to convert JSON to Object: ' + json)
 		if (e != 'SvyDataVisReferenceException') {
 			throw e
 		}
@@ -123,5 +124,10 @@ svyDataVis.debug = true
 svyDataVis.log = function(text) {
 	if (this.debug && window.console && window.console.log) {
 		console.log(text)
+	}
+}
+svyDataVis.error = function(text) {
+	if (window.console && window.console.error) {
+		console.error(text)
 	}
 }
