@@ -20,12 +20,7 @@
  *
  * @properties={typeid:35,uuid:"8BBE8A91-EBDE-4759-B3CF-C73506E288AA",variableType:-4}
  */
-var log = (function() {
-		var logger = scopes.modUtils$log.getLogger('com.servoy.bap.components.abstractcomponent.smartclient')
-
-		logger.setLevel(scopes.modUtils$log.Level.DEBUG)
-		return logger
-	}())
+var log = scopes.modUtils$log.getLogger('com.servoy.bap.components.abstractcomponent.smartclient')
 
 /**
  * @type {scopes.modJFXWebView.WebViewPanel}
@@ -36,7 +31,7 @@ var webPane
 
 /**
  * @private
- * @type {Object<String>}
+ * @type {{id: String}}
  * @properties={typeid:35,uuid:"11DBD598-42FD-45FF-9DFB-3F865D0E1B46",variableType:-4}
  */
 var scripts = {};
@@ -61,11 +56,9 @@ var cssDependancies = []
  * @properties={typeid:24,uuid:"D09C4575-7065-42AB-A541-3EB6996EEDAD"}
  */
 function persistObject(object, incrementalUpdateCode, isSubType) {
-	var script = 'svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\''
-	
 	//If rendered and a new subType is added, send to browser straight away
-	if (isRendered() && !scripts[object.id]) {
-		executeClientsideScript(script)
+	if (isRendered() && !scripts[object.id]) { //CHECKME: WC impl. does an extra check to see if issubType == true. Why not here?
+		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
 		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + object.id +'\');')
 	}
 	
@@ -73,7 +66,7 @@ function persistObject(object, incrementalUpdateCode, isSubType) {
 		executeClientsideScript(incrementalUpdateCode)
 	}
 	
-	scripts[object.id] = script
+	scripts[object.id] = object
 }
 
 /**
@@ -197,7 +190,8 @@ function onShow(firstShow, event) {
 		}
 		
 		for (var script in scripts) {
-			dom += '<script type="text/javascript">' + scripts[script] + '</script>\n';
+			var object = scripts[script]
+			dom += '<script type="text/javascript">svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'</script>\n';
 		}
 		dom += '</head>\
 			<body style="display: block; width: 100%; height: 100%; box-sizing: border-box; padding: 0px; margin: 0px; overflow: hidden" '
