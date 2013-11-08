@@ -100,7 +100,9 @@ function reviver(key, value) {
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
 function clientCallback(args) {
-	var objectType, objectId, instanceId, eventType, data	
+	var objectType, objectId, instanceId, eventType
+	/** @type {String} */
+	var data	
 	//Normalize how the arguments are send in between SC and WC and in the WC between calls with and without callback
 	if (arguments.length > 1) { 
 		objectType = arguments[0]
