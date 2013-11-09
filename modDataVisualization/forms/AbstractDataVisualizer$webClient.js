@@ -31,47 +31,21 @@ var html = '';
 
 /**
  * @private
- * @type {Object<String>}
+ * @type {Object<{id: String}>}
  * @properties={typeid:35,uuid:"95AF050B-A5A2-43F1-971F-AA01FAB9FC25",variableType:-4}
  */
 var scripts = {};
 
 /**
- * @private 
- * @properties={typeid:24,uuid:"7F55B514-C949-43F5-843D-84061FE180C2"}
- */
-function setState(){
-	
-	var dom = <html>
-		<head>
-		</head>
-		<body>
-			<div id={getId()} style="width: 100%; height: 100%; overflow: hidden"><![CDATA[&nbsp;]]></div>
-		</body>
-	</html>
-	dom.body.@onLoad = 'svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');'
-	for (var script in scripts) {
-		dom.head.appendChild(new XML('<script><![CDATA[' + scripts[script] + ']]></script>'))
-	}
-	html = scopes.modUtils$webClient.XHTML2Text(dom);
-	
-	//Making sure that updates from the browser to the server don't cause the server to update the browser again. Wicket ignores this if the complete form needs to be rendered
-	scopes.modUtils$webClient.setRendered(elements.visualizationContainer); 
-}
-
-/**
  * @param {{id: String}} object
  * @param {String} [incrementalUpdateCode]
- * @param {Boolean} [isSubType] To indicate a subType is being persisted. If the main DataVisualization is already rendered and a new subType is added, setting this flag to true will push the new type straight to the browser. Default: false
  *
  * @properties={typeid:24,uuid:"C8482365-ED48-4509-88C2-93F6AE068D15"}
  */
-function persistObject(object, incrementalUpdateCode, isSubType) {
-	var script = 'svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\''
-	
-	//If rendered and a new subType is added, send to browser straight away
-	if (isRendered() && isSubType && !scripts[object.id]) {
-		executeClientsideScript(script)
+function persistObject(object, incrementalUpdateCode) {
+	//If rendered and a new object is added, send to browser straight away
+	if (isRendered() && !scripts[object.id]) {
+		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
 		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + object.id +'\');')
 	}
 	
@@ -79,30 +53,7 @@ function persistObject(object, incrementalUpdateCode, isSubType) {
 		executeClientsideScript(incrementalUpdateCode)
 	}
 	
-	scripts[object.id] = script
-	//TODO: instead of calling setState for every persist, maybe attach an org.apache.wicket.behavior.AbstractBehavior and use it's beforeRender method to call setState?
-	//Taken even further, it would also be possible to just store the passed object and only generate the script when onRender is performed
-	//If storing the object, the object doesn't have to be updated with every change, as an object is just a reference, so it stays in sync automatically
-	//	var impl = {
-	//		afterRender: function(component) {
-	//			application.output('After Rendering: ' + component)
-	//		},
-	//		onRendered: function(component) {
-	//			application.output('onRendered: ' + component)
-	//		},	
-	//		beforeRender: function(component) {
-	//			application.output('Before Rendering: ' + component)
-	//		}
-	//	}
-	//	
-	//	var behavior  = new Packages.org.apache.wicket.behavior.AbstractBehavior(impl)
-	//	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).add(behavior)
-	//
-	//Another option would be not to use XML in the html form variable, but assign each script as a Wicket behavior on the svyDataVis instance
-	//Third option is possible the use of Wicket (Dynamic) Models:
-	// - http://jeff-schwartz.blogspot.nl/2011/03/put-your-wicket-applications-on-diet.html
-	// - https://cwiki.apache.org/confluence/display/WICKET/Working+with+Wicket+models#WorkingwithWicketmodels-DynamicModels
-	setState() 
+	scripts[object.id] = object
 }
 
 /**
@@ -114,11 +65,10 @@ function desistObject(id) {
 	//TODO: shouldn't this also immediately perform some clientSide cleanups?
 	delete allObjectCallbackHandlers[id]
 	delete scripts[id]
-	setState()
 }
 
 /**
- * TODO: don'tprovide direct access, but through setter (maybe the setter should be a param in persistObject(...))
+ * TODO: don't provide direct access, but through setter (maybe the setter should be a param in persistObject(...))
  * Map holding references to the callbackEvent handlers of the main DataVisualization and all it's subtypes.<br>
  * Used by the browserCallback function to lookup the correct object to delegate the callback to,<br>
  * in order to persists browserside updates to the map, without causing another render cycle towards the browser
@@ -165,6 +115,33 @@ function isRendered() {
 function onLoad(event) {
 	_super.onLoad(event);
 	addJavaScriptDependancy('media:///modComponent/json3.js') //Always including json3.js to solve browser incompatibility issues with date serialization
+	
+	var elementId = scopes.modUtils$webClient.getElementMarkupId(elements.visualizationContainer)
+	var impl = {
+		renderHead: function(/**@type {Packages.org.apache.wicket.markup.html.IHeaderResponse}*/ response) { //(IHeaderResponse response) 
+			var ids = Object.keys(scripts)
+			var script = ''
+				
+			var object
+			for (var i = 0; i < ids.length; i++) {
+				object = scripts[ids[i]]
+				script += 'svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\';\n'
+			}
+			response.renderJavascript(script, elementId)
+			response.renderOnLoadJavascript('svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + ids.join("','") +'\');') //CHECKME: do the references cause a mem leak?
+		}
+	}
+	
+	var behavior  = new Packages.org.apache.wicket.behavior.AbstractBehavior(impl)
+	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).add(behavior)
+	
+	html = scopes.modUtils$webClient.XHTML2Text(<html>
+		<head>
+		</head>
+		<body>
+			<div id={getId()} style="width: 100%; height: 100%; overflow: hidden"><![CDATA[&nbsp;]]></div>
+		</body>
+	</html>);
 }
 
 /**

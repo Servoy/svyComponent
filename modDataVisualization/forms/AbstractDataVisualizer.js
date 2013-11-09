@@ -94,11 +94,10 @@ function onResize(event) {
  * @abstract
  * @param {{id: String}} object
  * @param {String} [incrementalUpdateCode]
- * @param {Boolean} [isSubType] To indicate a subType is being persisted. If the main DataVisualization is already rendered and a new subType is added, setting this flag to true will push the new type straight to the browser. Default: false
  *
  * @properties={typeid:24,uuid:"639FBDF8-D88F-4D9F-A04B-3CAB322AA350"}
  */
-function persistObject(object, incrementalUpdateCode, isSubType) {
+function persistObject(object, incrementalUpdateCode) {
 	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method persistObject() must be implemented on instances of AbstractDataVisualizer');
 }
 
@@ -164,6 +163,7 @@ function serializeObject(o) {
  * Component interaction API
  */
 /**
+ * TODO refactor to executeScript
  * @abstract
  * @properties={typeid:24,uuid:"3DA12669-19E2-4015-B9F1-0D593797C1E8"}
  */

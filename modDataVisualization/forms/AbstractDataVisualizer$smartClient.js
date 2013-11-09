@@ -51,11 +51,10 @@ var cssDependancies = []
 /**
  * @param {{id: String}} object
  * @param {String} [incrementalUpdateCode]
- * @param {Boolean} [isSubType] To indicate a subType is being persisted. If the main DataVisualization is already rendered and a new subType is added, setting this flag to true will push the new type straight to the browser. Default: false
  *
  * @properties={typeid:24,uuid:"D09C4575-7065-42AB-A541-3EB6996EEDAD"}
  */
-function persistObject(object, incrementalUpdateCode, isSubType) {
+function persistObject(object, incrementalUpdateCode) {
 	//If rendered and a new subType is added, send to browser straight away
 	if (isRendered() && !scripts[object.id]) { //CHECKME: WC impl. does an extra check to see if issubType == true. Why not here?
 		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
