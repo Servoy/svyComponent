@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>modDataVisualization_test</name>
+	<name>modComponent_test</name>
 	<comment></comment>
 	<projects>
 		<project>servoy_localhost_resources</project>
