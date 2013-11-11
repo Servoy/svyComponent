@@ -16,7 +16,7 @@
  */
 
 /*
- * Dummy form for actual DataVisualisations to extend.
+ * Dummy form for Components to extend.
  * 
- * Gets it's super form set at Runtime to an implementation of IDataVisualizer for a specific clientType
+ * Gets it's super form set at Runtime to an implementation of AbstractComponent for a specific clientType
  */
