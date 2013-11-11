@@ -1,1 +1,1 @@
-//empty .js set with content in scopes.modDataVisualization.init
+//empty .js set with content in scopes.modComponent.init

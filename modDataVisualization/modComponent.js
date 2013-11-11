@@ -53,7 +53,7 @@ var init = function() {
 	//TODO: these changes don't work yet: probably need to separate callback methods: one that fires and forgets and one with callback
 	var callback
 	if (scopes.utils.system.isSwingClient()) {
-		callback = "var retval = servoy.executeMethod('scopes.modDataVisualization.clientCallback', [objectType, objectId, componentId, eventType, data, callback]);"
+		callback = "var retval = servoy.executeMethod('scopes.modComponent.clientCallback', [objectType, objectId, componentId, eventType, data, callback]);"
 		callback += "if (typeof callback == 'function') {callback.call(this, retval)};"
 	} else {
 		var url = scopes.modUtils$webClient.getCallbackUrl(clientCallback)
