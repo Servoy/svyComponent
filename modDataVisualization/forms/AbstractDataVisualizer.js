@@ -134,14 +134,14 @@ function getId() {
 }
 
 /**
- * Abstract identifier, should be overridden on DataVisualizer instances and return the id under which all browser interaction takes place
+ * Abstract identifier, should be overridden on implementations of AbstractComponent and return the id under which all browser interaction takes place
  * @abstract
  * @protected 
  * TODO: write UnitTest to check for this implementation
  * @properties={typeid:24,uuid:"9D9DA2C9-A017-47B8-A4A4-B7C9BF425550"}
  */
-function getDataVisualizationId(){
-	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method getDataVisualizationId() must be implemented on instances of AbstractDataVisualizer');
+function getComponentId(){
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method getComponentId() must be implemented on instances of AbstractDataVisualizer');
 }
 
 /**

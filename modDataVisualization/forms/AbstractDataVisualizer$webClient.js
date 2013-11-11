@@ -45,8 +45,8 @@ var scripts = {};
 function persistObject(object, incrementalUpdateCode) {
 	//If rendered and a new object is added, send to browser straight away
 	if (isRendered() && !scripts[object.id]) {
-		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
-		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + object.id +'\');')
+		executeClientsideScript('svyDataVis.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
+		executeClientsideScript('svyDataVis.' + getComponentId() + '.initialize(\'' + object.id +'\');')
 	}
 	
 	if (isRendered() && incrementalUpdateCode) {
@@ -78,13 +78,13 @@ function desistObject(id) {
 var allObjectCallbackHandlers = {};
 
 /**
- * Abstract identifier, should be overridden on DataVisualizer instances and return the id under which all browser interaction takes place
+ * Abstract identifier, should be overridden on implementations of AbstractComponent and return the id under which all browser interaction takes place
  * @abstract
  * @protected 
  * TODO: write UnitTest to check for this implementation
  * @properties={typeid:24,uuid:"3C417883-A4EB-46EF-B15C-4D9605846954"}
  */
-function getDataVisualizationId(){}
+function getComponentId(){}
 
 /**
  * Flag to be used by implementations to check whether or not to execute the incremental update code
@@ -125,10 +125,10 @@ function onLoad(event) {
 			var object
 			for (var i = 0; i < ids.length; i++) {
 				object = scripts[ids[i]]
-				script += 'svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\';\n'
+				script += 'svyDataVis.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\';\n'
 			}
 			response.renderJavascript(script, elementId)
-			response.renderOnLoadJavascript('svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + ids.join("','") +'\');') //CHECKME: do the references cause a mem leak?
+			response.renderOnLoadJavascript('svyDataVis.' + getComponentId() + '.initialize(\'' + ids.join("','") +'\');') //CHECKME: do the references cause a mem leak?
 		}
 	}
 	

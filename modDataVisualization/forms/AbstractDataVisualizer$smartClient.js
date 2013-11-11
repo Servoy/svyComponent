@@ -57,8 +57,8 @@ var cssDependancies = []
 function persistObject(object, incrementalUpdateCode) {
 	//If rendered and a new subType is added, send to browser straight away
 	if (isRendered() && !scripts[object.id]) { //CHECKME: WC impl. does an extra check to see if issubType == true. Why not here?
-		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
-		executeClientsideScript('svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + object.id +'\');')
+		executeClientsideScript('svyDataVis.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
+		executeClientsideScript('svyDataVis.' + getComponentId() + '.initialize(\'' + object.id +'\');')
 	}
 	
 	if (isRendered() && incrementalUpdateCode) {
@@ -88,13 +88,13 @@ function desistObject(id) {
 var allObjectCallbackHandlers = {};
 
 /**
- * Abstract identifier, should be overridden on DataVisualizer instances and return the id under which all browser interaction takes place
+ * Abstract identifier, should be overridden on implementations of AbstractComponent and return the id under which all browser interaction takes place
  * @abstract
  * @protected 
  * TODO: write UnitTest to check for this implementation
  * @properties={typeid:24,uuid:"AD9F8AAA-90A2-4664-BD91-ED05E2C61A69"}
  */
-function getDataVisualizationId(){}
+function getComponentId(){}
 
 /**
  * Flag to be used by implementations to check whether or not to execute the incremental update code
@@ -190,11 +190,11 @@ function onShow(firstShow, event) {
 		
 		for (var script in scripts) {
 			var object = scripts[script]
-			dom += '<script type="text/javascript">svyDataVis.' + getDataVisualizationId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'</script>\n';
+			dom += '<script type="text/javascript">svyDataVis.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'</script>\n';
 		}
 		dom += '</head>\
 			<body style="display: block; width: 100%; height: 100%; box-sizing: border-box; padding: 0px; margin: 0px; overflow: hidden" '
-		dom += 'onload="svyDataVis.' + getDataVisualizationId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');">'
+		dom += 'onload="svyDataVis.' + getComponentId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');">'
 			
 		dom += '<div id="' + getId() + '" style="width: 100%; height: 100%; overflow: hidden">&nbsp;</div>'
 		dom += '</body>\
