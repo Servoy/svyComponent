@@ -8,7 +8,7 @@ typeid:19,
 uuid:"74DB82D3-E01E-4527-9263-FEA56961695B"
 }
 ],
-name:"DataVisualizerBase",
+name:"ComponentBase",
 navigatorID:"-1",
 showInMenu:true,
 size:"10,10",

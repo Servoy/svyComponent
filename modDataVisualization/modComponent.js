@@ -18,7 +18,7 @@
 /*
  * This scope should handle the parts of data visualization that are generic:
  * - the creation of a container object for the DataVisualization
- * - switching the super form for DataVisualizerBase at runtime to a client specific implementation
+ * - switching the super form for ComponentBase at runtime to a client specific implementation
  * - @runtime setup the callback mechanism from the client to the scripting layer
  * - Generic reviver to restore date strings to dates when parsing JSON 
  * 
@@ -46,9 +46,9 @@
  * @properties={typeid:35,uuid:"C88DB00A-27F8-4CAB-A8FB-C1D2D50FC5C4",variableType:-4}
  */
 var init = function() {
-	//Modify the parent of DataVisualizerBase to be the client specific AbstractDataVisualizer impl.
+	//Modify the parent of ComponentBase to be the client specific AbstractDataVisualizer impl.
 	var clientSpecificAbstractDataVisualizerName = 'AbstractDataVisualizer' + (scopes.modUtils$system.isWebClient() ? '$webClient' : '$smartClient');
-	solutionModel.getForm('DataVisualizerBase').extendsForm = solutionModel.getForm(clientSpecificAbstractDataVisualizerName)
+	solutionModel.getForm('ComponentBase').extendsForm = solutionModel.getForm(clientSpecificAbstractDataVisualizerName)
 	
 	//TODO: these changes don't work yet: probably need to separate callback methods: one that fires and forgets and one with callback
 	var callback
@@ -133,16 +133,16 @@ function clientCallback(args) {
  * Internal API: DO NOT CALL
  * TODO: convert into a generic util function with just a thin wrapper for returning the right type, as also needed for other components 
  * @param {RuntimeTabPanel} panel the panel to which the visualization gets added
- * @param {String} dataVisualizerFormName Name of the subclass of RuntimeForm<DataVisualizerBase> for the specific dataVisualization
+ * @param {String} dataVisualizerFormName Name of the subclass of RuntimeForm<ComponentBase> for the specific dataVisualization
  * 
- * @return {RuntimeForm<DataVisualizerBase>}
+ * @return {RuntimeForm<ComponentBase>}
  * @properties={typeid:24,uuid:"23E83A2C-6B8E-4CF9-A031-A29F02B3DF3E"}
  */
 function createVisualizationContainer(panel, dataVisualizerFormName) {
 	var formName = application.getUUID().toString()
 	application.createNewFormInstance(dataVisualizerFormName, formName)
 	
-	/**@type {RuntimeForm<DataVisualizerBase>}*/
+	/**@type {RuntimeForm<ComponentBase>}*/
 	var dataVisualizerInstance = forms[formName]
 	
 	panel.removeAllTabs()
@@ -161,7 +161,7 @@ var maxIEVersion = 8
 
 /**
  * Utility method to conditionally include excanvas.js when running IE <= 8, to add canvas support in those IE version
- * @param {RuntimeForm<DataVisualizerBase>} container
+ * @param {RuntimeForm<ComponentBase>} container
  * @param {Number} maxVersion the max version of IE for which excanvas ought to be included. (default is IE8)
  * @properties={typeid:24,uuid:"FB38F277-182A-4971-8534-401EEC07EBFF"}
  */
