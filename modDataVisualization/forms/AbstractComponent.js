@@ -16,7 +16,7 @@
  */
 
 /*
- * Base definition for the different AbstractDataVisualizer$.... impl. 
+ * Base definition for the different AbstractComponent$.... impl. 
  */
 
 /*
@@ -98,7 +98,7 @@ function onResize(event) {
  * @properties={typeid:24,uuid:"639FBDF8-D88F-4D9F-A04B-3CAB322AA350"}
  */
 function persistObject(object, incrementalUpdateCode) {
-	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method persistObject() must be implemented on instances of AbstractDataVisualizer');
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method persistObject() must be implemented on instances of AbstractComponent');
 }
 
 /**
@@ -108,7 +108,7 @@ function persistObject(object, incrementalUpdateCode) {
  * @properties={typeid:24,uuid:"D855B7DA-E66B-46D6-8FE7-404FC27C2911"}
  */
 function desistObject(id) {
-	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method desistObject() must be implemented on instances of AbstractDataVisualizer');
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method desistObject() must be implemented on instances of AbstractComponent');
 }
 
 /**
@@ -141,7 +141,7 @@ function getId() {
  * @properties={typeid:24,uuid:"9D9DA2C9-A017-47B8-A4A4-B7C9BF425550"}
  */
 function getComponentId(){
-	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method getComponentId() must be implemented on instances of AbstractDataVisualizer');
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method getComponentId() must be implemented on instances of AbstractComponent');
 }
 
 /**
@@ -168,7 +168,7 @@ function serializeObject(o) {
  * @properties={typeid:24,uuid:"3DA12669-19E2-4015-B9F1-0D593797C1E8"}
  */
 function executeClientsideScript(script) {
-	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method executeClientsideScript() must be implemented on instances of AbstractDataVisualizer');
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method executeClientsideScript() must be implemented on instances of AbstractComponent');
 }
 
 /**
@@ -178,7 +178,7 @@ function executeClientsideScript(script) {
  * @properties={typeid:24,uuid:"1FBEAB33-6C34-4FF6-BE2F-38A7597CC7E0"}
  */
 function addJavaScriptDependancy(url) {	
-	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method addJavaScriptDependancy() must be implemented on instances of AbstractDataVisualizer');
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method addJavaScriptDependancy() must be implemented on instances of AbstractComponent');
 }
 
 /**
@@ -188,5 +188,5 @@ function addJavaScriptDependancy(url) {
  * @properties={typeid:24,uuid:"CBCAF7EB-7AF2-46F0-A9C2-7E0D4C8688B9"}
  */
 function addCSSDependancy(url) {	
-	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method addCSSDependancy() must be implemented on instances of AbstractDataVisualizer');
+	throw new scopes.modUtils$exceptions.AbstractMethodInvocationException('The abstract method addCSSDependancy() must be implemented on instances of AbstractComponent');
 }

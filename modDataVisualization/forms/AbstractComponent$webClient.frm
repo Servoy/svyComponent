@@ -21,7 +21,7 @@ typeid:4,
 uuid:"F4D04E1A-0359-469D-95CB-AF3A5B8FF3AC"
 }
 ],
-name:"AbstractDataVisualizer$webClient",
+name:"AbstractComponent$webClient",
 navigatorID:"-1",
 onHideMethodID:"36A21979-0F3F-49A1-B074-6DF879F207D1",
 onLoadMethodID:"C7C3623F-41C5-48DD-9345-D153FC02D04E",

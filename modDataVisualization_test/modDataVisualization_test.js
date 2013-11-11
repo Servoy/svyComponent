@@ -12,7 +12,7 @@ function onSolutionOpen() {
  */
 function testAbstractMethodImpl4AbstractDataVisualization() {
 	//All instances of AbstractDataVisualization should implement getComponentId(), but not getId()
-	var instances = scopes.modUtils$UI.getJSFormInstances(solutionModel.getForm('AbstractDataVisualizer'))
+	var instances = scopes.modUtils$UI.getJSFormInstances(solutionModel.getForm('AbstractComponent'))
 	
 	instances.forEach(function(element, index, array){
 		/** @type {JSForm} */

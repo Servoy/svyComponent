@@ -8,7 +8,7 @@ typeid:19,
 uuid:"9421DF0D-BB8F-4650-80CF-8C92EACDF6DF"
 }
 ],
-name:"AbstractDataVisualizer",
+name:"AbstractComponent",
 navigatorID:"-1",
 onHideMethodID:"16848B6D-636F-4CD0-A374-32F8B80DA8E7",
 onLoadMethodID:"5D664A6D-50CC-4FA6-A705-010EC67B7968",

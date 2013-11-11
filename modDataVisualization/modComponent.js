@@ -24,7 +24,7 @@
  * 
  * TODO Extract the intelligent loop for processing initializations in the right order from the GoogleMaps/FullCalendarHandler initialize method and put it in code
  * TODO refactor to modComponent
- * TODO put custom logger initialization into AbstractDataVisualizer
+ * TODO put custom logger initialization into AbstractComponent
  * TODO get rid of UUID's everywhere and have a global Id generator for dataVisualizations
  * TODO Refactor core logic of svyDataVis to modComponent
  * TODO Use constants for identifiers, like com.servoy.datavisualization.google.maps
@@ -46,9 +46,9 @@
  * @properties={typeid:35,uuid:"C88DB00A-27F8-4CAB-A8FB-C1D2D50FC5C4",variableType:-4}
  */
 var init = function() {
-	//Modify the parent of ComponentBase to be the client specific AbstractDataVisualizer impl.
-	var clientSpecificAbstractDataVisualizerName = 'AbstractDataVisualizer' + (scopes.modUtils$system.isWebClient() ? '$webClient' : '$smartClient');
-	solutionModel.getForm('ComponentBase').extendsForm = solutionModel.getForm(clientSpecificAbstractDataVisualizerName)
+	//Modify the parent of ComponentBase to be the client specific AbstractComponent impl.
+	var clientSpecificAbstractComponentName = 'AbstractComponent' + (scopes.modUtils$system.isWebClient() ? '$webClient' : '$smartClient');
+	solutionModel.getForm('ComponentBase').extendsForm = solutionModel.getForm(clientSpecificAbstractComponentName)
 	
 	//TODO: these changes don't work yet: probably need to separate callback methods: one that fires and forgets and one with callback
 	var callback

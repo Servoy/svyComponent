@@ -20,7 +20,7 @@ typeid:16,
 uuid:"FA90F2AB-35EC-4306-A782-306B0DF73066"
 }
 ],
-name:"AbstractDataVisualizer$smartClient",
+name:"AbstractComponent$smartClient",
 navigatorID:"-1",
 onHideMethodID:"987A4294-F39C-4A3E-A8C0-660F0BFD88F4",
 onLoadMethodID:"8E192053-D35E-4C47-8BA9-8E40AB3DC843",
