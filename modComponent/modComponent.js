@@ -65,7 +65,7 @@ var init = function() {
 	
 	var media = solutionModel.getMedia('modComponent/modComponentCallback.js')
 	media.bytes = scopes.modUtils$data.StringToByteArray(script)
-	media.mimeType = 'text/javascript' //When setting the bytes of a media entry, Servoy tries to set the mimeType accordingly, but fails
+	media.mimeType = 'text/javascript' /*When setting the bytes of a media entry, Servoy tries to set the mimeType accordingly, but fails*/
 }()
  
 /**
