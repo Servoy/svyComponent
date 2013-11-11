@@ -23,10 +23,8 @@
  * - Generic reviver to restore date strings to dates when parsing JSON 
  * 
  * TODO Extract the intelligent loop for processing initializations in the right order from the GoogleMaps/FullCalendarHandler initialize method and put it in code
- * TODO refactor to modComponent
  * TODO put custom logger initialization into AbstractComponent
  * TODO get rid of UUID's everywhere and have a global Id generator for Components
- * TODO Refactor core logic of svyDataVis to modComponent
  * TODO Use constants for identifiers, like com.servoy.component.google.maps
  * TODO Create "factory" functions for generating the JSON to send back and forth
  * TODO Create helper method to call methods on objects with arguments in the browser, from the server
@@ -63,7 +61,7 @@ var init = function() {
 		callback += scopes.modUtils$webClient.getCallbackScript(clientCallback, ['objectType', 'objectId', 'componentId', 'eventType', 'data'], {showLoading: false})
 		callback += '}'
 	}
-	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, componentId, eventType, data, callback){' + callback + '}';
+	var script = 'svyComp.callbackHandler = function(objectType, objectId, componentId, eventType, data, callback){' + callback + '}';
 	
 	solutionModel.getMedia('modComponent/modComponentCallback.js').bytes = scopes.modUtils$data.StringToByteArray(script)
 }()

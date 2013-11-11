@@ -45,8 +45,8 @@ var scripts = {};
 function persistObject(object, incrementalUpdateCode) {
 	//If rendered and a new object is added, send to browser straight away
 	if (isRendered() && !scripts[object.id]) {
-		executeClientsideScript('svyDataVis.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
-		executeClientsideScript('svyDataVis.' + getComponentId() + '.initialize(\'' + object.id +'\');')
+		executeClientsideScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
+		executeClientsideScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
 	}
 	
 	if (isRendered() && incrementalUpdateCode) {
@@ -125,10 +125,10 @@ function onLoad(event) {
 			var object
 			for (var i = 0; i < ids.length; i++) {
 				object = scripts[ids[i]]
-				script += 'svyDataVis.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\';\n'
+				script += 'svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\';\n'
 			}
 			response.renderJavascript(script, elementId)
-			response.renderOnLoadJavascript('svyDataVis.' + getComponentId() + '.initialize(\'' + ids.join("','") +'\');') //CHECKME: do the references cause a mem leak?
+			response.renderOnLoadJavascript('svyComp.' + getComponentId() + '.initialize(\'' + ids.join("','") +'\');') //CHECKME: do the references cause a mem leak?
 		}
 	}
 	
@@ -202,7 +202,7 @@ function onHide(event) {
 	//TODO: what to do with the return value of onHide of the super?
 	_super.onHide(event)
 	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid, so we also delete the keys from the object store.
-	executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyDataVis.objects[value]});')
+	executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyComp.objects[value]});')
 	rendered = false
 	return true
 }

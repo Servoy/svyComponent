@@ -1,5 +1,5 @@
-if (window.svyDataVis == undefined) {
-	var svyDataVis = {}
+if (window.svyComp == undefined) {
+	var svyComp = {}
 }
 /**
  * Helper function for dynamically calling a constructor function with arguments
@@ -9,7 +9,7 @@ if (window.svyDataVis == undefined) {
  * @param {Function} Constructor
  * @return {Object}
  */
-svyDataVis.dynConstructor = function(Constructor) {
+svyComp.dynConstructor = function(Constructor) {
 	var args = Array.prototype.slice.call(arguments, 1);
 	return function() {
 		var Temp = function() {} // temporary constructor
@@ -39,7 +39,7 @@ svyDataVis.dynConstructor = function(Constructor) {
  * @param {Object} value
  * @return {Object}
  */
-svyDataVis.reviver = function(key, value) {
+svyComp.reviver = function(key, value) {
 	if (value === null) {
 		return value
 	}
@@ -56,8 +56,8 @@ svyDataVis.reviver = function(key, value) {
 		for (var i = 0; i < value.parts.length; i++) {
 			object = object[value.parts[i]]
 			if (object == null) {
-				svyDataVis.error('Can\'t resolve "' + value.parts.join('.') + '"')
-				throw 'SvyDataVisReferenceException'
+				svyComp.error('Can\'t resolve "' + value.parts.join('.') + '"')
+				throw 'SvyComponentReferenceException'
 			}
 		}
 
@@ -77,7 +77,7 @@ svyDataVis.reviver = function(key, value) {
 					if (e.stack) this.log(e.stack)
 				}
 			case 'constructor':
-				return svyDataVis.dynConstructor.apply(this, [object].concat(value.args))()
+				return svyComp.dynConstructor.apply(this, [object].concat(value.args))()
 			case 'reference':
 				return object
 				//					case 'domReference':
@@ -94,13 +94,13 @@ svyDataVis.reviver = function(key, value) {
  * @param {String} json
  * @return {Object}
  */
-svyDataVis.JSON2Object = function(json) {
+svyComp.JSON2Object = function(json) {
 	var obj = null
 	try {
 		obj = JSON.parse(json, this.reviver)
 	} catch (e) {
 		this.error('Failed to convert JSON to Object: ' + json)
-		if (e != 'SvyDataVisReferenceException') {
+		if (e != 'SvyComponentReferenceException') {
 			throw e
 		}
 	}
@@ -110,23 +110,23 @@ svyDataVis.JSON2Object = function(json) {
 /**
  * hashmap holding all objects based on their ID (UUID)
  */
-svyDataVis.objects = {}
+svyComp.objects = {}
 
 /**
  * Flag to toggle debugging on/off
  */
-svyDataVis.debug = true
+svyComp.debug = true
 
 /**
- * Wrapper around window.console to prevent fails on IE<9 and to take into account the svyDataVis.debug flag
+ * Wrapper around window.console to prevent fails on IE<9 and to take into account the svyComp.debug flag
  * @param {Object} text
  */
-svyDataVis.log = function(text) {
+svyComp.log = function(text) {
 	if (this.debug && window.console && window.console.log) {
 		console.log(text)
 	}
 }
-svyDataVis.error = function(text) {
+svyComp.error = function(text) {
 	if (window.console && window.console.error) {
 		console.error(text)
 	}
