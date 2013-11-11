@@ -65,7 +65,7 @@ var init = function() {
 	}
 	var script = 'svyDataVis.callbackHandler = function(objectType, objectId, componentId, eventType, data, callback){' + callback + '}';
 	
-	solutionModel.getMedia('modComponent/svyDataVisCallback.js').bytes = scopes.modUtils$data.StringToByteArray(script)
+	solutionModel.getMedia('modComponent/modComponentCallback.js').bytes = scopes.modUtils$data.StringToByteArray(script)
 }()
  
 /**
