@@ -17,7 +17,7 @@
 
 /*
  * This scope should handle the parts of data visualization that are generic:
- * - the creation of a container object for the DataVisualization
+ * - the creation of a container object for the Component
  * - switching the super form for ComponentBase at runtime to a client specific implementation
  * - @runtime setup the callback mechanism from the client to the scripting layer
  * - Generic reviver to restore date strings to dates when parsing JSON 
@@ -25,9 +25,9 @@
  * TODO Extract the intelligent loop for processing initializations in the right order from the GoogleMaps/FullCalendarHandler initialize method and put it in code
  * TODO refactor to modComponent
  * TODO put custom logger initialization into AbstractComponent
- * TODO get rid of UUID's everywhere and have a global Id generator for dataVisualizations
+ * TODO get rid of UUID's everywhere and have a global Id generator for Components
  * TODO Refactor core logic of svyDataVis to modComponent
- * TODO Use constants for identifiers, like com.servoy.datavisualization.google.maps
+ * TODO Use constants for identifiers, like com.servoy.component.google.maps
  * TODO Create "factory" functions for generating the JSON to send back and forth
  * TODO Create helper method to call methods on objects with arguments in the browser, from the server
  */
@@ -133,22 +133,22 @@ function clientCallback(args) {
  * Internal API: DO NOT CALL
  * TODO: convert into a generic util function with just a thin wrapper for returning the right type, as also needed for other components 
  * @param {RuntimeTabPanel} panel the panel to which the visualization gets added
- * @param {String} dataVisualizerFormName Name of the subclass of RuntimeForm<ComponentBase> for the specific dataVisualization
+ * @param {String} componentFormName Name of the subclass of RuntimeForm<ComponentBase> for the specific Component
  * 
  * @return {RuntimeForm<ComponentBase>}
  * @properties={typeid:24,uuid:"23E83A2C-6B8E-4CF9-A031-A29F02B3DF3E"}
  */
-function createVisualizationContainer(panel, dataVisualizerFormName) {
+function createVisualizationContainer(panel, componentFormName) {
 	var formName = application.getUUID().toString()
-	application.createNewFormInstance(dataVisualizerFormName, formName)
+	application.createNewFormInstance(componentFormName, formName)
 	
 	/**@type {RuntimeForm<ComponentBase>}*/
-	var dataVisualizerInstance = forms[formName]
+	var componentInstance = forms[formName]
 	
 	panel.removeAllTabs()
-	panel.addTab(dataVisualizerInstance)
+	panel.addTab(componentInstance)
 
-	return dataVisualizerInstance
+	return componentInstance
 }
 
 /**

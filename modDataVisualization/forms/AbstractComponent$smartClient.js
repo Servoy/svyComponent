@@ -79,7 +79,7 @@ function desistObject(id) {
 }
 
 /**
- * Map holding references to the callbackEvent handlers of the main DataVisualization and all it's subtypes.<br>
+ * Map holding references to the callbackEvent handlers of the main Component and all it's subtypes.<br>
  * Used by the browserCallback function to lookup the correct object to delegate the callback to,<br>
  * in order to persists browserside updates to the map, without causing another render cycle towards the browser
  * @type {Object<Function>}
@@ -206,7 +206,7 @@ function onShow(firstShow, event) {
 }
 
 /**
- * Handle hide of DataVisualization
+ * Handle hide of Component
  *
  * @protected
  * @param {JSEvent} event the event that triggered the action

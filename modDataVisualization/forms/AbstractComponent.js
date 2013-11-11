@@ -123,7 +123,7 @@ function isRendered() {
 }
 
 /**
- * Returns the UUID by which to refer to this DataVisualization 
+ * Returns the UUID by which to refer to this Component instance
  * @final
  * @return {String}
  * 

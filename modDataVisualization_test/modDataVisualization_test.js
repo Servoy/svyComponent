@@ -10,8 +10,8 @@ function onSolutionOpen() {
 /**
  * @properties={typeid:24,uuid:"336166B1-D914-4701-B245-69C25DC2781B"}
  */
-function testAbstractMethodImpl4AbstractDataVisualization() {
-	//All instances of AbstractDataVisualization should implement getComponentId(), but not getId()
+function testAbstractMethodImpl4AbstractComponent() {
+	//All instances of AbstractComponent should implement getComponentId(), but not getId()
 	var instances = scopes.modUtils$UI.getJSFormInstances(solutionModel.getForm('AbstractComponent'))
 	
 	instances.forEach(function(element, index, array){
@@ -34,7 +34,7 @@ function testAbstractMethodImpl4AbstractDataVisualization() {
 					break;
 			}
 		})
-		jsunit.assertTrue('AbstractDataVisualization instances MUST override .getComponentId()', hasGetComponentId)
-		jsunit.assertFalse('AbstractDataVisualization instances must NOT override .getId()', hasGetId)
+		jsunit.assertTrue('AbstractComponent instances MUST override .getComponentId()', hasGetComponentId)
+		jsunit.assertFalse('AbstractComponent instances must NOT override .getId()', hasGetId)
 	})
 }
