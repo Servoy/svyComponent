@@ -18,14 +18,14 @@ function testAbstractMethodImpl4AbstractDataVisualization() {
 		/** @type {JSForm} */
 		var jsForm = element
 		var methods = jsForm.getMethods(false)
-		var hasGetDataVisualizationId = false
+		var hasGetComponentId = false
 		var hasGetId = false
 		methods.every(function(el, i, ar) {
 			/** @type {JSMethod} */
 			var method = el
 			switch (method.getName()) {
 				case 'getComponentId':
-					hasGetDataVisualizationId = true
+					hasGetComponentId = true
 					break;
 				case 'getId':
 					hasGetId = true
@@ -34,7 +34,7 @@ function testAbstractMethodImpl4AbstractDataVisualization() {
 					break;
 			}
 		})
-		jsunit.assertTrue('AbstractDataVisualization instances MUST override .getComponentId()', hasGetDataVisualizationId)
+		jsunit.assertTrue('AbstractDataVisualization instances MUST override .getComponentId()', hasGetComponentId)
 		jsunit.assertFalse('AbstractDataVisualization instances must NOT override .getId()', hasGetId)
 	})
 }
