@@ -19,6 +19,13 @@
  * TODO: do we need an HTML area at all, or can we just attach behaviors?
  */
 
+// /**
+//  * @private 
+//  *
+// * @properties={typeid:35,uuid:"1E01527C-8303-477A-9FB9-D422E86E982A",variableType:-4}
+// */
+// var log = scopes.modUtils$log.getLogger('com.servoy.bap.components.abstractcomponent.webclient')
+
 /**
  * Variable containing the stringified version of the DOM variable after the render cycle. 
  * This variable is dataprovider for the non-editable HMTL area through which the markup gets inserted into the browser
@@ -43,6 +50,8 @@ var scripts = {};
  * @properties={typeid:24,uuid:"C8482365-ED48-4509-88C2-93F6AE068D15"}
  */
 function persistObject(object, incrementalUpdateCode) {
+	scripts[object.id] = object
+
 	//If rendered and a new object is added, send to browser straight away
 	if (isRendered() && !scripts[object.id]) {
 		executeClientsideScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
@@ -52,8 +61,6 @@ function persistObject(object, incrementalUpdateCode) {
 	if (isRendered() && incrementalUpdateCode) {
 		executeClientsideScript(incrementalUpdateCode)
 	}
-	
-	scripts[object.id] = object
 }
 
 /**
