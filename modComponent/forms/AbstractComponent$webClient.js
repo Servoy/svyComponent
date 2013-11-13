@@ -51,15 +51,17 @@ var scripts = {};
  */
 function persistObject(object, incrementalUpdateCode) {
 	scripts[object.id] = object
-
-	//If rendered and a new object is added, send to browser straight away
-	if (isRendered() && !scripts[object.id]) {
-		executeClientsideScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
-		executeClientsideScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
-	}
 	
-	if (isRendered() && incrementalUpdateCode) {
-		executeClientsideScript(incrementalUpdateCode)
+	//If rendered and a new object is added, send to browser straight away
+	if (isRendered()) {
+		if (!scripts[object.id]) {
+			executeClientsideScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
+			executeClientsideScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
+		}
+		
+		if (incrementalUpdateCode) {
+			executeClientsideScript(incrementalUpdateCode)
+		}
 	}
 }
 
