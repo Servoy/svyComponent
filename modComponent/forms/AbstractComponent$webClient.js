@@ -50,9 +50,7 @@ var scripts = {};
  * @properties={typeid:24,uuid:"C8482365-ED48-4509-88C2-93F6AE068D15"}
  */
 function persistObject(object, incrementalUpdateCode) {
-	scripts[object.id] = object
-	
-	//If rendered and a new object is added, send to browser straight away
+	//If rendered and it is an object previously not yet persisted, send it to the client straight away
 	if (isRendered()) {
 		if (!scripts[object.id]) {
 			executeClientsideScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
@@ -63,6 +61,7 @@ function persistObject(object, incrementalUpdateCode) {
 			executeClientsideScript(incrementalUpdateCode)
 		}
 	}
+	scripts[object.id] = object
 }
 
 /**
