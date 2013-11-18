@@ -44,6 +44,13 @@ var html = '';
 var scripts = {};
 
 /**
+ * @type {Packages.org.apache.wicket.behavior.AbstractBehavior}
+ *
+ * @properties={typeid:35,uuid:"E613F298-61B3-4B4C-9FA1-9569D607A8B9",variableType:-4}
+ */
+var renderBehavior
+
+/**
  * @param {{id: String}} object
  * @param {String} [incrementalUpdateCode]
  *
@@ -140,8 +147,8 @@ function onLoad(event) {
 		}
 	}
 	
-	var behavior  = new Packages.org.apache.wicket.behavior.AbstractBehavior(impl)
-	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).add(behavior)
+	renderBehavior = new Packages.org.apache.wicket.behavior.AbstractBehavior(impl)
+	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).add(renderBehavior)
 	
 	html = scopes.modUtils$webClient.XHTML2Text(<html>
 		<head>
@@ -213,4 +220,14 @@ function onHide(event) {
 	executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyComp.objects[value]});')
 	rendered = false
 	return true
+}
+/**
+*
+* @param {JSEvent} event
+*
+* @properties={typeid:24,uuid:"98590DB3-DDBB-4D18-9AED-61D62C307536"}
+*/
+function onUnload(event) {
+	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).remove(renderBehavior)
+	return _super.onUnload(event)
 }
