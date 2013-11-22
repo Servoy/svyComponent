@@ -24,10 +24,11 @@
  * 
  * TODO Extract the intelligent loop for processing initializations in the right order from the GoogleMaps/FullCalendarHandler initialize method and put it in code
  * TODO put custom logger initialization into AbstractComponent
- * TODO get rid of UUID's everywhere and have a global Id generator for Components
  * TODO Use constants for identifiers, like com.servoy.component.google.maps
  * TODO Create "factory" functions for generating the JSON to send back and forth
  * TODO Create helper method to call methods on objects with arguments in the browser, from the server
+ * TODO Add method to enable the clientside debug mode 
+ * TODO Add mechanism to forward clientside log events on in the console in Developer (maybe also in production?)
  */
 
  /**
@@ -48,20 +49,19 @@ var init = function() {
 	var clientSpecificAbstractComponentName = 'AbstractComponent' + (scopes.modUtils$system.isWebClient() ? '$webClient' : '$smartClient');
 	solutionModel.getForm('ComponentBase').extendsForm = solutionModel.getForm(clientSpecificAbstractComponentName)
 	
-	//TODO: these changes don't work yet: probably need to separate callback methods: one that fires and forgets and one with callback
-	var callback
+	var callbackScript
 	if (scopes.utils.system.isSwingClient()) {
-		callback = "var retval = servoy.executeMethod('scopes.modComponent.clientCallback', [objectType, objectId, componentId, eventType, data, callback]);"
-		callback += "if (typeof callback == 'function') {callback.call(this, retval)};"
+		callbackScript = "var retval = servoy.executeMethod('scopes.modComponent.clientCallback', [objectType, objectId, componentId, eventType, data]);"
+		callbackScript += "if (typeof callback == 'function') {callback.call(this, retval)};"
 	} else {
 		var url = scopes.modUtils$webClient.getCallbackUrl(clientCallback)
 		url += "&p=' + encodeURIComponent(" + ['objectType', 'objectId', 'componentId', 'eventType', 'data'].join(") + '&p=' + encodeURIComponent(") + ")"
-		callback = "if (typeof callback == 'function') {$.ajax({url: '" + url + "}).done(function(data) {callback.call(this, data)});} else {"
-		//callback = plugins.WebClientUtils.generateCallbackScript(browserCallback, ['objectType', 'objectId', 'mapId', 'eventType', 'data'], false);
-		callback += scopes.modUtils$webClient.getCallbackScript(clientCallback, ['objectType', 'objectId', 'componentId', 'eventType', 'data'], {showLoading: false})
-		callback += '}'
+		
+		callbackScript = "if (typeof callback == 'function') {$.ajax({url: '" + url + "}).done(function(data) {callback.call(this, data)});} else {"
+		callbackScript += scopes.modUtils$webClient.getCallbackScript(clientCallback, ['objectType', 'objectId', 'componentId', 'eventType', 'data'], {showLoading: false})
+		callbackScript += '}'
 	}
-	var script = 'svyComp.callbackHandler = function(objectType, objectId, componentId, eventType, data, callback){' + callback + '}';
+	var script = 'svyComp.callbackHandler = function(objectType, objectId, componentId, eventType, data, callback){' + callbackScript + '}';
 	
 	var media = solutionModel.getMedia('modComponent/modComponentCallback.js')
 	media.bytes = scopes.modUtils$data.StringToByteArray(script)
@@ -69,6 +69,7 @@ var init = function() {
 }()
  
 /**
+ * TODO move to utils scope
  * CHECKME: do we need to take into account timezone differences between the client and server here?
  * Used in browserCallback when parsing incoming JSON data to revive dates stored as ISO Strings to JavaScript date objects
  * @private 
@@ -99,12 +100,18 @@ function reviver(key, value) {
  * @private 
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
-function clientCallback(args) {
+function clientCallback(body, args) {
 	var objectType, objectId, instanceId, eventType
 	/** @type {String} */
 	var data	
-	//Normalize how the arguments are send in between SC and WC and in the WC between calls with and without callback
-	if (arguments.length > 1) { 
+	/* Normalize how the arguments are send in between SC and WC and in the WC between calls with and without callback
+	 * SC w. callback  : objectType, objectId, componentId, eventType, data
+	 * SC w/o callback : objectType, objectId, componentId, eventType, data
+	 * WC w. callback  : body, {p: Array<String>}
+	 * WC w/o callback : objectType, objectId, componentId, eventType, data
+	 */
+	
+	if (arguments.length > 2) { 
 		objectType = arguments[0]
 		objectId = arguments[1]
 		instanceId = arguments[2]
@@ -115,11 +122,11 @@ function clientCallback(args) {
 		objectId = args.p[1]
 		instanceId = args.p[2]
 		eventType = args.p[3]
-		data = args.p[4]	
+		data = args.p[4]
 	}
 	
 	if (!(instanceId in forms)) {
-		log.warn('Callback for unknown component instance:  id=' + instanceId + '(' + Array.prototype.slice.call(arguments) + ')')
+		log.warn('Callback for unknown component instance:  id=' + instanceId + ' (' + Array.prototype.slice.call(arguments) + ')')
 		return;
 	}
 	if (forms[instanceId].allObjectCallbackHandlers[objectId]) {
@@ -127,6 +134,22 @@ function clientCallback(args) {
 	} else {
 		log.warn('Callback for unknown object: type=' + objectType + ', id=' + objectId + ', eventType=' + eventType + ', instanceId=' + instanceId)
 	}
+}
+
+/**
+ * @private 
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"3DF48842-7E60-4644-828B-D980AD8C4CC6",variableType:4}
+ */
+var counter = 0
+
+/**
+ * Helper method to generate unique ID values per session
+ * @properties={typeid:24,uuid:"A56D719A-1D17-47A9-BB9C-68C79F608209"}
+ */
+function getUID() {
+	return 'bap' + counter++
 }
 
 /**
@@ -139,7 +162,7 @@ function clientCallback(args) {
  * @properties={typeid:24,uuid:"23E83A2C-6B8E-4CF9-A031-A29F02B3DF3E"}
  */
 function createVisualizationContainer(panel, componentFormName) {
-	var formName = application.getUUID().toString()
+	var formName = getUID()
 	application.createNewFormInstance(componentFormName, formName)
 	
 	/**@type {RuntimeForm<ComponentBase>}*/
