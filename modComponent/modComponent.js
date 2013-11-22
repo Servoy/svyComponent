@@ -50,7 +50,7 @@ var init = function() {
 	solutionModel.getForm('ComponentBase').extendsForm = solutionModel.getForm(clientSpecificAbstractComponentName)
 	
 	var callbackScript
-	if (scopes.utils.system.isSwingClient()) {
+	if (scopes.modUtils$system.isSwingClient()) {
 		callbackScript = "var retval = servoy.executeMethod('scopes.modComponent.clientCallback', [objectType, objectId, componentId, eventType, data]);"
 		callbackScript += "if (typeof callback == 'function') {callback.call(this, retval)};"
 	} else {
@@ -189,7 +189,7 @@ var maxIEVersion = 8
  * @properties={typeid:24,uuid:"FB38F277-182A-4971-8534-401EEC07EBFF"}
  */
 function includeExCanvasForIE(container, maxVersion) {
-	if (scopes.utils.system.isSwingClient()) {
+	if (scopes.modUtils$system.isSwingClient()) {
 		return;
 	}
 	
