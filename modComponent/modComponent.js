@@ -35,7 +35,7 @@
   * @private 
   * @properties={typeid:35,uuid:"1ECADEE7-69C4-4CE8-B2D2-1CDD8C6428BD",variableType:-4}
   */
- var log = scopes.modUtils$log.getLogger('com.servoy.bap.components')
+ var log = scopes.svyLogManager.getLogger('com.servoy.bap.components')
 
 /**
  * Variable with self executing function as value to run some initialization code when the scope gets instantiated on solution start.

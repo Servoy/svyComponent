@@ -20,7 +20,7 @@
  *
  * @properties={typeid:35,uuid:"8BBE8A91-EBDE-4759-B3CF-C73506E288AA",variableType:-4}
  */
-var log = scopes.modUtils$log.getLogger('com.servoy.bap.components.abstractcomponent.smartclient')
+var log = scopes.svyLogManager.getLogger('com.servoy.bap.components.abstractcomponent.smartclient')
 
 /**
  * @type {scopes.modJFXWebView.WebViewPanel}

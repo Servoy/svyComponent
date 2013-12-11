@@ -24,7 +24,7 @@
 //  *
 // * @properties={typeid:35,uuid:"1E01527C-8303-477A-9FB9-D422E86E982A",variableType:-4}
 // */
-// var log = scopes.modUtils$log.getLogger('com.servoy.bap.components.abstractcomponent.webclient')
+// var log = scopes.svyLogManager.getLogger('com.servoy.bap.components.abstractcomponent.webclient')
 
 /**
  * Variable containing the stringified version of the DOM variable after the render cycle. 
