@@ -131,7 +131,7 @@ function onLoad(event) {
 	_super.onLoad(event);
 	addJavaScriptDependancy('media:///modComponent/json3.js') //Always including json3.js to solve browser incompatibility issues with date serialization
 	
-	var elementId = scopes.modUtils$webClient.getElementMarkupId(elements.visualizationContainer)
+	var elementId = scopes.svyWebClientUtils.getElementMarkupId(elements.visualizationContainer)
 	var impl = {
 		renderHead: function(/**@type {Packages.org.apache.wicket.markup.html.IHeaderResponse}*/ response) { //(IHeaderResponse response) 
 			var ids = Object.keys(scripts)
@@ -148,9 +148,9 @@ function onLoad(event) {
 	}
 	
 	renderBehavior = new Packages.org.apache.wicket.behavior.AbstractBehavior(impl)
-	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).add(renderBehavior)
+	scopes.svyWebClientUtils.unwrapElement(elements.visualizationContainer).add(renderBehavior)
 	
-	html = scopes.modUtils$webClient.XHTML2Text(<html>
+	html = scopes.svyWebClientUtils.XHTML2Text(<html>
 		<head>
 		</head>
 		<body>
@@ -166,7 +166,7 @@ function executeClientsideScript(script) {
 	//FIXME: should be throttled if isRendered() == false, as otherwise the Window is unknown
 	//Currently hardcoded 'null' as window
 	var windowName = controller.getWindow() ? controller.getWindow().getName() : 'null'
-	scopes.modUtils$webClient.executeClientsideScript(script, windowName)
+	scopes.svyWebClientUtils.executeClientsideScript(script, windowName)
 }
 
 /**
@@ -175,7 +175,7 @@ function executeClientsideScript(script) {
  * @properties={typeid:24,uuid:"145C8785-B43F-4856-8287-4A8759499113"}
  */
 function addJavaScriptDependancy(url) {
-	scopes.modUtils$webClient.addJavaScriptDependancy(url, forms[controller.getName()])
+	scopes.svyWebClientUtils.addJavaScriptDependancy(url, forms[controller.getName()])
 }
 
 /**
@@ -184,7 +184,7 @@ function addJavaScriptDependancy(url) {
  * @properties={typeid:24,uuid:"C499C04C-9B9D-4939-9251-B327863EE24B"}
  */
 function addCSSDependancy(url) {
-	scopes.modUtils$webClient.addCSSDependancy(url, forms[controller.getName()])
+	scopes.svyWebClientUtils.addCSSDependancy(url, forms[controller.getName()])
 }
 
 /**
@@ -228,6 +228,6 @@ function onHide(event) {
 * @properties={typeid:24,uuid:"98590DB3-DDBB-4D18-9AED-61D62C307536"}
 */
 function onUnload(event) {
-	scopes.modUtils$webClient.unwrapElement(elements.visualizationContainer).remove(renderBehavior)
+	scopes.svyWebClientUtils.unwrapElement(elements.visualizationContainer).remove(renderBehavior)
 	return _super.onUnload(event)
 }

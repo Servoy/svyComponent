@@ -9,10 +9,10 @@
  * @properties={typeid:24,uuid:"82108840-FE29-4C04-BB46-AF549D3FE6B5"}
  */
 function onAction(event) {
-	var script = scopes.modUtils$webClient.getCallbackScript(callbackMethod, ['"hello"'] , null, true)
+	var script = scopes.svyWebClientUtils.getCallbackScript(callbackMethod, ['"hello"'] , null, true)
 	application.output('From JS Callback: ' + script)
 	
-	scopes.modUtils$webClient.executeClientsideScript(script)
+	scopes.svyWebClientUtils.executeClientsideScript(script)
 	
 	script = plugins.WebClientUtils.generateCallbackScript(callbackMethod, ['hello'])
 	application.output('WCUtils Callback: ' + script)
@@ -98,5 +98,5 @@ function onAction1(event) {
  * @properties={typeid:24,uuid:"24F47D6F-2C17-4ED1-918D-0D45FFB0068F"}
  */
 function onAction2(event) {
-	scopes.modUtils$webClient.getWebClientPluginAccess().addCSSResource("media:///test.css")
+	scopes.svyWebClientUtils.getWebClientPluginAccess().addCSSResource("media:///test.css")
 }

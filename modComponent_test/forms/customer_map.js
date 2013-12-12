@@ -97,7 +97,7 @@ function addInfoWindow(event) {
 	
 	//Adding infoWindow
 	var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
-		content: scopes.modUtils$webClient.XHTML2Text(<div>
+		content: scopes.svyWebClientUtils.XHTML2Text(<div>
 			<b>{customerRec.companyname}</b><br/>(<a href="http://www.servoy.com" target="new">more information</a>)<br/>
 			<p>
 			{customerRec.address}<br/>

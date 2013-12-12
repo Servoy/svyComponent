@@ -7,7 +7,7 @@ function onSolutionOpen() {
 	application.putClientProperty(APP_UI_PROPERTY.TABLEVIEW_WC_DEFAULT_SCROLLABLE, true);
 	
 //	if (scopes.modUtils$system.isWebClient()) {
-//		scopes.modUtils$webClient.setWicketDebugMode(true)
+//		scopes.svyWebClientUtils.setWicketDebugMode(true)
 //	}
 }
 

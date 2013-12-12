@@ -152,7 +152,7 @@ function onLoad(event) {
 		maps.push({ map: map2, markers: [m, m2] })
 
 		var i2 = new gmaps.InfoWindow({
-				content: scopes.modUtils$webClient.XHTML2Text(<div>
+				content: scopes.svyWebClientUtils.XHTML2Text(<div>
 				<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
 				<p>De Brand 65<br/>
 				3823 LJ Amersfoort<br/>
@@ -170,7 +170,7 @@ function onLoad(event) {
 		i2.open(map2, m2);
 	}
 	
-	//scopes.modUtils$webClient.addJavaScriptDependancy('media:///ClientSideCode.js')
+	//scopes.svyWebClientUtils.addJavaScriptDependancy('media:///ClientSideCode.js')
 	
 	var lineChart = new scopes.modDataVis$flotr2.FlotrChart(elements.flotr2$line, scopes.modDataVis$flotr2.CHART_TYPES.LINES)
 	lineChart.draw([{
@@ -298,7 +298,7 @@ function addInfoWindow(event) {
 	//Adding infoWindow
 	infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
 		position: new scopes.modDataVis$googleMaps.LatLng(20,20),
-		content: scopes.modUtils$webClient.XHTML2Text(<div>
+		content: scopes.svyWebClientUtils.XHTML2Text(<div>
 			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
 			<p>De Brand 65<br/>
 			3823 LJ Amersfoort<br/>
@@ -314,7 +314,7 @@ function addInfoWindow(event) {
 //	infoWindow.addEventListener(infoWindow, infoWindow.EVENT_TYPES.CLOSECLICK);
 	infoWindow.open(marker.getMap(), marker);
 	
-	scopes.modUtils$webClient.updateUI()
+	scopes.svyWebClientUtils.updateUI()
 	infoWindow.setPosition(new scopes.modDataVis$googleMaps.LatLng(50,50))
 }
 
