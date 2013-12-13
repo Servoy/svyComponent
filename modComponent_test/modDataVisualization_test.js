@@ -16,7 +16,7 @@ function onSolutionOpen() {
  */
 function testAbstractMethodImpl4AbstractComponent() {
 	//All instances of AbstractComponent should implement getComponentId(), but not getId()
-	var instances = scopes.modUtils$UI.getJSFormInstances(solutionModel.getForm('AbstractComponent'))
+	var instances = scopes.svyUI.getJSFormInstances(solutionModel.getForm('AbstractComponent'))
 	
 	instances.forEach(function(element, index, array){
 		/** @type {JSForm} */
