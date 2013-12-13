@@ -64,7 +64,7 @@ var init = function() {
 	var script = 'svyComp.callbackHandler = function(objectType, objectId, componentId, eventType, data, callback){' + callbackScript + '}';
 	
 	var media = solutionModel.getMedia('modComponent/modComponentCallback.js')
-	media.bytes = scopes.modUtils$data.StringToByteArray(script)
+	media.bytes = scopes.svyDataUtils.StringToByteArray(script)
 	media.mimeType = 'text/javascript' /*When setting the bytes of a media entry, Servoy tries to set the mimeType accordingly, but fails*/
 }()
  
