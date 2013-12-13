@@ -46,11 +46,11 @@
  */
 var init = function() {
 	//Modify the parent of ComponentBase to be the client specific AbstractComponent impl.
-	var clientSpecificAbstractComponentName = 'AbstractComponent' + (scopes.modUtils$system.isWebClient() ? '$webClient' : '$smartClient');
+	var clientSpecificAbstractComponentName = 'AbstractComponent' + (scopes.svySystem.isWebClient() ? '$webClient' : '$smartClient');
 	solutionModel.getForm('ComponentBase').extendsForm = solutionModel.getForm(clientSpecificAbstractComponentName)
 	
 	var callbackScript
-	if (scopes.modUtils$system.isSwingClient()) {
+	if (scopes.svySystem.isSwingClient()) {
 		callbackScript = "var retval = servoy.executeMethod('scopes.modComponent.clientCallback', [objectType, objectId, componentId, eventType, data]);"
 		callbackScript += "if (typeof callback == 'function') {callback.call(this, retval)};"
 	} else {
@@ -189,7 +189,7 @@ var maxIEVersion = 8
  * @properties={typeid:24,uuid:"FB38F277-182A-4971-8534-401EEC07EBFF"}
  */
 function includeExCanvasForIE(container, maxVersion) {
-	if (scopes.modUtils$system.isSwingClient()) {
+	if (scopes.svySystem.isSwingClient()) {
 		return;
 	}
 	
