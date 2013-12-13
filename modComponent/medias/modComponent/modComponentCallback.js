@@ -1,1 +1,0 @@
-//empty .js set with content in scopes.modComponent.init

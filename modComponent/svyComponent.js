@@ -51,7 +51,7 @@ var init = function() {
 	
 	var callbackScript
 	if (scopes.svySystem.isSwingClient()) {
-		callbackScript = "var retval = servoy.executeMethod('scopes.modComponent.clientCallback', [objectType, objectId, componentId, eventType, data]);"
+		callbackScript = "var retval = servoy.executeMethod('scopes.svyComponent.clientCallback', [objectType, objectId, componentId, eventType, data]);"
 		callbackScript += "if (typeof callback == 'function') {callback.call(this, retval)};"
 	} else {
 		var url = scopes.svyWebClientUtils.getCallbackUrl(clientCallback)
@@ -63,7 +63,7 @@ var init = function() {
 	}
 	var script = 'svyComp.callbackHandler = function(objectType, objectId, componentId, eventType, data, callback){' + callbackScript + '}';
 	
-	var media = solutionModel.getMedia('modComponent/modComponentCallback.js')
+	var media = solutionModel.getMedia('svyComponent/svyComponentCallback.js')
 	media.bytes = scopes.svyDataUtils.StringToByteArray(script)
 	media.mimeType = 'text/javascript' /*When setting the bytes of a media entry, Servoy tries to set the mimeType accordingly, but fails*/
 }()
@@ -200,7 +200,7 @@ function includeExCanvasForIE(container, maxVersion) {
 	//Add excanvas to conditionally only in IE to compensate for the lack of canvas support in IE up to and including IE8
 	var clientProperties = scopes.svyWebClientUtils.getBrowserInfo().getProperties()
 	if (clientProperties.isBrowserInternetExplorer() && clientProperties.getBrowserVersionMajor() <= maxIEVersion) {
-		container.addJavaScriptDependancy('media:///excanvas.compiled.js')
+		container.addJavaScriptDependancy('media:///svyComponent/excanvas.compiled.js')
 	}	
 }
 

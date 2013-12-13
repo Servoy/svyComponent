@@ -129,7 +129,7 @@ function isRendered() {
  */
 function onLoad(event) {
 	_super.onLoad(event);
-	addJavaScriptDependancy('media:///modComponent/json3.js') //Always including json3.js to solve browser incompatibility issues with date serialization
+	addJavaScriptDependancy('media:///svyComponent/json3.js') //Always including json3.js to solve browser incompatibility issues with date serialization
 	
 	var elementId = scopes.svyWebClientUtils.getElementMarkupId(elements.visualizationContainer)
 	var impl = {
