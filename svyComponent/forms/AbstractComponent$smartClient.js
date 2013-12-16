@@ -57,12 +57,12 @@ var cssDependancies = []
 function persistObject(object, incrementalUpdateCode) {
 	//If rendered and a new subType is added, send to browser straight away
 	if (isRendered() && !scripts[object.id]) { //CHECKME: WC impl. does an extra check to see if issubType == true. Why not here?
-		executeClientsideScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
-		executeClientsideScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
+		executeScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
+		executeScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
 	}
 	
 	if (isRendered() && incrementalUpdateCode) {
-		executeClientsideScript(incrementalUpdateCode)
+		executeScript(incrementalUpdateCode)
 	}
 	
 	scripts[object.id] = object
@@ -131,7 +131,7 @@ function onLoad(event) {
  * @param {String} script
  * @properties={typeid:24,uuid:"EF53426A-F9D1-492C-A756-1FC78D93859A"}
  */
-function executeClientsideScript(script) {
+function executeScript(script) {
 	//FIXME: this should probably be throttled if isRendered() == false. See InfoWindow.open() method for usecase
 	webPane.executeScriptLater(script)
 }

@@ -163,12 +163,11 @@ function serializeObject(o) {
  * Component interaction API
  */
 /**
- * TODO refactor to executeScript
- * @abstract
+ *  @abstract
  * @properties={typeid:24,uuid:"3DA12669-19E2-4015-B9F1-0D593797C1E8"}
  */
-function executeClientsideScript(script) {
-	throw new scopes.svyExceptions.AbstractMethodInvocationException('Abstract method executeClientsideScript() must be implemented on instances of AbstractComponent');
+function executeScript(script) {
+	throw new scopes.svyExceptions.AbstractMethodInvocationException('Abstract method executeScript() must be implemented on instances of AbstractComponent');
 }
 
 /**

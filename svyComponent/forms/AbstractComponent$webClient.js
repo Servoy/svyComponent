@@ -60,12 +60,12 @@ function persistObject(object, incrementalUpdateCode) {
 	//If rendered and it is an object previously not yet persisted, send it to the client straight away
 	if (isRendered()) {
 		if (!scripts[object.id]) {
-			executeClientsideScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
-			executeClientsideScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
+			executeScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
+			executeScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
 		}
 		
 		if (incrementalUpdateCode) {
-			executeClientsideScript(incrementalUpdateCode)
+			executeScript(incrementalUpdateCode)
 		}
 	}
 	scripts[object.id] = object
@@ -162,7 +162,7 @@ function onLoad(event) {
 /**
  * @properties={typeid:24,uuid:"35FAD910-F9D1-4AF0-B172-69D75CE1A228"}
  */
-function executeClientsideScript(script) {
+function executeScript(script) {
 	//FIXME: should be throttled if isRendered() == false, as otherwise the Window is unknown
 	//Currently hardcoded 'null' as window
 	var windowName = controller.getWindow() ? controller.getWindow().getName() : 'null'
@@ -217,7 +217,7 @@ function onHide(event) {
 	//TODO: what to do with the return value of onHide of the super?
 	_super.onHide(event)
 	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid, so we also delete the keys from the object store.
-	executeClientsideScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyComp.objects[value]});')
+	executeScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyComp.objects[value]});')
 	rendered = false
 	return true
 }
