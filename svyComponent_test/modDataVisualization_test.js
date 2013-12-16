@@ -21,10 +21,13 @@ function testAbstractMethodImpl4AbstractComponent() {
 	instances.forEach(function(element, index, array){
 		/** @type {JSForm} */
 		var jsForm = element
+		if (['ComponentBase','AbstractComponent$smartClient','AbstractComponent$webClient'].indexOf(jsForm.name) != -1) {
+			return
+		}
 		var methods = jsForm.getMethods(false)
 		var hasGetComponentId = false
 		var hasGetId = false
-		methods.every(function(el, i, ar) {
+		methods.forEach(function(el, i, ar) {
 			/** @type {JSMethod} */
 			var method = el
 			switch (method.getName()) {
@@ -38,7 +41,7 @@ function testAbstractMethodImpl4AbstractComponent() {
 					break;
 			}
 		})
-		jsunit.assertTrue('AbstractComponent instances MUST override .getComponentId()', hasGetComponentId)
-		jsunit.assertFalse('AbstractComponent instances must NOT override .getId()', hasGetId)
+		jsunit.assertTrue('AbstractComponent instances MUST override .getComponentId(): ' + jsForm.name, hasGetComponentId)
+		jsunit.assertFalse('AbstractComponent instances must NOT override .getId(): ' + jsForm.name, hasGetId)
 	})
 }
