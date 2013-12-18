@@ -98,6 +98,8 @@ function reviver(key, value) {
 /**
  * Generic callbackHandler for events send from the client to the scripting layer
  * @private 
+ * @param {String} body
+ * @param {Object<Array<String>>} args
  * @properties={typeid:24,uuid:"2B8B17B3-42F6-46AA-86B1-9A8D49ABA53E"}
  */
 function clientCallback(body, args) {
@@ -110,7 +112,6 @@ function clientCallback(body, args) {
 	 * WC w. callback  : body, {p: Array<String>}
 	 * WC w/o callback : objectType, objectId, componentId, eventType, data
 	 */
-	
 	if (arguments.length > 2) { 
 		objectType = arguments[0]
 		objectId = arguments[1]
