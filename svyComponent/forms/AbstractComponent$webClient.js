@@ -131,7 +131,6 @@ function onLoad(event) {
 	_super.onLoad(event);
 	addJavaScriptDependancy('media:///svyComponent/json3.js') //Always including json3.js to solve browser incompatibility issues with date serialization
 	
-	var elementId = scopes.svyWebClientUtils.getElementMarkupId(elements.visualizationContainer)
 	var impl = {
 		renderHead: function(/**@type {Packages.org.apache.wicket.markup.html.IHeaderResponse}*/ response) { //(IHeaderResponse response) 
 			var ids = Object.keys(scripts)
@@ -142,8 +141,7 @@ function onLoad(event) {
 				object = scripts[ids[i]]
 				script += 'svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\';\n'
 			}
-			response.renderJavascript(script, elementId)
-			response.renderOnLoadJavascript('svyComp.' + getComponentId() + '.initialize(\'' + ids.join("','") +'\');') //CHECKME: do the references cause a mem leak?
+			response.renderOnLoadJavascript(script + 'svyComp.' + getComponentId() + '.initialize(\'' + ids.join("','") +'\');') //CHECKME: do the references cause a mem leak?
 		}
 	}
 	
@@ -151,8 +149,6 @@ function onLoad(event) {
 	scopes.svyWebClientUtils.unwrapElement(elements.visualizationContainer).add(renderBehavior)
 	
 	html = scopes.svyWebClientUtils.XHTML2Text(<html>
-		<head>
-		</head>
 		<body>
 			<div id={getId()} style="width: 100%; height: 100%; overflow: hidden"><![CDATA[&nbsp;]]></div>
 		</body>
@@ -221,6 +217,7 @@ function onHide(event) {
 	rendered = false
 	return true
 }
+
 /**
 *
 * @param {JSEvent} event
