@@ -56,6 +56,13 @@ var cssDependancies = []
 var initScripts = []
 
 /**
+ * @private 
+ * @type {Array<String>}
+ * @properties={typeid:35,uuid:"396BF072-D4C6-483D-84FF-CF235DBE3D8C",variableType:-4}
+ */
+var executeScripts = []
+
+/**
  * @param {{id: String}} object
  * @param {String} [incrementalUpdateCode]
  *
@@ -139,8 +146,11 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"EF53426A-F9D1-492C-A756-1FC78D93859A"}
  */
 function executeScript(script) {
-	//FIXME: this should probably be throttled if isRendered() == false. See InfoWindow.open() method for usecase
-	webPane.executeScriptLater(script)
+	if (!isRendered()) {
+		executeScripts.push(script)
+	} else {
+		webPane.executeScriptLater(script)
+	}
 }
 
 /**
@@ -221,6 +231,8 @@ function onShow(firstShow, event) {
 		webPane.loadContent(dom)
 	}
 	rendered = true
+	executeScript(executeScripts.join(';') + ';')
+	executeScripts.length = 0
 }
 
 /**

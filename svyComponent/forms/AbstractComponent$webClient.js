@@ -51,6 +51,13 @@ var persistedObjects = {};
 var initScripts = []
 
 /**
+ * @private 
+ * @type {Array<String>}
+ * @properties={typeid:35,uuid:"1FDEE3A1-6207-4CEF-B036-A8F311A71F71",variableType:-4}
+ */
+var executeScripts = []
+
+/**
  * @type {Packages.org.apache.wicket.behavior.AbstractBehavior}
  *
  * @properties={typeid:35,uuid:"E613F298-61B3-4B4C-9FA1-9569D607A8B9",variableType:-4}
@@ -166,10 +173,13 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"35FAD910-F9D1-4AF0-B172-69D75CE1A228"}
  */
 function executeScript(script) {
-	//FIXME: should be throttled if isRendered() == false, as otherwise the Window is unknown
-	//Currently hardcoded 'null' as window
-	var windowName = controller.getWindow() ? controller.getWindow().getName() : 'null'
-	scopes.svyWebClientUtils.executeClientsideScript(script, windowName)
+	if (!isRendered()) {
+		executeScripts.push(script)
+	} else {
+		//Currently hardcoded 'null' as window
+		var windowName = controller.getWindow() ? controller.getWindow().getName() : 'null'
+		scopes.svyWebClientUtils.executeClientsideScript(script, windowName)
+	}
 }
 
 /**
@@ -212,6 +222,8 @@ function addCSSDependancy(url) {
 function onShow(firstShow, event) {
 	_super.onShow(firstShow,event);
 	rendered = true
+	executeScript(executeScripts.join(';') + ';')
+	executeScripts.length = 0
 }
 
 /**
