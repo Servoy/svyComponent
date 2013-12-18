@@ -219,8 +219,8 @@ function onShow(firstShow, event) {
 		</html>'
 		
 		webPane.loadContent(dom)
-		rendered = true
 	}
+	rendered = true
 }
 
 /**
