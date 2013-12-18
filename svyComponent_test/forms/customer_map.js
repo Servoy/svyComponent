@@ -1,12 +1,12 @@
 /**
- * @type {scopes.modDataVis$googleMaps.Map}
+ * @type {scopes.svyGoogleMaps.Map}
  * 
  * @properties={typeid:35,uuid:"FEF481B6-B73B-4F5D-AB49-4012E579683D",variableType:-4}
  */
 var map;
 
 /**
- * @type {Object<scopes.modDataVis$googleMaps.Marker>}
+ * @type {Object<scopes.svyGoogleMaps.Marker>}
  *
  * @properties={typeid:35,uuid:"C06F4E47-69B7-44A3-A7BC-D874082461BC",variableType:-4}
  */
@@ -21,10 +21,10 @@ var markers = {};
  */
 function onLoad(event) {
 	//Instantiate GoogleMaps
-	map = new scopes.modDataVis$googleMaps.Map(elements.map, {
+	map = new scopes.svyGoogleMaps.Map(elements.map, {
 		zoom: 8,
-		center: new scopes.modDataVis$googleMaps.LatLng(52.2,5.2),
-		mapTypeId: scopes.modDataVis$googleMaps.MapTypeIds.HYBRID
+		center: new scopes.svyGoogleMaps.LatLng(52.2,5.2),
+		mapTypeId: scopes.svyGoogleMaps.MapTypeIds.HYBRID
 	})
 }
 
@@ -37,7 +37,7 @@ function fitBounds() {
 		if (bounds) {
 			bounds.extend(mkr.getPosition())
 		} else {
-			bounds = new scopes.modDataVis$googleMaps.LatLngBounds(mkr.getPosition(), mkr.getPosition())
+			bounds = new scopes.svyGoogleMaps.LatLngBounds(mkr.getPosition(), mkr.getPosition())
 		}
 	}
 	map.fitBounds(bounds)
@@ -50,8 +50,8 @@ function fitBounds() {
  * @properties={typeid:24,uuid:"F921C715-15AB-4926-B435-2C4533E29DEC"}
  */
 function addMarker(customerRec, pos) {
-	var marker = new scopes.modDataVis$googleMaps.Marker({
-		position: new scopes.modDataVis$googleMaps.LatLng(pos.lat, pos.lng),
+	var marker = new scopes.svyGoogleMaps.Marker({
+		position: new scopes.svyGoogleMaps.LatLng(pos.lat, pos.lng),
 		draggable: false,
 		title: customerRec.companyname
 	});
@@ -73,7 +73,7 @@ function removeMarker(customerRec) {
 }
 
 /**
- * @param {scopes.modDataVis$googleMaps.Event} event
+ * @param {scopes.svyGoogleMaps.Event} event
  *
  * @properties={typeid:24,uuid:"EEF54B74-6DA2-4FE6-9244-1B2DC321388B"}
  */
@@ -96,7 +96,7 @@ function addInfoWindow(event) {
 	
 	
 	//Adding infoWindow
-	var infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
+	var infoWindow = new scopes.svyGoogleMaps.InfoWindow({
 		content: scopes.svyWebClientUtils.XHTML2Text(<div>
 			<b>{customerRec.companyname}</b><br/>(<a href="http://www.servoy.com" target="new">more information</a>)<br/>
 			<p>
@@ -112,7 +112,7 @@ function addInfoWindow(event) {
 		</div>)
 	});
 	
-	/** @type {scopes.modDataVis$googleMaps.Marker} */
+	/** @type {scopes.svyGoogleMaps.Marker} */
 	var marker = event.getSource()
 	infoWindow.open(map, marker);
 }

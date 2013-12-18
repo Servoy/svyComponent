@@ -1,19 +1,19 @@
 /**
- * @type {scopes.modDataVis$googleMaps.Map}
+ * @type {scopes.svyGoogleMaps.Map}
  *
  * @properties={typeid:35,uuid:"DE7AD9F8-8D88-4865-8D5C-69D954170248",variableType:-4}
  */
 var map
 
 /**
- * @type {scopes.modDataVis$googleMaps.Marker}
+ * @type {scopes.svyGoogleMaps.Marker}
  *
  * @properties={typeid:35,uuid:"63B3F6F5-36DE-43D1-B90E-413741C390EB",variableType:-4}
  */
 var marker
 
 /**
- * @type {scopes.modDataVis$googleMaps.InfoWindow}
+ * @type {scopes.svyGoogleMaps.InfoWindow}
  *
  * @properties={typeid:35,uuid:"A0AABFE8-3230-42A9-9F0A-15727FD363B8",variableType:-4}
  */
@@ -29,14 +29,14 @@ var infoWindow
  * @properties={typeid:24,uuid:"3335EEB4-3E10-48DB-9A30-A14788C4477F"}
  */
 function onLoad(event) {
-	var gmaps = scopes.modDataVis$googleMaps
+	var gmaps = scopes.svyGoogleMaps
 	map = new gmaps.Map(elements.tabless, {
 		zoom: 2,
 		center: new gmaps.LatLng(30, 20),
 		mapTypeId: gmaps.MapTypeIds.HYBRID
 	})
 	
-	infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
+	infoWindow = new scopes.svyGoogleMaps.InfoWindow({
 		content: 'Hello',
 		position: map.getCenter()
 	})
@@ -54,8 +54,8 @@ function onLoad(event) {
  */
 function addMarker(event) {
 	if (!marker) {
-		marker = new scopes.modDataVis$googleMaps.Marker({
-			position: new scopes.modDataVis$googleMaps.LatLng(30, 20),
+		marker = new scopes.svyGoogleMaps.Marker({
+			position: new scopes.svyGoogleMaps.LatLng(30, 20),
 			map: map
 		})
 	} else {
@@ -69,8 +69,8 @@ function addMarker(event) {
  * @properties={typeid:24,uuid:"8594E527-21D6-4779-B3C9-DA24BC9F7813"}
  */
 function addMarker2(event) {
-	var marker2 = new scopes.modDataVis$googleMaps.Marker({
-			position: new scopes.modDataVis$googleMaps.LatLng(10, 40)
+	var marker2 = new scopes.svyGoogleMaps.Marker({
+			position: new scopes.svyGoogleMaps.LatLng(10, 40)
 		})
 	marker2.setMap(map)
 }

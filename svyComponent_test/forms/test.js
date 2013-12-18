@@ -6,7 +6,7 @@
 var gauges = []
 
 /**
- * @type {Array<{map: scopes.modDataVis$googleMaps.Map, markers: Array<scopes.modDataVis$googleMaps.Marker>}>}
+ * @type {Array<{map: scopes.svyGoogleMaps.Map, markers: Array<scopes.svyGoogleMaps.Marker>}>}
  *
  * @properties={typeid:35,uuid:"0236ED8A-A80D-4577-B3E3-7603CA724ABD",variableType:-4}
  */
@@ -103,7 +103,7 @@ function onLoad(event) {
 	geoChart.addSelectListener(callbackLogger)
 
 	//Instantiate GoogleMaps
-	var gmaps = scopes.modDataVis$googleMaps;
+	var gmaps = scopes.svyGoogleMaps;
 	var map = new gmaps.Map(elements.maps, {
 				zoom: 8,
 				center: new gmaps.LatLng(-34.397, 150.644),
@@ -252,7 +252,7 @@ function onLoad(event) {
 
 /**
  * @properties={typeid:24,uuid:"90F7FE19-B6F1-4DB4-8437-6F56E5C4C035"}
- * @param {scopes.modDataVis$googleMaps.Event} event
+ * @param {scopes.svyGoogleMaps.Event} event
  */
 function callbackLogger(event) {
 	application.output("CALLBACK: " + event)
@@ -262,14 +262,14 @@ function callbackLogger(event) {
  * Perform the element default action.
  *
  * @param {JSEvent} [event] the event that triggered the action
- * @param {{map: scopes.modDataVis$googleMaps.Map, markers: Array<scopes.modDataVis$googleMaps.Marker>}} map
+ * @param {{map: scopes.svyGoogleMaps.Map, markers: Array<scopes.svyGoogleMaps.Marker>}} map
  *
  * @properties={typeid:24,uuid:"BC59C8F4-194C-44B9-996C-4DA40ABD1AC5"}
  */
 function addMarker(event, map) {
 	//Adding random marker
-	var marker = new scopes.modDataVis$googleMaps.Marker({
-		position: new scopes.modDataVis$googleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180),
+	var marker = new scopes.svyGoogleMaps.Marker({
+		position: new scopes.svyGoogleMaps.LatLng((Math.random() * 180).toFixed(0)-90, (Math.random() * 360).toFixed(0)-180),
 		draggable: true,
 		title: 'Random marker'
 	})
@@ -281,23 +281,23 @@ function addMarker(event, map) {
 }
 
 /**
- * @type {scopes.modDataVis$googleMaps.InfoWindow}
+ * @type {scopes.svyGoogleMaps.InfoWindow}
  *
  * @properties={typeid:35,uuid:"D96A0A49-CE6F-4D58-AE1C-34FEE29E1289",variableType:-4}
  */
 var infoWindow
 
 /**
- * @param {scopes.modDataVis$googleMaps.Event} event
+ * @param {scopes.svyGoogleMaps.Event} event
  *
  * @properties={typeid:24,uuid:"884AC979-A6FC-4E1B-AD24-C8BF439AA98E"}
  */
 function addInfoWindow(event) {
-	/** @type {scopes.modDataVis$googleMaps.Marker} */
+	/** @type {scopes.svyGoogleMaps.Marker} */
 	var marker = event.getSource()
 	//Adding infoWindow
-	infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
-		position: new scopes.modDataVis$googleMaps.LatLng(20,20),
+	infoWindow = new scopes.svyGoogleMaps.InfoWindow({
+		position: new scopes.svyGoogleMaps.LatLng(20,20),
 		content: scopes.svyWebClientUtils.XHTML2Text(<div>
 			<b>Servoy BV</b>   <a href="http://www.servoy.com" target="new">more information</a>
 			<p>De Brand 65<br/>
@@ -315,7 +315,7 @@ function addInfoWindow(event) {
 	infoWindow.open(marker.getMap(), marker);
 	
 	scopes.svyWebClientUtils.updateUI()
-	infoWindow.setPosition(new scopes.modDataVis$googleMaps.LatLng(50,50))
+	infoWindow.setPosition(new scopes.svyGoogleMaps.LatLng(50,50))
 }
 
 /**
@@ -351,7 +351,7 @@ function fitBounds() {
 	for (var i = 0; i < maps.length; i++) {
 		var markers = maps[i].markers
 		if (markers.length) {
-			var bounds = new scopes.modDataVis$googleMaps.LatLngBounds(markers[0].getPosition(), markers[0].getPosition())
+			var bounds = new scopes.svyGoogleMaps.LatLngBounds(markers[0].getPosition(), markers[0].getPosition())
 			for (var z = 1; z < markers.length; z++) {
 				bounds.extend(markers[z].getPosition())
 			}
