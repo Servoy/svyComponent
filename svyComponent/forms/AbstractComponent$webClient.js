@@ -41,7 +41,14 @@ var html = '';
  * @type {Object<{id: String}>}
  * @properties={typeid:35,uuid:"95AF050B-A5A2-43F1-971F-AA01FAB9FC25",variableType:-4}
  */
-var scripts = {};
+var persistedObjects = {};
+
+/**
+ * @private 
+ * @type {Array<String>}
+ * @properties={typeid:35,uuid:"AC0D247B-CD1B-4C63-B7E9-EA82473276B1",variableType:-4}
+ */
+var initScripts = []
 
 /**
  * @type {Packages.org.apache.wicket.behavior.AbstractBehavior}
@@ -59,7 +66,7 @@ var renderBehavior
 function persistObject(object, incrementalUpdateCode) {
 	//If rendered and it is an object previously not yet persisted, send it to the client straight away
 	if (isRendered()) {
-		if (!scripts[object.id]) {
+		if (!persistedObjects[object.id]) {
 			executeScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
 			executeScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
 		}
@@ -68,7 +75,7 @@ function persistObject(object, incrementalUpdateCode) {
 			executeScript(incrementalUpdateCode)
 		}
 	}
-	scripts[object.id] = object
+	persistedObjects[object.id] = object
 }
 
 /**
@@ -79,7 +86,7 @@ function persistObject(object, incrementalUpdateCode) {
 function desistObject(id) {
 	//TODO: shouldn't this also immediately perform some clientSide cleanups?
 	delete allObjectCallbackHandlers[id]
-	delete scripts[id]
+	delete persistedObjects[id]
 }
 
 /**
@@ -133,12 +140,12 @@ function onLoad(event) {
 	
 	var impl = {
 		renderHead: function(/**@type {Packages.org.apache.wicket.markup.html.IHeaderResponse}*/ response) { //(IHeaderResponse response) 
-			var ids = Object.keys(scripts)
-			var script = ''
+			var ids = Object.keys(persistedObjects)
+			var script = initScripts.join(';\n') + ';\n'
 				
 			var object
 			for (var i = 0; i < ids.length; i++) {
-				object = scripts[ids[i]]
+				object = persistedObjects[ids[i]]
 				script += 'svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\';\n'
 			}
 			response.renderOnLoadJavascript(script + 'svyComp.' + getComponentId() + '.initialize(\'' + ids.join("','") +'\');') //CHECKME: do the references cause a mem leak?
@@ -163,6 +170,15 @@ function executeScript(script) {
 	//Currently hardcoded 'null' as window
 	var windowName = controller.getWindow() ? controller.getWindow().getName() : 'null'
 	scopes.svyWebClientUtils.executeClientsideScript(script, windowName)
+}
+
+/**
+ * @param {String} script
+ *
+ * @properties={typeid:24,uuid:"10DDF007-7C54-4FAD-9E39-633149860ADF"}
+ */
+function addInitializeScript(script) {
+	initScripts.push(script)
 }
 
 /**
@@ -213,7 +229,7 @@ function onHide(event) {
 	//TODO: what to do with the return value of onHide of the super?
 	_super.onHide(event)
 	//As a form gets hidden in de WC, the markup is removed, so the reference to the map becomes invalid, so we also delete the keys from the object store.
-	executeScript('$.each([\'' + Object.keys(scripts).join("\',\'") + '\'],function(key, value) {delete svyComp.objects[value]});')
+	executeScript('$.each([\'' + Object.keys(persistedObjects).join("\',\'") + '\'],function(key, value) {delete svyComp.objects[value]});')
 	rendered = false
 	return true
 }

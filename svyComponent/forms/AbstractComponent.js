@@ -172,6 +172,16 @@ function executeScript(script) {
 
 /**
  * @abstract
+ * @param {String} script
+ *
+ * @properties={typeid:24,uuid:"DCE38328-29D3-4674-8CDE-3EE5CBB149AE"}
+ */
+function addInitializeScript(script) {
+	throw new scopes.svyExceptions.AbstractMethodInvocationException('Abstract method addInitializeScript() must be implemented on instances of AbstractComponent');	
+}
+
+/**
+ * @abstract
  * @param {String} url
  *
  * @properties={typeid:24,uuid:"1FBEAB33-6C34-4FF6-BE2F-38A7597CC7E0"}

@@ -34,7 +34,7 @@ var webPane
  * @type {{id: String}}
  * @properties={typeid:35,uuid:"11DBD598-42FD-45FF-9DFB-3F865D0E1B46",variableType:-4}
  */
-var scripts = {};
+var persistedObjects = {};
 
 /**
  * @private 
@@ -49,6 +49,13 @@ var jsDependancies = []
 var cssDependancies = []
 
 /**
+ * @private 
+ * @type {Array<String>}
+ * @properties={typeid:35,uuid:"E3E05A8E-9B05-4EF9-89B7-D7A794F3E513",variableType:-4}
+ */
+var initScripts = []
+
+/**
  * @param {{id: String}} object
  * @param {String} [incrementalUpdateCode]
  *
@@ -56,7 +63,7 @@ var cssDependancies = []
  */
 function persistObject(object, incrementalUpdateCode) {
 	//If rendered and a new subType is added, send to browser straight away
-	if (isRendered() && !scripts[object.id]) { //CHECKME: WC impl. does an extra check to see if issubType == true. Why not here?
+	if (isRendered() && !persistedObjects[object.id]) { //CHECKME: WC impl. does an extra check to see if issubType == true. Why not here?
 		executeScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
 		executeScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
 	}
@@ -65,7 +72,7 @@ function persistObject(object, incrementalUpdateCode) {
 		executeScript(incrementalUpdateCode)
 	}
 	
-	scripts[object.id] = object
+	persistedObjects[object.id] = object
 }
 
 /**
@@ -75,7 +82,7 @@ function persistObject(object, incrementalUpdateCode) {
  */
 function desistObject(id) {
 	delete allObjectCallbackHandlers[id]
-	delete scripts[id]
+	delete persistedObjects[id]
 }
 
 /**
@@ -137,6 +144,15 @@ function executeScript(script) {
 }
 
 /**
+ * @param script
+ *
+ * @properties={typeid:24,uuid:"BA3BDE28-3037-4F1F-A67C-B08B1ED0B402"}
+ */
+function addInitializeScript(script) {
+	initScripts.push(script)
+}
+
+/**
  * @param {String} url
  *
  * @properties={typeid:24,uuid:"D2DE4AA4-8D02-4AEC-84B5-FB2A21B2233C"}
@@ -188,18 +204,20 @@ function onShow(firstShow, event) {
 			dom += '<link type="text/css" rel="stylesheet" href="' + cssDependancies[i] + '"></link>\n';
 		}
 		
-		for (var script in scripts) {
-			var object = scripts[script]
+		for (var script in persistedObjects) {
+			var object = persistedObjects[script]
 			dom += '<script type="text/javascript">svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'</script>\n';
 		}
 		dom += '</head>\
 			<body style="display: block; width: 100%; height: 100%; box-sizing: border-box; padding: 0px; margin: 0px; overflow: hidden" '
-		dom += 'onload="svyComp.' + getComponentId() + '.initialize(\'' + Object.keys(scripts).join("','") +'\');">'
+		dom += 'onload="'
+		dom += initScripts.join(';') + ';'
+		dom += 'svyComp.' + getComponentId() + '.initialize(\'' + Object.keys(persistedObjects).join("','") +'\');">'
 			
 		dom += '<div id="' + getId() + '" style="width: 100%; height: 100%; overflow: hidden">&nbsp;</div>'
 		dom += '</body>\
 		</html>'
-			
+		
 		webPane.loadContent(dom)
 		rendered = true
 	}
