@@ -37,7 +37,7 @@ function onLoad(event) {
 	})
 	
 	infoWindow = new scopes.modDataVis$googleMaps.InfoWindow({
-		content: 'Hello Paul, you did it..',
+		content: 'Hello',
 		position: map.getCenter()
 	})
 	infoWindow.open(map)

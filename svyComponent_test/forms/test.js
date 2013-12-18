@@ -127,7 +127,7 @@ function onLoad(event) {
 	var m = new gmaps.Marker({
 			position: new gmaps.LatLng(10, 20),
 			draggable: true,
-			title: 'Hello Paul'
+			title: 'Hello you'
 		});
 	m.setMap(map2)
 	m.addClickListener(callbackLogger)
@@ -416,5 +416,6 @@ function changeGeoChartContent(event) {
  */
 function showMapIndialog(event) {
 	var win = application.createWindow('mapdialog', JSWindow.DIALOG)
-	win.show(forms.debugMarkersAndInfoWindows)
+	win.title = 'Dialog Test'
+	win.show(forms.mapDialog)
 }

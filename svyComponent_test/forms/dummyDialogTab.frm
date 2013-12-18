@@ -1,0 +1,21 @@
+items:[
+{
+location:"5,5",
+size:"630,32",
+text:"After switching back to the 'Map' tab the map should reappear in the exact same state as before switching tabs",
+transparent:true,
+typeid:7,
+uuid:"341D0F37-07AE-4413-9FAF-D10AA8AC2647"
+},
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"7314810C-E78C-41BC-A000-D9E3DF334337"
+}
+],
+name:"dummyDialogTab",
+navigatorID:"-1",
+showInMenu:true,
+typeid:3,
+uuid:"EB1D3947-5DB0-42D6-9ED1-F76C8F2D184B"
