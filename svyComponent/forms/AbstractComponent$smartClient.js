@@ -105,7 +105,6 @@ var allObjectCallbackHandlers = {};
  * Abstract identifier, should be overridden on implementations of AbstractComponent and return the id under which all browser interaction takes place
  * @abstract
  * @protected 
- * TODO: write UnitTest to check for this implementation
  * @properties={typeid:24,uuid:"AD9F8AAA-90A2-4664-BD91-ED05E2C61A69"}
  */
 function getComponentId(){}

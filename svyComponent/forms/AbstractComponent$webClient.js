@@ -15,10 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * TODO: do we need an HTML area at all, or can we just attach behaviors?
- */
-
 // /**
 //  * @private 
 //  *
@@ -109,8 +105,7 @@ var allObjectCallbackHandlers = {};
 /**
  * Abstract identifier, should be overridden on implementations of AbstractComponent and return the id under which all browser interaction takes place
  * @abstract
- * @protected 
- * TODO: write UnitTest to check for this implementation
+ * @protected
  * @properties={typeid:24,uuid:"3C417883-A4EB-46EF-B15C-4D9605846954"}
  */
 function getComponentId(){}

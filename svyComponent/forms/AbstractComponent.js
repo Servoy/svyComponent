@@ -137,7 +137,6 @@ function getId() {
  * Abstract identifier, should be overridden on implementations of AbstractComponent and return the id under which all browser interaction takes place
  * @abstract
  * @protected 
- * TODO: write UnitTest to check for this implementation
  * @properties={typeid:24,uuid:"9D9DA2C9-A017-47B8-A4A4-B7C9BF425550"}
  */
 function getComponentId(){
