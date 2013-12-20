@@ -22,6 +22,10 @@
  * - @runtime setup the callback mechanism from the client to the scripting layer
  * - Generic reviver to restore date strings to dates when parsing JSON 
  * 
+ * TODO namespace components inside the browser to prevent clashes
+ * TODO provide boilerplate solution to have a startingPoint to develop new Components
+ * TODO Make processing the TODO's in the client generic and shared between components
+ * Provide a component prototype function to use as basis for the main constructors
  * TODO Extract the intelligent loop for processing initializations in the right order from the GoogleMaps/FullCalendarHandler initialize method and put it in code
  * TODO put custom logger initialization into AbstractComponent
  * TODO Use constants for identifiers, like com.servoy.component.google.maps
