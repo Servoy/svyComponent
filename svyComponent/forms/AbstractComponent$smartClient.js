@@ -205,7 +205,8 @@ function onShow(firstShow, event) {
 
 	if (firstShow) {
 		var dom = '<html>\
-			<head>'
+			<head>\
+				<style>html {font-family: Tahoma, Arial, Helvetica, sans-serif}</style>' //Resetting the default font used as it by default seems to use Times New Roman or something similar
 		for (var i = 0; i < jsDependancies.length; i++) {
 			dom += '<script type="text/javascript" src="' + jsDependancies[i] + '"></script>\n';
 		}
