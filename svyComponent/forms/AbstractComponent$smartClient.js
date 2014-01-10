@@ -231,8 +231,10 @@ function onShow(firstShow, event) {
 		webPane.loadContent(dom)
 	}
 	rendered = true
-	executeScript(executeScripts.join(';') + ';')
-	executeScripts.length = 0
+	if (executeScripts.length) {
+		executeScript(executeScripts.join(';') + ';')
+		executeScripts.length = 0
+	}
 }
 
 /**
