@@ -61,7 +61,7 @@ var init = function() {
 		var url = scopes.svyWebClientUtils.getCallbackUrl(clientCallback)
 		url += "&p=' + encodeURIComponent(" + ['objectType', 'objectId', 'componentId', 'eventType', 'data'].join(") + '&p=' + encodeURIComponent(") + ")"
 		
-		callbackScript = "if (typeof callback == 'function') {$.ajax({url: '" + url + "}).done(function(data) {callback.call(this, data)});} else {"
+		callbackScript = "if (typeof callback == 'function') {$.ajax({url: '" + url + ", headers: {'Wicket-Ajax': true}}).done(function(data) {callback.call(this, data)});} else {"
 		callbackScript += scopes.svyWebClientUtils.getCallbackScript(clientCallback, ['objectType', 'objectId', 'componentId', 'eventType', 'data'], {showLoading: false})
 		callbackScript += '}'
 	}
@@ -71,7 +71,7 @@ var init = function() {
 	media.bytes = scopes.svyDataUtils.StringToByteArray(script)
 	media.mimeType = 'text/javascript' /*When setting the bytes of a media entry, Servoy tries to set the mimeType accordingly, but fails*/
 }()
- 
+
 /**
  * TODO move to utils scope
  * CHECKME: do we need to take into account timezone differences between the client and server here?
