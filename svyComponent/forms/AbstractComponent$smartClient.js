@@ -1,22 +1,22 @@
 /*
- * This file is part of the Servoy Business Application Platform, Copyright (C) 2012-2013 Servoy BV 
- * 
+ * This file is part of the Servoy Business Application Platform, Copyright (C) 2012-2013 Servoy BV
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
- * @private 
+ * @private
  *
  * @properties={typeid:35,uuid:"8BBE8A91-EBDE-4759-B3CF-C73506E288AA",variableType:-4}
  */
@@ -37,7 +37,7 @@ var webPane
 var persistedObjects = {};
 
 /**
- * @private 
+ * @private
  * @properties={typeid:35,uuid:"BC7BCCBE-90C4-4E50-9B4B-E31BD20F7761",variableType:-4}
  */
 var jsDependancies = []
@@ -49,14 +49,14 @@ var jsDependancies = []
 var cssDependancies = []
 
 /**
- * @private 
+ * @private
  * @type {Array<String>}
  * @properties={typeid:35,uuid:"E3E05A8E-9B05-4EF9-89B7-D7A794F3E513",variableType:-4}
  */
 var initScripts = []
 
 /**
- * @private 
+ * @private
  * @type {Array<String>}
  * @properties={typeid:35,uuid:"396BF072-D4C6-483D-84FF-CF235DBE3D8C",variableType:-4}
  */
@@ -71,14 +71,14 @@ var executeScripts = []
 function persistObject(object, incrementalUpdateCode) {
 	//If rendered and a new subType is added, send to browser straight away
 	if (isRendered() && !persistedObjects[object.id]) { //CHECKME: WC impl. does an extra check to see if issubType == true. Why not here?
-		executeScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'')
-		executeScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id +'\');')
+		executeScript('svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' + serializeObject(object) + '\'')
+		executeScript('svyComp.' + getComponentId() + '.initialize(\'' + object.id + '\');')
 	}
-	
+
 	if (isRendered() && incrementalUpdateCode) {
 		executeScript(incrementalUpdateCode)
 	}
-	
+
 	persistedObjects[object.id] = object
 }
 
@@ -104,14 +104,14 @@ var allObjectCallbackHandlers = {};
 /**
  * Abstract identifier, should be overridden on implementations of AbstractComponent and return the id under which all browser interaction takes place
  * @abstract
- * @protected 
+ * @protected
  * @properties={typeid:24,uuid:"AD9F8AAA-90A2-4664-BD91-ED05E2C61A69"}
  */
-function getComponentId(){}
+function getComponentId() {}
 
 /**
  * Flag to be used by implementations to check whether or not to execute the incremental update code
- * @private 
+ * @private
  * @type {Boolean}
  *
  * @properties={typeid:35,uuid:"01E1055B-98D8-412C-8EA4-724D8E5E0942",variableType:-4}
@@ -131,7 +131,7 @@ function isRendered() {
 /**
  * @param {JSEvent} event the event that triggered the action
  *
- * @protected 
+ * @protected
  *
  * @properties={typeid:24,uuid:"8E192053-D35E-4C47-8BA9-8E40AB3DC843"}
  */
@@ -176,11 +176,11 @@ function addJavaScriptDependancy(url) {
 }
 
 /**
-*
-* @param {String} url
-*
-* @properties={typeid:24,uuid:"E64002BA-62B3-4817-8E94-EDE26269E3D7"}
-*/
+ *
+ * @param {String} url
+ *
+ * @properties={typeid:24,uuid:"E64002BA-62B3-4817-8E94-EDE26269E3D7"}
+ */
 function addCSSDependancy(url) {
 	if (cssDependancies.indexOf(url) === -1) {
 		cssDependancies.push(url)
@@ -213,21 +213,21 @@ function onShow(firstShow, event) {
 		for (i = 0; i < cssDependancies.length; i++) {
 			dom += '<link type="text/css" rel="stylesheet" href="' + cssDependancies[i] + '"></link>\n';
 		}
-		
+
 		for (var script in persistedObjects) {
 			var object = persistedObjects[script]
-			dom += '<script type="text/javascript">svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' +  serializeObject(object) + '\'</script>\n';
+			dom += '<script type="text/javascript">svyComp.' + getComponentId() + '[\'' + object.id + '\']=\'' + serializeObject(object) + '\'</script>\n';
 		}
 		dom += '</head>\
 			<body style="display: block; width: 100%; height: 100%; box-sizing: border-box; padding: 0px; margin: 0px; overflow: hidden" '
 		dom += 'onload="'
 		dom += initScripts.join(';') + ';'
-		dom += 'svyComp.' + getComponentId() + '.initialize(\'' + Object.keys(persistedObjects).join("','") +'\');">'
-			
+		dom += 'svyComp.' + getComponentId() + '.initialize(\'' + Object.keys(persistedObjects).join("','") + '\');">'
+
 		dom += '<div id="' + getId() + '" style="width: 100%; height: 100%; overflow: hidden">&nbsp;</div>'
 		dom += '</body>\
 		</html>'
-		
+
 		webPane.loadContent(dom)
 	}
 	rendered = true
