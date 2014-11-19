@@ -4,7 +4,7 @@ svyComponent
 
 Getting started
 -------------
-To use the svyComponent module download the [svyComponent.zip](https://github.com/Servoy/svyUtils/releases) file extract the .servoy file and import it into your workspace
+To use the svyComponent module download the [svyComponent.zip](https://github.com/Servoy/svyComponent/releases) file extract the .servoy file and import it into your workspace
 
 To use the latest source code clone the git repository and checkout the develop branch. Install the [egit](http://www.eclipse.org/egit/download/) plugin for Eclipse to clone the repository and import the projects into the workspace.
 
