@@ -26,4 +26,4 @@ Eager to fix a bug or introduce a new feature? Clone the repository and issue a 
 
 License
 -------
-svyComponent is licensed under LGPL
+svyComponent is licensed under MIT
