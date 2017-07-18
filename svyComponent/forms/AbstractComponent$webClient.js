@@ -138,6 +138,12 @@ function isRendered() {
  */
 function onLoad(event) {
 	_super.onLoad(event);
+	
+	//TODO: remove check and string access when Servoy requirement is upped to >= 8.1.2
+	if ('TRUST_DATA_AS_HTML' in APP_UI_PROPERTY) {
+		elements.visualizationContainer.putClientProperty(APP_UI_PROPERTY['TRUST_DATA_AS_HTML'], true);
+	}
+	
 	addJavaScriptDependancy('media:///svyComponent/json3.js') //Always including json3.js to solve browser incompatibility issues with date serialization
 	
 	var impl = {
